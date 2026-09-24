@@ -2,13 +2,20 @@ import { useState } from 'react';
 import { criteria, shuffleCriteria } from '../../data/criteria.js';
 import { CriteriaSelector } from './CriteriaSelector.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
+import { QuestionNav } from './QuestionNav.jsx';
 
 const MAX_CRITERIA = 5;
 
-export function Question2({ rawAnswer, onContinue }) {
+export function Question2({
+  rawAnswer,
+  onContinue,
+  onLockedBack,
+  initialCriteria = [],
+  initialCustomCriterion = '',
+}) {
   const [orderedCriteria] = useState(() => shuffleCriteria(criteria));
-  const [selectedIds, setSelectedIds] = useState([]);
-  const [customCriterion, setCustomCriterion] = useState('');
+  const [selectedIds, setSelectedIds] = useState(initialCriteria);
+  const [customCriterion, setCustomCriterion] = useState(initialCustomCriterion);
   const otherSelected = selectedIds.includes('other');
   const customReady = !otherSelected || customCriterion.trim().length > 0;
   const canContinue = selectedIds.length > 0 && customReady;
@@ -35,8 +42,7 @@ export function Question2({ rawAnswer, onContinue }) {
   }
 
   return (
-    <QuestionContainer>
-      <p className="eyebrow">Still going with instinct</p>
+    <QuestionContainer questionNumber={2}>
       <h1 className="question-title">
         Why does “{rawAnswer}” feel vegetabley?
       </h1>
@@ -64,21 +70,13 @@ export function Question2({ rawAnswer, onContinue }) {
           </div>
         ) : null}
 
-        <div className="continue-wrap">
-          <button
-            className="continue-button"
-            type="submit"
-            disabled={!canContinue}
-            aria-describedby={selectedIds.length === 0 ? 'continue-hint' : undefined}
-          >
-            Continue
-          </button>
-          {selectedIds.length === 0 ? (
-            <span className="continue-hint" role="tooltip" id="continue-hint">
-              Select at least one
-            </span>
-          ) : null}
-        </div>
+        <QuestionNav
+          backMode="locked"
+          onLockedBack={onLockedBack}
+          continueDisabled={!canContinue}
+          continueHint={selectedIds.length === 0 ? 'Select at least one' : undefined}
+          continueHintId="continue-hint"
+        />
       </form>
     </QuestionContainer>
   );

@@ -3,6 +3,7 @@ import { vegetables } from '../../data/vegetables.js';
 import { findCanonicalMatch, getSuggestions } from '../../utils/autocomplete.js';
 import { AutocompleteInput } from './AutocompleteInput.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
+import { QuestionNav } from './QuestionNav.jsx';
 
 export function Question1({ onContinue }) {
   const [value, setValue] = useState('');
@@ -33,16 +34,15 @@ export function Question1({ onContinue }) {
   }
 
   return (
-    <QuestionContainer>
-      <p className="eyebrow">A small experiment</p>
+    <QuestionContainer questionNumber={1}>
       <h1 className="question-title">
-        When you hear the word “vegetable”, which vegetable comes to your mind?
+        When you hear the word “vegetable”, what comes to your mind?
       </h1>
       <p className="microcopy">Go with your first instinct. There are no wrong answers.</p>
 
       <form className="question-form" onSubmit={handleSubmit}>
         <label className="sr-only" htmlFor="vegetable-answer">
-          Type a vegetable
+          Type what comes to mind
         </label>
         <AutocompleteInput
           id="vegetable-answer"
@@ -50,11 +50,9 @@ export function Question1({ onContinue }) {
           onChange={handleChange}
           onPickSuggestion={handlePick}
           suggestions={suggestions}
-          placeholder="Type a vegetable..."
+          placeholder="Type what comes to mind..."
         />
-        <button className="continue-button" type="submit" disabled={!canContinue}>
-          Continue
-        </button>
+        <QuestionNav backMode="disabled" continueDisabled={!canContinue} />
       </form>
     </QuestionContainer>
   );

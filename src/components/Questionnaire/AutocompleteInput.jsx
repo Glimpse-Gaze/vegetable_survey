@@ -7,6 +7,8 @@ export function AutocompleteInput({
   onPickSuggestion,
   suggestions,
   placeholder,
+  autoFocus = true,
+  onCommit,
 }) {
   const [open, setOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
@@ -26,11 +28,12 @@ export function AutocompleteInput({
   }, [suggestions]);
 
   useEffect(() => {
+    if (!autoFocus) return;
     const isCoarse = window.matchMedia('(pointer: coarse)').matches;
     if (!isCoarse) {
       inputRef.current?.focus();
     }
-  }, []);
+  }, [autoFocus]);
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -72,16 +75,27 @@ export function AutocompleteInput({
 
     if (event.key === 'Enter' && showList && highlightIndex >= 0) {
       event.preventDefault();
-      onPickSuggestion(suggestions[highlightIndex]);
+      chooseSuggestion(suggestions[highlightIndex]);
+      return;
+    }
+
+    if (event.key === 'Enter' && onCommit) {
+      event.preventDefault();
+      onCommit(value);
       setOpen(false);
       setHighlightIndex(-1);
     }
   }
 
-  function handlePick(vegetable) {
-    onPickSuggestion(vegetable);
+  function chooseSuggestion(item) {
+    const shouldClose = onPickSuggestion(item);
+    if (shouldClose === false) return;
     setOpen(false);
     setHighlightIndex(-1);
+  }
+
+  function handlePick(item) {
+    chooseSuggestion(item);
   }
 
   return (
@@ -108,6 +122,9 @@ export function AutocompleteInput({
           setOpen(true);
         }}
         onFocus={() => {
+          if (suggestions.length > 0) setOpen(true);
+        }}
+        onClick={() => {
           if (suggestions.length > 0) setOpen(true);
         }}
         onKeyDown={handleKeyDown}
