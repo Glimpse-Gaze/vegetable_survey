@@ -1,16 +1,46 @@
-# React + Vite
+# The most vegetable vegetable
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A short, playful questionnaire about what people actually mean by **vegetable** — first instinct, why it feels vegetabley, a ranking of awkward cases (tomato, mushroom, sweet potato…), then a few optional background questions.
 
-Currently, two official plugins are available:
+This is a research prototype, not a botany test. There are no wrong answers.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Run it
 
-## React Compiler
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Open the local URL Vite prints (usually `http://localhost:5173/`).
 
-## Expanding the Oxlint configuration
+```bash
+npm run build    # production build
+npm run preview  # serve that build
+npm run lint     # oxlint
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## What exists today
+
+Five questions in the browser, with answers kept in `sessionStorage` for the tab only:
+
+1. What comes to mind when you hear “vegetable”?
+2. Why does that feel vegetabley? (up to five reasons)
+3. Rank ten named items from least to most vegetabley
+4. In your own words, what makes something feel like a vegetable?
+5. Optional: where you grew up, and languages you speak
+
+After that you currently get a **developer JSON recap** so we can inspect the payload. That screen is not meant for participants.
+
+There is **no server** yet. Refreshing the same tab restores progress; a new tab starts over.
+
+## Stack
+
+Vite, React 19, JavaScript, CSS. No TypeScript, no animation library.
+
+## For the next person building this
+
+Start with [`HANDOVER.md`](./HANDOVER.md). It records the research constraints, the response schema, and the planned path: confirm Q1 wording, add a real thank-you ending, persist ~1,000 anonymous responses, then deploy.
+
+## License / data
+
+Responses are anonymous by design. Do not add precise geolocation. A public privacy note still needs to be written before a live launch.
