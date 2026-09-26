@@ -1,116 +1,92 @@
 import { useEffect, useState } from 'react';
 import {
-  emptySpectrumSlots,
-  shuffleSpectrumVegetables,
-  spectrumVegetables,
-} from '../../data/spectrumVegetables.js';
+  bucketItems,
+  emptyBuckets,
+  placedBucketIds,
+} from '../../data/bucketItems.js';
+import { shuffleSpectrumVegetables } from '../../data/spectrumVegetables.js';
+import { BucketBoard } from './BucketBoard.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
-import { SpectrumBoard } from './SpectrumBoard.jsx';
 
-export function Question3({ onContinue, onBack, initialSpectrum }) {
+export function Question3({ onContinue, onBack, initialBuckets }) {
   const [paletteOrder] = useState(() =>
-    shuffleSpectrumVegetables(spectrumVegetables),
+    shuffleSpectrumVegetables(bucketItems),
   );
-  const [slots, setSlots] = useState(
-    () => initialSpectrum ?? emptySpectrumSlots(),
+  const [buckets, setBuckets] = useState(() =>
+    initialBuckets?.not_vegetable ? initialBuckets : emptyBuckets(),
   );
-  const [activeSlot, setActiveSlot] = useState(0);
-  const remaining = slots.filter((id) => id == null).length;
-  const canContinue = remaining === 0;
-  const palette = paletteOrder.filter((vegetable) => !slots.includes(vegetable.id));
+  const [activeBucket, setActiveBucket] = useState(null);
+  const placed = placedBucketIds(buckets);
+  const palette = paletteOrder.filter((item) => !placed.includes(item.id));
+  const canContinue = placed.length === bucketItems.length;
 
   useEffect(() => {
     function handlePointerDown(event) {
-      if (event.target.closest('.spectrum-slot, .spectrum-tile')) return;
-      setActiveSlot(null);
+      if (event.target.closest('.bucket, .spectrum-tile')) return;
+      setActiveBucket(null);
     }
 
     document.addEventListener('pointerdown', handlePointerDown);
     return () => document.removeEventListener('pointerdown', handlePointerDown);
   }, []);
 
-  function handlePlace(id, slotIndex = activeSlot) {
-    if (slotIndex == null || slotIndex < 0) return;
+  function handlePlace(id, bucketId = activeBucket) {
+    if (!bucketId) return;
 
-    setSlots((current) => {
-      const next = [...current];
-      const fromIndex = next.indexOf(id);
-      if (fromIndex === slotIndex) return current;
-
-      const displaced = next[slotIndex];
-      if (fromIndex !== -1) {
-        next[fromIndex] = displaced;
-        next[slotIndex] = id;
-      } else {
-        next[slotIndex] = id;
-      }
+    setBuckets((current) => {
+      const next = {
+        not_vegetable: current.not_vegetable.filter((item) => item !== id),
+        in_between: current.in_between.filter((item) => item !== id),
+        definitely_vegetable: current.definitely_vegetable.filter(
+          (item) => item !== id,
+        ),
+      };
+      next[bucketId] = [...next[bucketId], id];
       return next;
     });
-
-    setActiveSlot((currentActive) => {
-      if (slotIndex !== currentActive && slotIndex != null) {
-        return slotIndex;
-      }
-      return currentActive;
-    });
-  }
-
-  function handleMove(index, delta) {
-    const target = index + delta;
-    if (target < 0 || target >= slots.length) return;
-
-    setSlots((current) => {
-      const next = [...current];
-      if (!next[index]) return current;
-      const displaced = next[target];
-      next[target] = next[index];
-      next[index] = displaced;
-      return next;
-    });
-    setActiveSlot(target);
+    setActiveBucket(bucketId);
   }
 
   function handleReturnToPalette(id) {
-    setSlots((current) => current.map((item) => (item === id ? null : item)));
-  }
-
-  function handleActivateSlot(index) {
-    setActiveSlot(index);
+    setBuckets((current) => ({
+      not_vegetable: current.not_vegetable.filter((item) => item !== id),
+      in_between: current.in_between.filter((item) => item !== id),
+      definitely_vegetable: current.definitely_vegetable.filter(
+        (item) => item !== id,
+      ),
+    }));
   }
 
   function handleSubmit(event) {
     event.preventDefault();
     if (!canContinue) return;
-    onContinue({ spectrum: slots });
+    onContinue({ sortBuckets: buckets });
   }
 
   return (
     <QuestionContainer questionNumber={3}>
-      <h1 className="question-title">
-        How vegetabley does each of these feel to you?
-      </h1>
+      <h1 className="question-title">Which of these count as vegetables?</h1>
       <p className="microcopy">
-        Place each item on the spectrum ranking. Drag and drop or click a slot
-        and then an item. Use arrows to nudge a placed item up or down.
+        Sort each item into a bucket. Degree doesn’t matter yet — just no, yes,
+        or somewhere in-between. Drag them, or click a bucket and then an item.
       </p>
 
       <form className="question-form" onSubmit={handleSubmit}>
-        <SpectrumBoard
+        <BucketBoard
           palette={palette}
-          slots={slots}
-          activeSlot={activeSlot}
-          onActivateSlot={handleActivateSlot}
+          buckets={buckets}
+          activeBucket={activeBucket}
+          onActivateBucket={setActiveBucket}
           onPlace={handlePlace}
-          onMove={handleMove}
           onReturnToPalette={handleReturnToPalette}
         />
 
         <QuestionNav
           onBack={onBack}
           continueDisabled={!canContinue}
-          continueHint={!canContinue ? 'Place all ten items' : undefined}
-          continueHintId="spectrum-hint"
+          continueHint={!canContinue ? 'Sort all twenty items' : undefined}
+          continueHintId="bucket-hint"
         />
       </form>
     </QuestionContainer>

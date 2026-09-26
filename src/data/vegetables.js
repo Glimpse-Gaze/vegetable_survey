@@ -260,6 +260,14 @@ export const vegetables = [
     'snap peas',
   ]),
   v('edamame', 'Edamame', ['green soybeans', 'young soybeans']),
+  v('soybean', 'Soybean', [
+    'soybeans',
+    'soya bean',
+    'soya beans',
+    'soya',
+    'soy bean',
+    'soy beans',
+  ]),
   v('chickpea', 'Chickpea', [
     'chickpeas',
     'chick pea',
@@ -407,4 +415,8 @@ export const vegetables = [
   v('spirulina', 'Spirulina', ['blue-green algae']),
   v('seaweed', 'Seaweed', ['sea vegetables', 'sea vegetable', 'marine algae']),
   v('olive_leaf', 'Olive leaf', ['olive leaves']),
+  v('cinnamon', 'Cinnamon', ['cinnamon bark', 'cinnamon stick']),
+  v('tobacco', 'Tobacco', ['tabacco', 'tobacco leaf', 'tobacco leaves']),
+  v('peanut', 'Peanut', ['peanuts', 'groundnut', 'groundnuts', 'goober']),
+  v('vanilla', 'Vanilla', ['vanilla bean', 'vanilla pod']),
 ];

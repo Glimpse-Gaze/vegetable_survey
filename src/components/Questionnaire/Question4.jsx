@@ -1,68 +1,117 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  emptySpectrumSlots,
+  shuffleSpectrumVegetables,
+  spectrumVegetables,
+} from '../../data/spectrumVegetables.js';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
+import { SpectrumBoard } from './SpectrumBoard.jsx';
 
-const MAX_LENGTH = 10000;
-
-export function Question4({ onContinue, onBack, initialDescription }) {
-  const [text, setText] = useState(initialDescription?.text ?? '');
-  const [publicDisplay, setPublicDisplay] = useState(
-    initialDescription?.publicDisplay ?? false,
+export function Question4({ onContinue, onBack, initialSpectrum }) {
+  const [paletteOrder] = useState(() =>
+    shuffleSpectrumVegetables(spectrumVegetables),
   );
-  const canContinue = text.trim().length > 0;
+  const [slots, setSlots] = useState(
+    () => initialSpectrum ?? emptySpectrumSlots(),
+  );
+  const [activeSlot, setActiveSlot] = useState(0);
+  const remaining = slots.filter((id) => id == null).length;
+  const canContinue = remaining === 0;
+  const palette = paletteOrder.filter((vegetable) => !slots.includes(vegetable.id));
+
+  useEffect(() => {
+    function handlePointerDown(event) {
+      if (event.target.closest('.spectrum-slot, .spectrum-tile')) return;
+      setActiveSlot(null);
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, []);
+
+  function handlePlace(id, slotIndex = activeSlot) {
+    if (slotIndex == null || slotIndex < 0) return;
+
+    setSlots((current) => {
+      const next = [...current];
+      const fromIndex = next.indexOf(id);
+      if (fromIndex === slotIndex) return current;
+
+      const displaced = next[slotIndex];
+      if (fromIndex !== -1) {
+        next[fromIndex] = displaced;
+        next[slotIndex] = id;
+      } else {
+        next[slotIndex] = id;
+      }
+      return next;
+    });
+
+    setActiveSlot((currentActive) => {
+      if (slotIndex !== currentActive && slotIndex != null) {
+        return slotIndex;
+      }
+      return currentActive;
+    });
+  }
+
+  function handleMove(index, delta) {
+    const target = index + delta;
+    if (target < 0 || target >= slots.length) return;
+
+    setSlots((current) => {
+      const next = [...current];
+      if (!next[index]) return current;
+      const displaced = next[target];
+      next[target] = next[index];
+      next[index] = displaced;
+      return next;
+    });
+    setActiveSlot(target);
+  }
+
+  function handleReturnToPalette(id) {
+    setSlots((current) => current.map((item) => (item === id ? null : item)));
+  }
+
+  function handleActivateSlot(index) {
+    setActiveSlot(index);
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
     if (!canContinue) return;
-
-    onContinue({
-      openDescription: {
-        text: text.trim(),
-        publicDisplay,
-      },
-    });
+    onContinue({ spectrum: slots });
   }
 
   return (
     <QuestionContainer questionNumber={4}>
       <h1 className="question-title">
-        After arranging these, how would you describe what makes something feel
-        like a vegetable?
+        How vegetabley does each of these feel to you?
       </h1>
-      <p className="microcopy">Write freely. There are no wrong answers.</p>
+      <p className="microcopy">
+        Degree matters now. Place each item from least vegetabley at the top to
+        most at the bottom. Drag and drop, or click a slot and then an item.
+        Use arrows to nudge a placed item up or down.
+      </p>
 
       <form className="question-form" onSubmit={handleSubmit}>
-        <label className="sr-only" htmlFor="open-description">
-          Your description
-        </label>
-        <textarea
-          id="open-description"
-          className="open-description"
-          value={text}
-          maxLength={MAX_LENGTH}
-          rows={8}
-          onChange={(event) => setText(event.target.value.slice(0, MAX_LENGTH))}
-          placeholder="Type whatever comes to mind..."
+        <SpectrumBoard
+          palette={palette}
+          slots={slots}
+          activeSlot={activeSlot}
+          onActivateSlot={handleActivateSlot}
+          onPlace={handlePlace}
+          onMove={handleMove}
+          onReturnToPalette={handleReturnToPalette}
         />
-        <p className="character-count">
-          {text.length.toLocaleString()} / {MAX_LENGTH.toLocaleString()}
-        </p>
-
-        <label className="public-consent">
-          <input
-            className="criterion-input"
-            type="checkbox"
-            checked={publicDisplay}
-            onChange={(event) => setPublicDisplay(event.target.checked)}
-          />
-          <span>I agree to display this answer publicly.</span>
-        </label>
 
         <QuestionNav
           onBack={onBack}
           continueDisabled={!canContinue}
-          continueHint={!canContinue ? 'Write a little something' : undefined}
-          continueHintId="description-hint"
+          continueHint={!canContinue ? 'Place all ten items' : undefined}
+          continueHintId="spectrum-hint"
         />
       </form>
     </QuestionContainer>

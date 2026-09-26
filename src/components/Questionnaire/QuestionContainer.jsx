@@ -1,4 +1,4 @@
-const TOTAL_QUESTIONS = 5;
+const TOTAL_QUESTIONS = 7;
 
 export function QuestionContainer({ questionNumber, children }) {
   return (

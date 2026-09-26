@@ -5,9 +5,11 @@ import { Question2 } from './Question2.jsx';
 import { Question3 } from './Question3.jsx';
 import { Question4 } from './Question4.jsx';
 import { Question5 } from './Question5.jsx';
+import { Question6 } from './Question6.jsx';
+import { Question7 } from './Question7.jsx';
 import { Toast } from './Toast.jsx';
 
-const STORAGE_KEY = 'vegetable-survey-q1q5';
+const STORAGE_KEY = 'vegetable-survey-q1q7';
 const LOCK_TOAST = 'First instinct locked. No wrong answers.';
 const BACK_LOCKED_TOAST =
   'Your initial intuition is locked. There are no bad answers!';
@@ -19,6 +21,8 @@ const STEPS = {
   QUESTION_3: 'question3',
   QUESTION_4: 'question4',
   QUESTION_5: 'question5',
+  QUESTION_6: 'question6',
+  QUESTION_7: 'question7',
   RECAP: 'recap',
 };
 
@@ -26,6 +30,8 @@ const PREVIOUS_STEP = {
   [STEPS.QUESTION_3]: STEPS.QUESTION_2,
   [STEPS.QUESTION_4]: STEPS.QUESTION_3,
   [STEPS.QUESTION_5]: STEPS.QUESTION_4,
+  [STEPS.QUESTION_6]: STEPS.QUESTION_5,
+  [STEPS.QUESTION_7]: STEPS.QUESTION_6,
 };
 
 function emptyResponse() {
@@ -35,7 +41,9 @@ function emptyResponse() {
     initialAssociation: null,
     initialCriteria: [],
     customCriterion: '',
+    sortBuckets: null,
     spectrum: null,
+    mostVegetable: null,
     openDescription: {
       text: '',
       publicDisplay: false,
@@ -117,21 +125,35 @@ export function Questionnaire() {
     });
   }
 
-  function handleQuestion3({ spectrum }) {
+  function handleQuestion3({ sortBuckets }) {
     persist(STEPS.QUESTION_4, {
+      ...response,
+      sortBuckets,
+    });
+  }
+
+  function handleQuestion4({ spectrum }) {
+    persist(STEPS.QUESTION_5, {
       ...response,
       spectrum,
     });
   }
 
-  function handleQuestion4({ openDescription }) {
-    persist(STEPS.QUESTION_5, {
+  function handleQuestion5({ mostVegetable }) {
+    persist(STEPS.QUESTION_6, {
+      ...response,
+      mostVegetable,
+    });
+  }
+
+  function handleQuestion6({ openDescription }) {
+    persist(STEPS.QUESTION_7, {
       ...response,
       openDescription,
     });
   }
 
-  function handleQuestion5({ background }) {
+  function handleQuestion7({ background }) {
     persist(STEPS.RECAP, {
       ...response,
       background,
@@ -181,22 +203,36 @@ export function Questionnaire() {
         ) : null}
         {step === STEPS.QUESTION_3 ? (
           <Question3
-            initialSpectrum={response.spectrum}
+            initialBuckets={response.sortBuckets}
             onContinue={handleQuestion3}
             onBack={handleBack}
           />
         ) : null}
         {step === STEPS.QUESTION_4 ? (
           <Question4
-            initialDescription={response.openDescription}
+            initialSpectrum={response.spectrum}
             onContinue={handleQuestion4}
             onBack={handleBack}
           />
         ) : null}
         {step === STEPS.QUESTION_5 ? (
           <Question5
-            initialBackground={response.background}
+            initialMostVegetable={response.mostVegetable}
             onContinue={handleQuestion5}
+            onBack={handleBack}
+          />
+        ) : null}
+        {step === STEPS.QUESTION_6 ? (
+          <Question6
+            initialDescription={response.openDescription}
+            onContinue={handleQuestion6}
+            onBack={handleBack}
+          />
+        ) : null}
+        {step === STEPS.QUESTION_7 ? (
+          <Question7
+            initialBackground={response.background}
+            onContinue={handleQuestion7}
             onBack={handleBack}
             onBlockedAntarctica={handleBlockedAntarctica}
           />
