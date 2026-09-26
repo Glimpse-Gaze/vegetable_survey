@@ -36,13 +36,13 @@ export function Question1({ onContinue }) {
   return (
     <QuestionContainer questionNumber={1}>
       <h1 className="question-title">
-        When you hear the word “vegetable”, what comes to your mind?
+        Which vegetable comes to your mind when you hear the word "vegetable"?
       </h1>
       <p className="microcopy">Go with your first instinct. There are no wrong answers.</p>
 
       <form className="question-form" onSubmit={handleSubmit}>
         <label className="sr-only" htmlFor="vegetable-answer">
-          Type what comes to mind
+          Type which vegetable comes to your mind
         </label>
         <AutocompleteInput
           id="vegetable-answer"
@@ -50,7 +50,7 @@ export function Question1({ onContinue }) {
           onChange={handleChange}
           onPickSuggestion={handlePick}
           suggestions={suggestions}
-          placeholder="Type what comes to mind..."
+          placeholder="Type your first instict..."
         />
         <QuestionNav backMode="disabled" continueDisabled={!canContinue} />
       </form>

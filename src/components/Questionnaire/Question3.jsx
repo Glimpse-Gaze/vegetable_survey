@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   emptySpectrumSlots,
   shuffleSpectrumVegetables,
@@ -19,6 +19,16 @@ export function Question3({ onContinue, onBack, initialSpectrum }) {
   const remaining = slots.filter((id) => id == null).length;
   const canContinue = remaining === 0;
   const palette = paletteOrder.filter((vegetable) => !slots.includes(vegetable.id));
+
+  useEffect(() => {
+    function handlePointerDown(event) {
+      if (event.target.closest('.spectrum-slot, .spectrum-tile')) return;
+      setActiveSlot(null);
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, []);
 
   function handlePlace(id, slotIndex = activeSlot) {
     if (slotIndex == null || slotIndex < 0) return;
@@ -46,6 +56,21 @@ export function Question3({ onContinue, onBack, initialSpectrum }) {
     });
   }
 
+  function handleMove(index, delta) {
+    const target = index + delta;
+    if (target < 0 || target >= slots.length) return;
+
+    setSlots((current) => {
+      const next = [...current];
+      if (!next[index]) return current;
+      const displaced = next[target];
+      next[target] = next[index];
+      next[index] = displaced;
+      return next;
+    });
+    setActiveSlot(target);
+  }
+
   function handleReturnToPalette(id) {
     setSlots((current) => current.map((item) => (item === id ? null : item)));
   }
@@ -62,10 +87,12 @@ export function Question3({ onContinue, onBack, initialSpectrum }) {
 
   return (
     <QuestionContainer questionNumber={3}>
-      <h1 className="question-title">How vegetabley is each of these?</h1>
+      <h1 className="question-title">
+        How vegetabley does each of these feel to you?
+      </h1>
       <p className="microcopy">
-        Place each of these on the scale. Click a slot, then an item — or drag
-        them around.
+        Place each item on the spectrum ranking. Drag and drop or click a slot
+        and then an item. Use arrows to nudge a placed item up or down.
       </p>
 
       <form className="question-form" onSubmit={handleSubmit}>
@@ -75,6 +102,7 @@ export function Question3({ onContinue, onBack, initialSpectrum }) {
           activeSlot={activeSlot}
           onActivateSlot={handleActivateSlot}
           onPlace={handlePlace}
+          onMove={handleMove}
           onReturnToPalette={handleReturnToPalette}
         />
 
