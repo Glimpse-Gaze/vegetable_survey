@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { DeveloperRecap } from './DeveloperRecap.jsx';
+import { PrivacyConsent } from './PrivacyConsent.jsx';
 import { Question1 } from './Question1.jsx';
 import { Question2 } from './Question2.jsx';
 import { Question3 } from './Question3.jsx';
@@ -7,15 +7,18 @@ import { Question4 } from './Question4.jsx';
 import { Question5 } from './Question5.jsx';
 import { Question6 } from './Question6.jsx';
 import { Question7 } from './Question7.jsx';
+import { ThankYou } from './ThankYou.jsx';
 import { Toast } from './Toast.jsx';
+import { submitResponse } from '../../utils/submitResponse.js';
 
-const STORAGE_KEY = 'vegetable-survey-q1q7';
 const LOCK_TOAST = 'First instinct locked. No wrong answers.';
 const BACK_LOCKED_TOAST =
   'Your initial intuition is locked. There are no bad answers!';
 const ANTARCTICA_TOAST = "I don't believe you.";
+const SPEEDRUN_TOAST = 'Dev speedrun loaded. Submit the last question to save.';
 
 const STEPS = {
+  CONSENT: 'consent',
   QUESTION_1: 'question1',
   QUESTION_2: 'question2',
   QUESTION_3: 'question3',
@@ -23,10 +26,11 @@ const STEPS = {
   QUESTION_5: 'question5',
   QUESTION_6: 'question6',
   QUESTION_7: 'question7',
-  RECAP: 'recap',
+  THANKS: 'thanks',
 };
 
 const PREVIOUS_STEP = {
+  [STEPS.QUESTION_1]: STEPS.CONSENT,
   [STEPS.QUESTION_3]: STEPS.QUESTION_2,
   [STEPS.QUESTION_4]: STEPS.QUESTION_3,
   [STEPS.QUESTION_5]: STEPS.QUESTION_4,
@@ -38,6 +42,7 @@ function emptyResponse() {
   return {
     responseId: null,
     timestamp: null,
+    processingConsent: null,
     initialAssociation: null,
     initialCriteria: [],
     customCriterion: '',
@@ -55,39 +60,14 @@ function emptyResponse() {
   };
 }
 
-function loadSession() {
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
-function saveSession(state) {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function clearSession() {
-  sessionStorage.removeItem(STORAGE_KEY);
-}
-
-function readInitialState() {
-  const stored = loadSession();
-  return {
-    step: stored?.step ?? STEPS.QUESTION_1,
-    response: stored?.response ?? emptyResponse(),
-  };
-}
-
 export function Questionnaire() {
-  const [step, setStep] = useState(() => readInitialState().step);
-  const [response, setResponse] = useState(() => readInitialState().response);
+  const [step, setStep] = useState(STEPS.CONSENT);
+  const [response, setResponse] = useState(() => emptyResponse());
   const [toastMessage, setToastMessage] = useState(LOCK_TOAST);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastTick, setToastTick] = useState(0);
   const [resetKey, setResetKey] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     window.history.replaceState({ step }, '');
@@ -100,9 +80,51 @@ export function Questionnaire() {
   }, [toastVisible, toastTick]);
 
   function persist(nextStep, nextResponse) {
-    saveSession({ step: nextStep, response: nextResponse });
     setStep(nextStep);
     setResponse(nextResponse);
+  }
+
+  function showToast(message) {
+    setToastMessage(message);
+    setToastVisible(true);
+    setToastTick((tick) => tick + 1);
+  }
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return undefined;
+
+    async function handleSpeedrun(event) {
+      if (!(event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'd')) {
+        return;
+      }
+      event.preventDefault();
+
+      const { DEV_SPEEDRUN } = await import('../../data/devSpeedrun.js');
+      const nextResponse = {
+        ...emptyResponse(),
+        ...DEV_SPEEDRUN,
+        responseId: crypto.randomUUID(),
+        timestamp: new Date().toISOString(),
+        processingConsent: {
+          agreed: true,
+          agreedAt: new Date().toISOString(),
+        },
+      };
+
+      setResetKey((key) => key + 1);
+      persist(STEPS.QUESTION_7, nextResponse);
+      showToast(SPEEDRUN_TOAST);
+    }
+
+    window.addEventListener('keydown', handleSpeedrun);
+    return () => window.removeEventListener('keydown', handleSpeedrun);
+  }, []);
+
+  function handleConsent({ processingConsent }) {
+    persist(STEPS.QUESTION_1, {
+      ...emptyResponse(),
+      processingConsent,
+    });
   }
 
   function handleQuestion1(initialAssociation) {
@@ -110,11 +132,10 @@ export function Questionnaire() {
       ...emptyResponse(),
       responseId: crypto.randomUUID(),
       timestamp: new Date().toISOString(),
+      processingConsent: response.processingConsent,
       initialAssociation,
     });
-    setToastMessage(LOCK_TOAST);
-    setToastVisible(true);
-    setToastTick((tick) => tick + 1);
+    showToast(LOCK_TOAST);
   }
 
   function handleQuestion2({ initialCriteria, customCriterion }) {
@@ -153,11 +174,24 @@ export function Questionnaire() {
     });
   }
 
-  function handleQuestion7({ background }) {
-    persist(STEPS.RECAP, {
+  async function handleQuestion7({ background }) {
+    if (isSubmitting) return;
+
+    const nextResponse = {
       ...response,
       background,
-    });
+    };
+
+    setIsSubmitting(true);
+    const result = await submitResponse(nextResponse);
+    setIsSubmitting(false);
+
+    if (!result.ok) {
+      showToast(result.error ?? 'Could not save your answers. Try again.');
+      return;
+    }
+
+    persist(STEPS.THANKS, nextResponse);
   }
 
   function handleBack() {
@@ -167,30 +201,21 @@ export function Questionnaire() {
   }
 
   function handleLockedBack() {
-    setToastMessage(BACK_LOCKED_TOAST);
-    setToastVisible(true);
-    setToastTick((tick) => tick + 1);
+    showToast(BACK_LOCKED_TOAST);
   }
 
   function handleBlockedAntarctica() {
-    setToastMessage(ANTARCTICA_TOAST);
-    setToastVisible(true);
-    setToastTick((tick) => tick + 1);
-  }
-
-  function handleReset() {
-    clearSession();
-    setToastVisible(false);
-    setResponse(emptyResponse());
-    setStep(STEPS.QUESTION_1);
-    setResetKey((key) => key + 1);
+    showToast(ANTARCTICA_TOAST);
   }
 
   return (
     <main className="questionnaire">
       <div className="questionnaire-inner" key={`${step}-${resetKey}`}>
+        {step === STEPS.CONSENT ? (
+          <PrivacyConsent onContinue={handleConsent} />
+        ) : null}
         {step === STEPS.QUESTION_1 ? (
-          <Question1 onContinue={handleQuestion1} />
+          <Question1 onContinue={handleQuestion1} onBack={handleBack} />
         ) : null}
         {step === STEPS.QUESTION_2 ? (
           <Question2
@@ -235,11 +260,11 @@ export function Questionnaire() {
             onContinue={handleQuestion7}
             onBack={handleBack}
             onBlockedAntarctica={handleBlockedAntarctica}
+            continueDisabled={isSubmitting}
+            continueHint={isSubmitting ? 'Saving your answers…' : undefined}
           />
         ) : null}
-        {step === STEPS.RECAP ? (
-          <DeveloperRecap response={response} onReset={handleReset} />
-        ) : null}
+        {step === STEPS.THANKS ? <ThankYou /> : null}
       </div>
 
       <Toast message={toastMessage} visible={toastVisible} />

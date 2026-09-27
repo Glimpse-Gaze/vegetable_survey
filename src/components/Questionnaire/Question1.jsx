@@ -5,7 +5,7 @@ import { AutocompleteInput } from './AutocompleteInput.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
 
-export function Question1({ onContinue }) {
+export function Question1({ onContinue, onBack }) {
   const [value, setValue] = useState('');
   const [picked, setPicked] = useState(null);
   const suggestions = getSuggestions(value, vegetables);
@@ -52,7 +52,7 @@ export function Question1({ onContinue }) {
           suggestions={suggestions}
           placeholder="Type your first instict..."
         />
-        <QuestionNav backMode="disabled" continueDisabled={!canContinue} />
+        <QuestionNav onBack={onBack} continueDisabled={!canContinue} />
       </form>
     </QuestionContainer>
   );

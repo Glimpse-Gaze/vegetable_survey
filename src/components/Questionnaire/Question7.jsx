@@ -37,6 +37,8 @@ export function Question7({
   onBack,
   initialBackground,
   onBlockedAntarctica,
+  continueDisabled = false,
+  continueHint,
 }) {
   const grewUp = initialBackground?.grewUp;
   const skippedPlace = !grewUp || grewUp.skipped;
@@ -238,7 +240,12 @@ export function Question7({
           </button>
         </div>
 
-        <QuestionNav onBack={onBack} />
+        <QuestionNav
+          onBack={onBack}
+          continueDisabled={continueDisabled}
+          continueHint={continueHint}
+          continueHintId="submit-hint"
+        />
       </form>
     </QuestionContainer>
   );
