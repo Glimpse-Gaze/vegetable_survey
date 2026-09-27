@@ -5,7 +5,7 @@ export const spectrumVegetables = [
   { id: 'carrot', name: 'Carrot', family: 'Apiaceae' },
   { id: 'tomato', name: 'Tomato', family: 'Solanaceae' },
   { id: 'turnip', name: 'Turnip', family: 'Brassicaceae' },
-  { id: 'pea', name: 'Pea', family: 'Fabaceae' },
+  { id: 'celery', name: 'Celery', family: 'Apiaceae' },
   { id: 'corn', name: 'Corn', family: 'Poaceae' },
   { id: 'onion', name: 'Onion', family: 'Amaryllidaceae' },
   { id: 'lettuce', name: 'Lettuce', family: 'Asteraceae' },

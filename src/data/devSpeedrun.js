@@ -17,9 +17,10 @@ export const DEV_SPEEDRUN = {
       'rhubarb',
       'cinnamon',
       'garlic',
-      'ginger',
+      'turmeric',
       'tobacco',
       'mushroom',
+      'horseradish',
     ],
     in_between: ['pumpkin', 'cucumber', 'avocado', 'olive', 'tomato'],
     definitely_vegetable: [
@@ -32,6 +33,10 @@ export const DEV_SPEEDRUN = {
       'carrot',
       'bamboo_shoot',
       'onion',
+      'bell_pepper',
+      'pea',
+      'pak_choi',
+      'rocket',
     ],
   },
   spectrum: [
@@ -43,7 +48,7 @@ export const DEV_SPEEDRUN = {
     'sweet_potato',
     'broccoli',
     'corn',
-    'pea',
+    'celery',
     'turnip',
   ],
   mostVegetable: {

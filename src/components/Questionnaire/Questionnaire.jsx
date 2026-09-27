@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PrivacyConsent } from './PrivacyConsent.jsx';
 import { Question1 } from './Question1.jsx';
 import { Question2 } from './Question2.jsx';
@@ -61,6 +62,7 @@ function emptyResponse() {
 }
 
 export function Questionnaire() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(STEPS.CONSENT);
   const [response, setResponse] = useState(() => emptyResponse());
   const [toastMessage, setToastMessage] = useState(LOCK_TOAST);
@@ -212,7 +214,10 @@ export function Questionnaire() {
     <main className="questionnaire">
       <div className="questionnaire-inner" key={`${step}-${resetKey}`}>
         {step === STEPS.CONSENT ? (
-          <PrivacyConsent onContinue={handleConsent} />
+          <PrivacyConsent
+            onContinue={handleConsent}
+            onBack={() => navigate('/')}
+          />
         ) : null}
         {step === STEPS.QUESTION_1 ? (
           <Question1 onContinue={handleQuestion1} onBack={handleBack} />

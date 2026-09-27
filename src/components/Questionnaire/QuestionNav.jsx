@@ -2,6 +2,8 @@ export function QuestionNav({
   onBack,
   backMode = 'enabled',
   onLockedBack,
+  backHint,
+  backHintId,
   continueDisabled = false,
   continueHint,
   continueHintId,
@@ -20,14 +22,22 @@ export function QuestionNav({
 
   return (
     <div className="question-nav">
-      <button
-        className={locked ? 'back-button is-disabled' : 'back-button'}
-        type="button"
-        aria-disabled={locked ? true : undefined}
-        onClick={handleBack}
-      >
-        Back
-      </button>
+      <div className="back-wrap">
+        <button
+          className={locked ? 'back-button is-disabled' : 'back-button'}
+          type="button"
+          aria-disabled={locked ? true : undefined}
+          aria-describedby={backHint ? backHintId : undefined}
+          onClick={handleBack}
+        >
+          Back
+        </button>
+        {backHint ? (
+          <span className="back-hint" role="tooltip" id={backHintId}>
+            {backHint}
+          </span>
+        ) : null}
+      </div>
       <div className="continue-wrap">
         <button
           className="continue-button"
