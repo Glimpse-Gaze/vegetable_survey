@@ -17,7 +17,8 @@ export default function App() {
           </div>
         }
       />
-      <Route path="/results" element={<Results />} />
+      <Route path="/results" element={<Navigate to="/results/first-instincts" replace />} />
+      <Route path="/results/:categoryId" element={<Results />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

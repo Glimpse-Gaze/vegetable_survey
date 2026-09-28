@@ -1,12 +1,54 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { RESULTS_MOCK } from '../data/resultsMock.js';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { WorldMap } from '../components/Results/WorldMap.jsx';
+import {
+  CATEGORIES,
+  getCategory,
+  getSection,
+  nextCategoryId,
+  REGION_GROUPS,
+  REGIONS,
+  VEGETABLE_LABELS,
+} from '../data/resultsMock.js';
 import '../styles/results.css';
 
 const VISIBLE_LEADERS = 5;
-const AUTO_PX_PER_MS = 0.038;
-const RESUME_MS = 2800;
+const AUTO_PX_PER_MS = 0.048;
 const DRAG_THRESHOLD = 6;
+const IDLE_MS = 5000;
+const NUDGE_SETTLE_MS = 450;
+const WARMUP_MS = 4000;
+const EDGE_PX = 110;
+const EDGE_FLOOR = 0.64;
+
+function clamp01(value) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function warmupGain(elapsed) {
+  const t = clamp01(elapsed / WARMUP_MS);
+  if (t <= 0.1) {
+    const u = t / 0.1;
+    return 0.05 * u * u * u * u;
+  }
+  const u = (t - 0.1) / 0.9;
+  return 0.05 + 0.95 * (u * u);
+}
+
+function edgeGain(position, max, direction) {
+  if (max <= 0) return 1;
+  const fromStart = direction > 0 ? position : max - position;
+  const toEnd = direction > 0 ? max - position : position;
+  const leave =
+    fromStart >= EDGE_PX
+      ? 1
+      : EDGE_FLOOR + (1 - EDGE_FLOOR) * (fromStart / EDGE_PX) ** 2;
+  const approach =
+    toEnd >= EDGE_PX
+      ? 1
+      : EDGE_FLOOR + (1 - EDGE_FLOOR) * (toEnd / EDGE_PX) ** 2;
+  return Math.min(leave, approach);
+}
 
 function formatVotes(n) {
   return `${n.toLocaleString('en-GB')} ${n === 1 ? 'vote' : 'votes'}`;
@@ -18,37 +60,85 @@ function formatShare(share) {
   return `${Math.round(pct)}%`;
 }
 
+function ordinal(n) {
+  const remainder = n % 100;
+  if (remainder >= 11 && remainder <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1:
+      return `${n}st`;
+    case 2:
+      return `${n}nd`;
+    case 3:
+      return `${n}rd`;
+    default:
+      return `${n}th`;
+  }
+}
+
+function placeLabel(region) {
+  if (region.id === 'global') return 'worldwide';
+  if (region.kind === 'continent') return `in ${region.name}`;
+  return `in ${region.name}`;
+}
+
+function alignmentTone(rank, total) {
+  if (!rank) return 'lose';
+  if (rank === 1) return 'win';
+  if (rank === total) return 'lose';
+  return 'place';
+}
+
 function alignmentCopy(section) {
   const picked = section.items.find((item) => item.id === section.userVoteId);
-  if (!picked) return null;
+  const name = picked?.name ?? VEGETABLE_LABELS[section.userVoteId];
+  if (!name) return null;
 
-  const same = formatShare(picked.share);
-  const itemCount = section.items.length;
-
-  if (picked.rank === 1) {
+  const place = placeLabel(section.region);
+  if (!picked) {
     return {
-      kicker: 'You picked the leader',
-      body: `Your answer was ${picked.name}. ${same} of respondents said the same — rank #1 of ${itemCount}.`,
+      kicker: null,
+      name,
+      tone: 'lose',
+      connector: 'It',
+      outcome: `hasn't made this list ${place}`,
     };
   }
 
-  const minority = picked.share < 0.05;
   return {
-    kicker: minority
-      ? `Your vote is in a ${same} minority`
-      : `${same} of people answered with you`,
-    body: `You said ${picked.name}. That places you at rank #${picked.rank} of ${itemCount}.`,
+    kicker: `${formatShare(picked.share)} of people voted with you`,
+    name,
+    tone: alignmentTone(picked.rank, section.items.length),
+    connector: 'It is',
+    outcome:
+      picked.rank === 1
+        ? `leading ${place}`
+        : `${ordinal(picked.rank)} ${place}`,
   };
 }
 
-function Blade({ item, isYours, leaderShare, variant }) {
-  const fill = Math.max(8, (item.share / leaderShare) * 100);
+function Crown() {
+  return (
+    <svg className="blade-crown" viewBox="0 0 32 18" aria-hidden="true">
+      <path
+        d="M3 16h26L26 7l-5 4L16 2l-5 9-5-4z"
+        fill="#e3c25b"
+        stroke="#8c6b14"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function Blade({ item, isYours, variant }) {
+  const fill = Math.max(0, item.share * 100);
+  const isChampion = variant === 'champion';
 
   return (
     <article
       className={[
         'blade',
-        variant === 'champion' ? 'is-champion' : '',
+        isChampion ? 'is-champion' : '',
         variant === 'outlier' ? 'is-outlier' : '',
         isYours ? 'is-yours' : '',
       ]
@@ -56,26 +146,29 @@ function Blade({ item, isYours, leaderShare, variant }) {
         .join(' ')}
       data-blade={item.id}
     >
-      <img src={item.art} alt="" draggable={false} />
-      <div className="blade-scrim" />
-      <div className="blade-copy">
-        <div className="blade-topline">
-          <span className="blade-rank">#{item.rank}</span>
-          {isYours ? <span className="blade-badge">Your vote</span> : null}
+      {isChampion ? <Crown /> : null}
+      <div className="blade-face">
+        {isYours ? <span className="blade-badge">Your vote</span> : null}
+        <img src={item.art} alt="" draggable={false} />
+        <div className="blade-scrim" />
+        <div className="blade-copy">
+          <div className="blade-topline">
+            <span className="blade-rank">#{item.rank}</span>
+          </div>
+          <h3 className="blade-name">{item.name}</h3>
+          <p className="blade-meta">
+            {formatVotes(item.votes)} · {formatShare(item.share)}
+          </p>
         </div>
-        <h3 className="blade-name">{item.name}</h3>
-        <p className="blade-meta">
-          {formatVotes(item.votes)} · {formatShare(item.share)}
-        </p>
-      </div>
-      <div className="blade-meter" aria-hidden="true">
-        <span style={{ width: `${fill}%` }} />
+        <div className="blade-meter" aria-hidden="true">
+          <span style={{ width: `${fill}%` }} />
+        </div>
       </div>
     </article>
   );
 }
 
-function RankSection({ section, pauseAutoplay }) {
+function RankRail({ section, pauseAutoplay }) {
   const railRef = useRef(null);
   const stageRef = useRef(null);
   const menuPauseRef = useRef(false);
@@ -83,10 +176,8 @@ function RankSection({ section, pauseAutoplay }) {
   const nudgePauseRef = useRef(false);
   const directionRef = useRef(1);
   const resumeTimer = useRef(0);
-  const leaderShare = section.items[0]?.share ?? 1;
   const userItem = section.items.find((item) => item.id === section.userVoteId);
   const userOutsideLeaders = userItem && userItem.rank > VISIBLE_LEADERS;
-  const alignment = alignmentCopy(section);
 
   function holdNudge() {
     nudgePauseRef.current = true;
@@ -97,7 +188,7 @@ function RankSection({ section, pauseAutoplay }) {
     window.clearTimeout(resumeTimer.current);
     resumeTimer.current = window.setTimeout(() => {
       nudgePauseRef.current = false;
-    }, RESUME_MS);
+    }, NUDGE_SETTLE_MS);
   }
 
   useEffect(() => {
@@ -113,16 +204,35 @@ function RankSection({ section, pauseAutoplay }) {
 
     let carry = 0;
     let last = performance.now();
+    let idleMs = 0;
+    let warmupElapsed = 0;
     let frame = 0;
 
     function tick(now) {
       const dt = Math.min(48, now - last);
       last = now;
       const dragging = dragRef.current != null;
-      if (!menuPauseRef.current && !nudgePauseRef.current && !dragging) {
+      const busy =
+        menuPauseRef.current || nudgePauseRef.current || dragging;
+      if (busy) {
+        idleMs = 0;
+        warmupElapsed = 0;
+        carry = 0;
+      } else {
+        idleMs += dt;
+      }
+      if (!busy && idleMs >= IDLE_MS) {
+        warmupElapsed += dt;
         const max = rail.scrollWidth - rail.clientWidth;
         if (max > 4) {
-          carry += directionRef.current * AUTO_PX_PER_MS * dt;
+          const warmup = warmupGain(warmupElapsed);
+          const edge = edgeGain(
+            rail.scrollLeft,
+            max,
+            directionRef.current,
+          );
+          const speed = AUTO_PX_PER_MS * warmup * edge;
+          carry += directionRef.current * speed * dt;
           const step = Math.trunc(carry);
           if (step !== 0) {
             carry -= step;
@@ -203,19 +313,7 @@ function RankSection({ section, pauseAutoplay }) {
   }
 
   return (
-    <section className="results-section" id={section.id} tabIndex={-1}>
-      <header className="results-section-head">
-        <p className="eyebrow">{section.eyebrow}</p>
-        <h2 className="results-section-title">{section.title}</h2>
-        <p className="results-section-prompt">{section.prompt}</p>
-        {alignment ? (
-          <div className="alignment-card">
-            <p className="alignment-kicker">{alignment.kicker}</p>
-            <p className="alignment-body">{alignment.body}</p>
-          </div>
-        ) : null}
-      </header>
-
+    <>
       <div className="blade-stage" ref={stageRef}>
         <button
           className="blade-arrow is-prev"
@@ -238,7 +336,6 @@ function RankSection({ section, pauseAutoplay }) {
               key={item.id}
               item={item}
               isYours={item.id === section.userVoteId}
-              leaderShare={leaderShare}
               variant={item.rank === 1 ? 'champion' : 'field'}
             />
           ))}
@@ -252,48 +349,47 @@ function RankSection({ section, pauseAutoplay }) {
           ›
         </button>
       </div>
-
       {userOutsideLeaders ? (
         <div className="outlier-row">
           <p className="outlier-label">Your pick sits outside the leading five</p>
           <Blade
             item={userItem}
             isYours
-            leaderShare={leaderShare}
             variant="outlier"
           />
         </div>
       ) : null}
-    </section>
+    </>
   );
 }
 
 export function Results() {
-  const [activeId, setActiveId] = useState(RESULTS_MOCK.sections[0].id);
+  const navigate = useNavigate();
+  const { categoryId } = useParams();
   const [menuOpen, setMenuOpen] = useState(false);
-  const activeSection =
-    RESULTS_MOCK.sections.find((section) => section.id === activeId) ??
-    RESULTS_MOCK.sections[0];
+  const [regionId, setRegionId] = useState('global');
+  const category = getCategory(categoryId);
+  const section = useMemo(
+    () => getSection(category.id, regionId),
+    [category.id, regionId],
+  );
+  const nextId = nextCategoryId(category.id);
+  const alignment = alignmentCopy(section);
+  const bladesRef = useRef(null);
 
   useEffect(() => {
-    const nodes = RESULTS_MOCK.sections
-      .map((section) => document.getElementById(section.id))
-      .filter(Boolean);
-    if (nodes.length === 0) return undefined;
+    if (categoryId && categoryId !== category.id) {
+      navigate('/results/first-instincts', { replace: true });
+    }
+  }, [category, categoryId, navigate]);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target?.id) setActiveId(visible.target.id);
-      },
-      { rootMargin: '-20% 0px -55% 0px', threshold: [0.15, 0.4, 0.7] },
-    );
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [category.id]);
 
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
-  }, []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [category.id]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -304,10 +400,18 @@ export function Results() {
     return () => window.removeEventListener('keydown', onKey);
   }, [menuOpen]);
 
-  function jumpTo(id) {
-    setActiveId(id);
+  function goTo(id) {
     setMenuOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    navigate(`/results/${id}`);
+  }
+
+  function revealBlades() {
+    bladesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function selectRegion(id) {
+    setRegionId(id);
+    revealBlades();
   }
 
   return (
@@ -318,7 +422,7 @@ export function Results() {
           type="button"
           onClick={() => setMenuOpen(true)}
         >
-          {activeSection.title}
+          {category.title}
         </button>
         <button
           className="results-menu-btn"
@@ -352,36 +456,134 @@ export function Results() {
       >
         <p className="results-nav-kicker">Categories</p>
         <p className="results-nav-meta">
-          Mock standings · {RESULTS_MOCK.responseCount.toLocaleString('en-GB')}{' '}
+          Mock standings · {section.responseCount.toLocaleString('en-GB')}{' '}
           answers
         </p>
         <nav className="results-tabs" aria-label="Results categories">
-          {RESULTS_MOCK.sections.map((section) => (
+          {CATEGORIES.map((item) => (
             <button
-              key={section.id}
+              key={item.id}
               type="button"
               className={
-                activeId === section.id ? 'results-tab is-active' : 'results-tab'
+                item.id === category.id ? 'results-tab is-active' : 'results-tab'
               }
-              onClick={() => jumpTo(section.id)}
+              onClick={() => goTo(item.id)}
             >
-              {section.title}
+              {item.title}
             </button>
           ))}
         </nav>
         <Link className="results-home-link" to="/" onClick={() => setMenuOpen(false)}>
-          Back to the foyer
+          Back to the main page
         </Link>
       </aside>
 
       <div className="results-main">
-        {RESULTS_MOCK.sections.map((section) => (
-          <RankSection
-            key={section.id}
-            section={section}
-            pauseAutoplay={menuOpen}
-          />
-        ))}
+        <section className="results-section">
+          <header className="results-section-head">
+            <p className="eyebrow">{section.eyebrow}</p>
+            <h1 className="results-section-title">{section.title}</h1>
+            <p className="results-section-prompt">{section.prompt}</p>
+          </header>
+
+          <div className="blade-anchor" ref={bladesRef}>
+            <RankRail
+              key={`${category.id}-${regionId}`}
+              section={section}
+              pauseAutoplay={menuOpen}
+            />
+          </div>
+
+          {alignment ? (
+            <div className="alignment-wrap">
+              <div className="alignment-card">
+                {alignment.kicker ? (
+                  <p className="alignment-kicker">{alignment.kicker}</p>
+                ) : null}
+                <p className="alignment-body">
+                  You voted for{' '}
+                  <strong className={`alignment-var is-${alignment.tone}`}>
+                    {alignment.name}
+                  </strong>
+                  . {alignment.connector}{' '}
+                  <strong className={`alignment-var is-${alignment.tone}`}>
+                    {alignment.outcome}
+                  </strong>
+                  .
+                </p>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="map-panel">
+            <div className="map-panel-head">
+              <div>
+                <p className="eyebrow">By place</p>
+                <h2 className="map-title">Where people answered from</h2>
+                <p className="map-copy">
+                  Default is the whole set, including people who preferred not
+                  to disclose a place. Highlighted countries have at least 20
+                  answers. Continent views include every country there, plus
+                  people who named the continent itself.
+                </p>
+              </div>
+              <label className="map-select">
+                <span>Filter by place</span>
+                <select
+                  value={regionId}
+                  onChange={(event) => selectRegion(event.target.value)}
+                >
+                  {REGION_GROUPS.map((group) => (
+                    <optgroup key={group.label} label={group.label}>
+                      {group.ids.map((id) => {
+                        const region = REGIONS.find((item) => item.id === id);
+                        return (
+                          <option key={id} value={id}>
+                            {region.name}
+                          </option>
+                        );
+                      })}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <WorldMap selectedId={regionId} onSelect={selectRegion} />
+            <p className="map-status">
+              Showing {section.region.name} · {section.responseCount} answers
+              {regionId !== 'global' ? (
+                <>
+                  {' · '}
+                  <button
+                    className="map-clear"
+                    type="button"
+                    onClick={() => selectRegion('global')}
+                  >
+                    Show the world
+                  </button>
+                </>
+              ) : null}
+            </p>
+          </div>
+
+          {nextId ? (
+            <div className="results-next-wrap">
+              <button
+                className="results-next"
+                type="button"
+                onClick={() => goTo(nextId)}
+              >
+                Next category
+              </button>
+            </div>
+          ) : (
+            <div className="results-next-wrap">
+              <Link className="results-next is-quiet" to="/">
+                Back to the main page
+              </Link>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );
