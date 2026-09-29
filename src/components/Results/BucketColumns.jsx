@@ -40,13 +40,13 @@ export function BucketColumns({ section }) {
               {column.items.map((item) => (
                 <li
                   key={item.id}
-                  className={[
-                    'bucket-row',
-                    item.rank === 1 ? 'is-leader' : '',
-                    item.isYours ? 'is-yours' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
+                    className={[
+                      'bucket-row',
+                      item.rank === 1 ? 'is-leader' : '',
+                      item.isYours ? 'is-yours' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                 >
                   <span className="bucket-row-rank">#{item.rank}</span>
                   <div className="bucket-row-body">

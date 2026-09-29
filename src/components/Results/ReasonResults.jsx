@@ -4,12 +4,19 @@ import {
   layoutCommentRows,
   rankComments,
 } from '../../data/reasonResults.js';
+import {
+  applyMyAnswerToRows,
+  readMyCustomReason,
+} from '../../utils/myCustomReason.js';
 
 const VISITOR_KEY = 'veg-survey-visitor';
 const MY_VOTES_KEY = 'veg-survey-reason-votes';
 const TAP_MS = 280;
+const HOLD_MS = 500;
+const HOLD_MOVE_PX = 10;
 const MAX_LIKES = 5;
 const MAX_DISLIKES = 5;
+const PUFF_MS = 900;
 
 function formatVotes(n) {
   return `${n.toLocaleString('en-GB')} ${n === 1 ? 'vote' : 'votes'}`;
@@ -53,6 +60,21 @@ function writeMyVotes(votes) {
   }
 }
 
+function nextFromSingleTap(current) {
+  if (current === 1 || current === -1) return 0;
+  return 1;
+}
+
+function nextFromRightClick(current) {
+  if (current === -1) return 0;
+  return -1;
+}
+
+function nextFromDoubleTap(current) {
+  if (current === -1) return 1;
+  return -1;
+}
+
 function canSetVote(votes, commentId, nextValue) {
   if (nextValue === 0) return true;
   const current = votes[commentId] ?? 0;
@@ -66,6 +88,13 @@ function canSetVote(votes, commentId, nextValue) {
 function netsFromScores(scores) {
   return Object.fromEntries(
     Object.entries(scores).map(([id, entry]) => [id, entry.net ?? 0]),
+  );
+}
+
+function snapshotRows(pool, nets = {}, myText = '') {
+  return applyMyAnswerToRows(
+    layoutCommentRows(rankComments(pool, nets), COMMENT_DISPLAY_COUNT),
+    myText,
   );
 }
 
@@ -83,7 +112,7 @@ function pointFromEvent(event) {
   };
 }
 
-function DriftRow({ row, myVotes, onVote }) {
+function DriftRow({ row, myVotes, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
   const loop = [...row.items, ...row.items];
 
   return (
@@ -101,6 +130,7 @@ function DriftRow({ row, myVotes, onVote }) {
               'reason-chip',
               mine === 1 ? 'is-liked' : '',
               mine === -1 ? 'is-disliked' : '',
+              item.isMine ? 'is-mine' : '',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -108,13 +138,17 @@ function DriftRow({ row, myVotes, onVote }) {
             data-boosts={item.score}
             aria-pressed={mine === 1}
             aria-label={`${item.text}. ${
-              mine === 1
-                ? 'Liked'
-                : mine === -1
-                  ? 'Sunk'
-                  : 'Not voted'
-            }. Click to like, double-click or right-click to sink.`}
-            onPointerUp={(event) => onVote(event, item.id)}
+              item.isMine ? 'Your answer. ' : ''
+            }${
+              mine === 1 ? 'Liked' : mine === -1 ? 'Sunk' : 'Not voted'
+            }. Click to like, double-click, right-click, or hold to sink.`}
+            onPointerDown={(event) => onHoldStart(event, item.id)}
+            onPointerMove={(event) => onHoldMove(event)}
+            onPointerUp={(event) => {
+              onHoldEnd();
+              onVote(event, item.id);
+            }}
+            onPointerCancel={() => onHoldEnd()}
             onContextMenu={(event) => onVote(event, item.id)}
             onKeyDown={(event) => {
               if (event.key === 'Enter' || event.key === ' ') {
@@ -124,6 +158,9 @@ function DriftRow({ row, myVotes, onVote }) {
             }}
           >
             {item.text}
+            {item.isMine ? (
+              <span className="reason-chip-flair">Your answer</span>
+            ) : null}
           </button>
         );
       })}
@@ -133,62 +170,82 @@ function DriftRow({ row, myVotes, onVote }) {
 
 export function ReasonResults({ section }) {
   const visitorId = useMemo(() => readVisitorId(), []);
+  const myReason = useMemo(() => readMyCustomReason(), []);
+  const pool = section.commentPool ?? [];
   const [myVotes, setMyVotes] = useState(readMyVotes);
-  const [nets, setNets] = useState({});
+  const [rows, setRows] = useState(() => snapshotRows(pool, {}, myReason));
   const tapTimer = useRef(0);
   const tapTarget = useRef(null);
   const tapPoint = useRef(null);
   const [capTip, setCapTip] = useState(null);
   const capTipTimer = useRef(0);
-
-  const rows = useMemo(() => {
-    const ranked = rankComments(section.commentPool ?? [], nets);
-    return layoutCommentRows(ranked, COMMENT_DISPLAY_COUNT);
-  }, [nets, section.commentPool]);
+  const [puff, setPuff] = useState(null);
+  const puffTimer = useRef(0);
+  const layoutLocked = useRef(false);
+  const sinkGuard = useRef({ id: null, at: 0 });
+  const holdTimer = useRef(0);
+  const holdFired = useRef(false);
+  const holdOrigin = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadScores() {
+    async function loadSnapshot() {
       try {
         const result = await fetch('/api/reason-votes');
         if (!result.ok) return;
         const body = await result.json();
-        if (!cancelled && body?.scores) {
-          setNets(netsFromScores(body.scores));
-        }
+        if (cancelled || layoutLocked.current || !body?.scores) return;
+        setRows(snapshotRows(pool, netsFromScores(body.scores), myReason));
       } catch {
-        // keep seed order
+        // keep the seed snapshot
+      } finally {
+        if (!cancelled) layoutLocked.current = true;
       }
     }
 
-    loadScores();
+    loadSnapshot();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [pool, myReason]);
 
   useEffect(
     () => () => {
       if (tapTimer.current) window.clearTimeout(tapTimer.current);
       if (capTipTimer.current) window.clearTimeout(capTipTimer.current);
+      if (puffTimer.current) window.clearTimeout(puffTimer.current);
+      if (holdTimer.current) window.clearTimeout(holdTimer.current);
     },
     [],
   );
 
-  function showCapTip(kind, point) {
+  function clampPoint(point) {
     const pad = 16;
-    const x = Math.min(
-      window.innerWidth - pad,
-      Math.max(pad, point?.x ?? window.innerWidth / 2),
-    );
-    const y = Math.min(
-      window.innerHeight - pad,
-      Math.max(pad, point?.y ?? window.innerHeight / 2),
-    );
+    return {
+      x: Math.min(
+        window.innerWidth - pad,
+        Math.max(pad, point?.x ?? window.innerWidth / 2),
+      ),
+      y: Math.min(
+        window.innerHeight - pad,
+        Math.max(pad, point?.y ?? window.innerHeight / 2),
+      ),
+    };
+  }
+
+  function showCapTip(kind, point) {
+    const { x, y } = clampPoint(point);
     setCapTip({ id: Date.now(), kind, x, y });
     if (capTipTimer.current) window.clearTimeout(capTipTimer.current);
     capTipTimer.current = window.setTimeout(() => setCapTip(null), 1800);
+  }
+
+  function showPuff(delta, point) {
+    const { x, y } = clampPoint(point);
+    setPuff({ id: Date.now(), delta, x, y });
+    if (puffTimer.current) window.clearTimeout(puffTimer.current);
+    puffTimer.current = window.setTimeout(() => setPuff(null), PUFF_MS);
   }
 
   function applyVote(commentId, nextValue, point) {
@@ -207,10 +264,10 @@ export function ReasonResults({ section }) {
     else votes[commentId] = nextValue;
     writeMyVotes(votes);
     setMyVotes(votes);
-    setNets((netsNow) => ({
-      ...netsNow,
-      [commentId]: (netsNow[commentId] ?? 0) - previous + nextValue,
-    }));
+    layoutLocked.current = true;
+    if (nextValue === 1 || nextValue === -1) {
+      showPuff(nextValue, point);
+    }
 
     fetch('/api/reason-votes', {
       method: 'POST',
@@ -220,14 +277,9 @@ export function ReasonResults({ section }) {
         visitorId,
         value: nextValue,
       }),
-    })
-      .then((result) => (result.ok ? result.json() : null))
-      .then((body) => {
-        if (body?.scores) setNets(netsFromScores(body.scores));
-      })
-      .catch(() => {
-        // local score already applied
-      });
+    }).catch(() => {
+      // markings already applied locally
+    });
   }
 
   function resetVotes() {
@@ -236,13 +288,7 @@ export function ReasonResults({ section }) {
 
     writeMyVotes({});
     setMyVotes({});
-    setNets((netsNow) => {
-      const next = { ...netsNow };
-      for (const [id, value] of Object.entries(votesNow)) {
-        next[id] = (next[id] ?? 0) - value;
-      }
-      return next;
-    });
+    layoutLocked.current = true;
 
     fetch('/api/reason-votes', {
       method: 'POST',
@@ -251,35 +297,85 @@ export function ReasonResults({ section }) {
         visitorId,
         reset: true,
       }),
-    })
-      .then((result) => (result.ok ? result.json() : null))
-      .then((body) => {
-        if (body?.scores) setNets(netsFromScores(body.scores));
-      })
-      .catch(() => {
-        // local reset already applied
-      });
+    }).catch(() => {
+      // markings already cleared locally
+    });
+  }
+
+  function clearHold() {
+    if (holdTimer.current) window.clearTimeout(holdTimer.current);
+    holdTimer.current = 0;
+  }
+
+  function onHoldStart(event, commentId) {
+    if (event.button != null && event.button !== 0) return;
+    holdFired.current = false;
+    clearHold();
+    holdOrigin.current = {
+      x: event.clientX ?? 0,
+      y: event.clientY ?? 0,
+    };
+    const point = pointFromEvent(event);
+    holdTimer.current = window.setTimeout(() => {
+      holdTimer.current = 0;
+      holdFired.current = true;
+      if (tapTimer.current) window.clearTimeout(tapTimer.current);
+      tapTimer.current = 0;
+      tapTarget.current = null;
+      applyVote(commentId, -1, point);
+      sinkGuard.current = {
+        id: commentId,
+        at: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+      };
+    }, HOLD_MS);
+  }
+
+  function onHoldMove(event) {
+    if (!holdTimer.current) return;
+    const dx = (event.clientX ?? 0) - holdOrigin.current.x;
+    const dy = (event.clientY ?? 0) - holdOrigin.current.y;
+    if (dx * dx + dy * dy > HOLD_MOVE_PX * HOLD_MOVE_PX) {
+      clearHold();
+    }
+  }
+
+  function onHoldEnd() {
+    clearHold();
   }
 
   function onVote(event, commentId) {
     event.preventDefault?.();
     event.stopPropagation?.();
+
+    if (event.type === 'pointerup' && holdFired.current) {
+      holdFired.current = false;
+      return;
+    }
+
     const point = pointFromEvent(event);
 
     if (event.type === 'keydown') {
       const current = readMyVotes()[commentId] ?? 0;
-      applyVote(commentId, current === 1 ? 0 : 1, point);
+      applyVote(commentId, nextFromSingleTap(current), point);
       return;
     }
 
     const isRightClick =
       event.type === 'contextmenu' || event.button === 2;
     if (isRightClick) {
+      const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+      if (
+        sinkGuard.current.id === commentId &&
+        now - sinkGuard.current.at < 400
+      ) {
+        return;
+      }
+      sinkGuard.current = { id: commentId, at: now };
       if (tapTimer.current) window.clearTimeout(tapTimer.current);
       tapTimer.current = 0;
       tapTarget.current = null;
       const current = readMyVotes()[commentId] ?? 0;
-      applyVote(commentId, current === -1 ? 0 : -1, point);
+      applyVote(commentId, nextFromRightClick(current), point);
       return;
     }
 
@@ -293,7 +389,7 @@ export function ReasonResults({ section }) {
       tapTimer.current = 0;
       tapTarget.current = null;
       const current = readMyVotes()[commentId] ?? 0;
-      applyVote(commentId, current === -1 ? 0 : -1, point);
+      applyVote(commentId, nextFromDoubleTap(current), point);
       return;
     }
 
@@ -304,7 +400,7 @@ export function ReasonResults({ section }) {
       tapTimer.current = 0;
       tapTarget.current = null;
       const current = readMyVotes()[commentId] ?? 0;
-      applyVote(commentId, current === 1 ? 0 : 1, tapPoint.current);
+      applyVote(commentId, nextFromSingleTap(current), tapPoint.current);
     }, TAP_MS);
   }
 
@@ -364,14 +460,18 @@ export function ReasonResults({ section }) {
               row={row}
               myVotes={myVotes}
               onVote={onVote}
+              onHoldStart={onHoldStart}
+              onHoldMove={onHoldMove}
+              onHoldEnd={onHoldEnd}
             />
           ))}
         </div>
         <p className="reason-drift-hint">
-          Click or tap once to like an answer — it turns green and rises for
-          everyone. Double-click, tap twice, or right-click to mark it red and
-          sink it. You can like up to {MAX_LIKES} and sink up to {MAX_DISLIKES}.
-          The strongest lines stay in view; the rest wait in the pool.
+          Click or tap once to like, or to clear a marked pill. Double-click,
+          right-click, or press and hold a clear pill to sink it; double-click a
+          red pill to like it. You can like up to {MAX_LIKES} and sink up to{' '}
+          {MAX_DISLIKES}. The ribbons keep this snapshot until the page is
+          refreshed.
         </p>
         <div className="reason-reset-row">
           <button
@@ -388,6 +488,16 @@ export function ReasonResults({ section }) {
           </button>
         </div>
       </div>
+      {puff ? (
+        <p
+          key={puff.id}
+          className={`reason-puff ${puff.delta === 1 ? 'is-up' : 'is-down'}`}
+          style={{ left: puff.x, top: puff.y }}
+          role="status"
+        >
+          {puff.delta === 1 ? '+1' : '−1'}
+        </p>
+      ) : null}
       {capTip ? (
         <p
           key={capTip.id}

@@ -84,10 +84,9 @@ function placeLabel(region) {
   return `in ${region.name}`;
 }
 
-function alignmentTone(rank, total) {
+function alignmentTone(rank) {
   if (!rank) return 'lose';
   if (rank === 1) return 'win';
-  if (rank === total) return 'lose';
   return 'place';
 }
 
@@ -99,7 +98,7 @@ function alignmentCopy(section) {
   const place = placeLabel(section.region);
   if (!picked) {
     return {
-      kicker: null,
+      kicker: `${formatShare(0)} of people voted with you`,
       name,
       tone: 'lose',
       connector: 'It',
@@ -107,10 +106,13 @@ function alignmentCopy(section) {
     };
   }
 
+  const onTheList = picked.rank <= VISIBLE_LEADERS;
+  const votedWithYou = `${formatShare(picked.share)} of people voted with you`;
+
   return {
-    kicker: `${formatShare(picked.share)} of people voted with you`,
+    kicker: onTheList ? votedWithYou : `Only ${votedWithYou}`,
     name,
-    tone: alignmentTone(picked.rank, section.items.length),
+    tone: alignmentTone(picked.rank),
     connector: 'It is',
     outcome:
       picked.rank === 1
@@ -441,6 +443,19 @@ export function Results() {
           </span>
         </button>
       </div>
+      {regionId !== 'global' ? (
+        <p className="results-region-status">
+          Showing {section.region.name} · {section.region.votes} answers
+          {' · '}
+          <button
+            className="map-clear"
+            type="button"
+            onClick={() => selectRegion('global')}
+          >
+            Show the world
+          </button>
+        </p>
+      ) : null}
 
       {menuOpen ? (
         <button
@@ -513,7 +528,9 @@ export function Results() {
             <div className="alignment-wrap">
               <div className="alignment-card">
                 {alignment.kicker ? (
-                  <p className="alignment-kicker">{alignment.kicker}</p>
+                  <p className={`alignment-kicker is-${alignment.tone}`}>
+                    {alignment.kicker}
+                  </p>
                 ) : null}
                 <p className="alignment-body">
                   You voted for{' '}

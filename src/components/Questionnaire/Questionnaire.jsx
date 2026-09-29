@@ -11,6 +11,7 @@ import { Question7 } from './Question7.jsx';
 import { ThankYou } from './ThankYou.jsx';
 import { Toast } from './Toast.jsx';
 import { submitResponse } from '../../utils/submitResponse.js';
+import { writeMyCustomReason } from '../../utils/myCustomReason.js';
 
 const LOCK_TOAST = 'First instinct locked. No wrong answers.';
 const BACK_LOCKED_TOAST =
@@ -146,6 +147,7 @@ export function Questionnaire() {
     customCriterion,
     customCriterionPublic,
   }) {
+    writeMyCustomReason(customCriterion, customCriterionPublic);
     persist(STEPS.QUESTION_3, {
       ...response,
       initialCriteria,

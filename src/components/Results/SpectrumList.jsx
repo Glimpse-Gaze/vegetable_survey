@@ -59,13 +59,17 @@ function Spread({ item }) {
   );
 }
 
-function SpectrumBlade({ item }) {
-  const poleClass =
-    item.rank === 1 ? 'is-least' : item.rank === 10 ? 'is-most' : '';
+function SpectrumBlade({ item, bandId }) {
+  const isLeastScore = item.rank === 1;
 
   return (
     <article
-      className={['spectrum-blade', poleClass, item.userSlot ? 'is-yours' : '']
+      className={[
+        'spectrum-blade',
+        `is-band-${bandId}`,
+        isLeastScore ? 'is-least-score' : '',
+        item.userSlot ? 'is-yours' : '',
+      ]
         .filter(Boolean)
         .join(' ')}
     >
@@ -95,7 +99,7 @@ export function SpectrumList({ section }) {
           <h2 className="spectrum-band-title">{band.title}</h2>
           <div className="spectrum-band-list">
             {band.items.map((item) => (
-              <SpectrumBlade key={item.id} item={item} />
+              <SpectrumBlade key={item.id} item={item} bandId={band.id} />
             ))}
           </div>
         </section>

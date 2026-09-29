@@ -16,7 +16,7 @@ export const criteria = [
   { id: 'other', label: 'Something else' },
 ];
 
-export const MAX_CUSTOM_CRITERION = 100;
+export const MAX_CUSTOM_CRITERION = 50;
 
 const PINNED_CRITERIA_IDS = ['just_feels', 'other'];
 

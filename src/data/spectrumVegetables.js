@@ -30,7 +30,7 @@ export const spectrumVegetables = [
     origin: 'the Mediterranean',
     botany: 'a head of flower buds',
     kin: ['cauliflower', 'Brussels sprouts', 'kohlrabi', 'kale'],
-    fact: 'Broccoli comes from the Mediterranean. It is one of over six vegetables created by selectively breeding different parts of the wild cabbage (Brassica oleracea): broccolies are flower buds, cauliflowers are the curds, Brussels sprouts are side buds, kohlrabi is the swollen stem, and kale and cabbage are the leaves.',
+    fact: 'Broccoli, native to the Mediterranean, is one of several vegetables bred from wild cabbage (Brassica oleracea). Broccolies are flower buds, while cauliflower are the curds; Brussels sprouts are side buds, kohlrabi is a swollen stem, and kale and cabbage are leaves.',
     note: 'Broccoli is a not-yet bouquet. Left alone, every bud will grow a yellow flower.',
   },
   {
