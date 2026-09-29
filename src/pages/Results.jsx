@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { WorldMap } from '../components/Results/WorldMap.jsx';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
+import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
 import {
   CATEGORIES,
@@ -378,7 +379,8 @@ export function Results() {
   const nextId = nextCategoryId(category.id);
   const alignment =
     category.layout === 'blades' ? alignmentCopy(section) : null;
-  const showMap = category.layout !== 'buckets';
+  const showMap =
+    category.layout === 'blades' || category.layout === 'spectrum';
   const bladesRef = useRef(null);
 
   useEffect(() => {
@@ -488,6 +490,8 @@ export function Results() {
 
           {category.layout === 'buckets' ? (
             <BucketColumns section={section} />
+          ) : category.layout === 'reasons' ? (
+            <ReasonResults section={section} />
           ) : category.layout === 'spectrum' ? (
             <div className="blade-anchor" ref={bladesRef}>
               <SpectrumList

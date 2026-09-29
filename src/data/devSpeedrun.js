@@ -12,6 +12,7 @@ export const DEV_SPEEDRUN = {
     'common_label',
   ],
   customCriterion: '',
+  customCriterionPublic: false,
   sortBuckets: {
     not_vegetable: [
       'rhubarb',

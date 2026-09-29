@@ -839,21 +839,30 @@ body {
   color: var(--ink);
 }
 
-.disclose-button {
+.disclose-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   justify-self: start;
-  padding: 0;
-  border: 0;
-  background: none;
   color: var(--muted);
-  font: inherit;
   font-size: 0.9rem;
-  text-decoration: underline;
-  text-underline-offset: 3px;
   cursor: pointer;
 }
 
-.disclose-button:hover,
-.disclose-button:focus-visible {
+.disclose-check input {
+  appearance: auto;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 1.1rem;
+  accent-color: var(--green);
+}
+
+.disclose-check span {
+  text-underline-offset: 3px;
+}
+
+.disclose-check:hover span,
+.disclose-check:focus-within span {
   color: var(--ink);
 }
 

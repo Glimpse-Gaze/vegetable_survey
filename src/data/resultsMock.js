@@ -16,6 +16,7 @@ import turnip from '../content/Turnips.jpg';
 import placeholder from '../content/Placeholder.png';
 import { DEV_SPEEDRUN } from './devSpeedrun.js';
 import { getSpectrumSection } from './spectrumResults.js';
+import { getReasonsSection } from './reasonResults.js';
 
 export const VEGETABLE_ART = {
   broccoli,
@@ -449,6 +450,14 @@ export const CATEGORIES = [
     userVoteId: 'broccoli',
   },
   {
+    id: 'why-vegetabley',
+    eyebrow: 'Question 2',
+    title: 'Why does it feel vegetabley?',
+    prompt: 'The reasons people marked for their first instinct.',
+    layout: 'reasons',
+    userCriteria: DEV_SPEEDRUN.initialCriteria,
+  },
+  {
     id: 'sort-buckets',
     eyebrow: 'Question 3',
     title: 'Which of these count as vegetables?',
@@ -565,6 +574,9 @@ export function getSection(categoryId, regionId) {
   const region = getRegion(regionId);
   if (category.layout === 'buckets') {
     return getBucketSection(category, region);
+  }
+  if (category.layout === 'reasons') {
+    return getReasonsSection(category, region);
   }
   if (category.layout === 'spectrum') {
     return getSpectrumSection(category, region, artFor);

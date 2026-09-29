@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { criteria, shuffleCriteria } from '../../data/criteria.js';
+import { criteria, MAX_CUSTOM_CRITERION, shuffleCriteria } from '../../data/criteria.js';
 import { CriteriaSelector } from './CriteriaSelector.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
@@ -12,12 +12,15 @@ export function Question2({
   onLockedBack,
   initialCriteria = [],
   initialCustomCriterion = '',
+  initialCustomPublic = false,
 }) {
   const [orderedCriteria] = useState(() => shuffleCriteria(criteria));
   const [selectedIds, setSelectedIds] = useState(initialCriteria);
   const [customCriterion, setCustomCriterion] = useState(initialCustomCriterion);
+  const [customPublic, setCustomPublic] = useState(initialCustomPublic);
   const otherSelected = selectedIds.includes('other');
-  const customReady = !otherSelected || customCriterion.trim().length > 0;
+  const customText = customCriterion.trim();
+  const customReady = !otherSelected || customText.length > 0;
   const canContinue = selectedIds.length > 0 && customReady;
   const atLimit = selectedIds.length >= MAX_CRITERIA;
 
@@ -31,13 +34,18 @@ export function Question2({
     });
   }
 
+  function handleCustomChange(value) {
+    setCustomCriterion(value.slice(0, MAX_CUSTOM_CRITERION));
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
     if (!canContinue) return;
 
     onContinue({
       initialCriteria: selectedIds,
-      customCriterion: otherSelected ? customCriterion.trim() : '',
+      customCriterion: otherSelected ? customText : '',
+      customCriterionPublic: otherSelected ? customPublic : false,
     });
   }
 
@@ -62,11 +70,24 @@ export function Question2({
             <textarea
               id="custom-criterion"
               value={customCriterion}
-              onChange={(event) => setCustomCriterion(event.target.value)}
+              onChange={(event) => handleCustomChange(event.target.value)}
               rows={3}
+              maxLength={MAX_CUSTOM_CRITERION}
               placeholder="Type your own reason..."
               required
             />
+            <p className="character-count">
+              {customCriterion.length} / {MAX_CUSTOM_CRITERION}
+            </p>
+            <label className="public-consent">
+              <input
+                className="criterion-input"
+                type="checkbox"
+                checked={customPublic}
+                onChange={(event) => setCustomPublic(event.target.checked)}
+              />
+              <span>I agree to display this answer publicly.</span>
+            </label>
           </div>
         ) : null}
 

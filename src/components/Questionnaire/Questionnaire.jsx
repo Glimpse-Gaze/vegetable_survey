@@ -47,6 +47,7 @@ function emptyResponse() {
     initialAssociation: null,
     initialCriteria: [],
     customCriterion: '',
+    customCriterionPublic: false,
     sortBuckets: null,
     spectrum: null,
     mostVegetable: null,
@@ -140,11 +141,16 @@ export function Questionnaire() {
     showToast(LOCK_TOAST);
   }
 
-  function handleQuestion2({ initialCriteria, customCriterion }) {
+  function handleQuestion2({
+    initialCriteria,
+    customCriterion,
+    customCriterionPublic,
+  }) {
     persist(STEPS.QUESTION_3, {
       ...response,
       initialCriteria,
       customCriterion,
+      customCriterionPublic,
     });
   }
 
@@ -227,6 +233,7 @@ export function Questionnaire() {
             rawAnswer={response.initialAssociation?.rawAnswer ?? ''}
             initialCriteria={response.initialCriteria}
             initialCustomCriterion={response.customCriterion}
+            initialCustomPublic={response.customCriterionPublic}
             onContinue={handleQuestion2}
             onLockedBack={handleLockedBack}
           />
