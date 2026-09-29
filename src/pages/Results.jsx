@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { WorldMap } from '../components/Results/WorldMap.jsx';
+import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import {
   CATEGORIES,
   getCategory,
@@ -121,8 +122,8 @@ function Crown() {
     <svg className="blade-crown" viewBox="0 0 32 18" aria-hidden="true">
       <path
         d="M3 16h26L26 7l-5 4L16 2l-5 9-5-4z"
-        fill="#e3c25b"
-        stroke="#8c6b14"
+        fill="currentColor"
+        stroke="currentColor"
         strokeWidth="1.2"
         strokeLinejoin="round"
       />
@@ -374,7 +375,7 @@ export function Results() {
     [category.id, regionId],
   );
   const nextId = nextCategoryId(category.id);
-  const alignment = alignmentCopy(section);
+  const alignment = category.layout === 'buckets' ? null : alignmentCopy(section);
   const bladesRef = useRef(null);
 
   useEffect(() => {
@@ -382,10 +383,6 @@ export function Results() {
       navigate('/results/first-instincts', { replace: true });
     }
   }, [category, categoryId, navigate]);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }, [category.id]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -486,13 +483,17 @@ export function Results() {
             <p className="results-section-prompt">{section.prompt}</p>
           </header>
 
-          <div className="blade-anchor" ref={bladesRef}>
-            <RankRail
-              key={`${category.id}-${regionId}`}
-              section={section}
-              pauseAutoplay={menuOpen}
-            />
-          </div>
+          {category.layout === 'buckets' ? (
+            <BucketColumns section={section} />
+          ) : (
+            <div className="blade-anchor" ref={bladesRef}>
+              <RankRail
+                key={`${category.id}-${regionId}`}
+                section={section}
+                pauseAutoplay={menuOpen}
+              />
+            </div>
+          )}
 
           {alignment ? (
             <div className="alignment-wrap">
@@ -515,6 +516,7 @@ export function Results() {
             </div>
           ) : null}
 
+          {category.layout === 'buckets' ? null : (
           <div className="map-panel">
             <div className="map-panel-head">
               <div>
@@ -565,6 +567,7 @@ export function Results() {
               ) : null}
             </p>
           </div>
+          )}
 
           {nextId ? (
             <div className="results-next-wrap">

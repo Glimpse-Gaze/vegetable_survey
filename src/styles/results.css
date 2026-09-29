@@ -234,7 +234,7 @@
 }
 
 .alignment-var.is-win {
-  color: #b8860b;
+  color: var(--carrot);
 }
 
 .alignment-var.is-place {
@@ -348,9 +348,9 @@
 }
 
 .blade.is-champion .blade-face {
-  outline: 5px solid #d4a017;
+  outline: 5px solid var(--carrot);
   outline-offset: 0;
-  animation: blade-pulse-gold 2.8s ease-in-out infinite;
+  animation: blade-pulse-carrot 2.8s ease-in-out infinite;
 }
 
 .blade.is-outlier {
@@ -374,7 +374,13 @@
   width: 41px;
   height: 24px;
   margin: 0 auto 14px;
+  color: var(--carrot);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+.blade-crown path {
+  fill: var(--carrot);
+  stroke: var(--carrot-deep);
 }
 
 .blade img {
@@ -434,6 +440,7 @@
 
 .blade.is-champion .blade-rank {
   font-size: 0.8rem;
+  color: #f0b15a;
 }
 
 .blade-badge {
@@ -490,6 +497,10 @@
   background: #ffd2c6;
 }
 
+.blade.is-champion .blade-meter span {
+  background: #f0b15a;
+}
+
 .outlier-row {
   display: grid;
   gap: 10px;
@@ -503,7 +514,7 @@
   font-size: 0.88rem;
 }
 
-@keyframes blade-pulse-gold {
+@keyframes blade-pulse-carrot {
   0%,
   100% {
     outline-width: 4px;
@@ -699,6 +710,254 @@
   cursor: pointer;
 }
 
+.bucket-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 22rem));
+  justify-content: center;
+  gap: 18px;
+  width: min(72rem, calc(100% - 48px));
+  margin: 12px auto 0;
+}
+
+.bucket-card {
+  padding: 18px 18px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.bucket-card-kicker {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bucket-card-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.bucket-card-summary {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.bucket-card-summary strong {
+  color: var(--carrot);
+  font-weight: 750;
+}
+
+.bucket-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bucket-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 10px 11px;
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.bucket-row.is-leader {
+  background: var(--carrot-soft);
+  outline: 2px solid var(--carrot);
+  outline-offset: 0;
+}
+
+.bucket-row-rank {
+  flex: 0 0 1.8rem;
+  width: 1.8rem;
+  padding-top: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.bucket-row.is-leader .bucket-row-rank {
+  color: var(--carrot-deep);
+}
+
+.bucket-row-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.bucket-row-topline {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bucket-row-name {
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.bucket-row.is-leader .bucket-row-name {
+  color: var(--carrot);
+}
+
+.bucket-row-badge {
+  flex: 0 0 auto;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--tomato);
+  color: #fffaf2;
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bucket-row-meta {
+  margin: 2px 0 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.bucket-row-meter {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(29, 42, 28, 0.12);
+}
+
+.bucket-row-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+}
+
+.bucket-row.is-leader .bucket-row-meter span {
+  background: var(--carrot);
+}
+
+.bucket-lookup {
+  width: min(40rem, calc(100% - 48px));
+  margin: 28px auto 0;
+}
+
+.bucket-lookup-label {
+  display: grid;
+  gap: 6px;
+  max-width: 22rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bucket-lookup-label select {
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.bucket-lookup-card {
+  margin-top: 14px;
+  padding: 16px 18px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.bucket-lookup-lead {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.bucket-lookup-lead strong {
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.bucket-lookup-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.bucket-lookup-table th,
+.bucket-lookup-table td {
+  padding: 8px 10px 8px 0;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.bucket-lookup-table thead th {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--border);
+}
+
+.bucket-lookup-table tbody th {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.bucket-lookup-table .is-bar {
+  width: 42%;
+  padding-right: 0;
+}
+
+.bucket-lookup-table tr.is-yours th,
+.bucket-lookup-table tr.is-yours td {
+  color: var(--tomato);
+}
+
+.bucket-lookup-meter {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(29, 42, 28, 0.12);
+}
+
+.bucket-lookup-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+}
+
+.bucket-lookup-table tr.is-yours .bucket-lookup-meter span {
+  background: var(--tomato);
+}
+
 .results-next-wrap {
   display: flex;
   justify-content: center;
@@ -781,6 +1040,20 @@
   .map-panel-head {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .bucket-results {
+    grid-template-columns: minmax(0, 22rem);
+    justify-content: center;
+    width: calc(100% - 32px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .bucket-lookup {
+    width: calc(100% - 32px);
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .blade-rail {

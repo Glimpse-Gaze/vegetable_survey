@@ -1,4 +1,5 @@
 import { CONTINENTS } from './continents.js';
+import { bucketItems } from './bucketItems.js';
 import broccoli from '../content/Broccoli.jpg';
 import brusselsSprouts from '../content/Brussel_sprouts.jpg';
 import cabbage from '../content/Cabbage.jpg';
@@ -274,6 +275,152 @@ const BOARDS = {
   },
 };
 
+const BUCKET_RESPONDENTS = 700;
+
+const BUCKET_COLUMNS = [
+  {
+    id: 'not_vegetable',
+    title: 'Not a vegetable',
+  },
+  {
+    id: 'in_between',
+    title: 'In-between',
+  },
+  {
+    id: 'definitely_vegetable',
+    title: 'Definite vegetable',
+  },
+];
+
+// Each item is placed by every respondent into exactly one bucket.
+const BUCKET_ITEM_VOTES = {
+  mushroom: { not_vegetable: 462, in_between: 168, definitely_vegetable: 70 },
+  cinnamon: { not_vegetable: 245, in_between: 315, definitely_vegetable: 140 },
+  tobacco: { not_vegetable: 196, in_between: 280, definitely_vegetable: 224 },
+  turmeric: { not_vegetable: 154, in_between: 336, definitely_vegetable: 210 },
+  rhubarb: { not_vegetable: 112, in_between: 343, definitely_vegetable: 245 },
+  garlic: { not_vegetable: 84, in_between: 406, definitely_vegetable: 210 },
+  olive: { not_vegetable: 63, in_between: 175, definitely_vegetable: 462 },
+  horseradish: { not_vegetable: 49, in_between: 301, definitely_vegetable: 350 },
+  tomato: { not_vegetable: 168, in_between: 280, definitely_vegetable: 252 },
+  avocado: { not_vegetable: 210, in_between: 245, definitely_vegetable: 245 },
+  pumpkin: { not_vegetable: 175, in_between: 210, definitely_vegetable: 315 },
+  cucumber: { not_vegetable: 189, in_between: 161, definitely_vegetable: 350 },
+  soybean: { not_vegetable: 189, in_between: 126, definitely_vegetable: 385 },
+  potato: { not_vegetable: 301, in_between: 98, definitely_vegetable: 301 },
+  bell_pepper: { not_vegetable: 105, in_between: 70, definitely_vegetable: 525 },
+  broccoli: { not_vegetable: 28, in_between: 112, definitely_vegetable: 560 },
+  carrot: { not_vegetable: 70, in_between: 105, definitely_vegetable: 525 },
+  cabbage: { not_vegetable: 70, in_between: 140, definitely_vegetable: 490 },
+  spinach: { not_vegetable: 84, in_between: 161, definitely_vegetable: 455 },
+  onion: { not_vegetable: 70, in_between: 210, definitely_vegetable: 420 },
+  pea: { not_vegetable: 105, in_between: 210, definitely_vegetable: 385 },
+  pak_choi: { not_vegetable: 140, in_between: 210, definitely_vegetable: 350 },
+  rocket: { not_vegetable: 175, in_between: 210, definitely_vegetable: 315 },
+  bamboo_shoot: { not_vegetable: 140, in_between: 210, definitely_vegetable: 350 },
+  lotus_root: { not_vegetable: 175, in_between: 245, definitely_vegetable: 280 },
+};
+
+const USER_BUCKETS = {
+  rhubarb: 'not_vegetable',
+  cinnamon: 'not_vegetable',
+  garlic: 'not_vegetable',
+  turmeric: 'not_vegetable',
+  tobacco: 'not_vegetable',
+  mushroom: 'not_vegetable',
+  horseradish: 'not_vegetable',
+  pumpkin: 'in_between',
+  cucumber: 'in_between',
+  avocado: 'in_between',
+  olive: 'in_between',
+  tomato: 'in_between',
+  potato: 'definitely_vegetable',
+  cabbage: 'definitely_vegetable',
+  spinach: 'definitely_vegetable',
+  broccoli: 'definitely_vegetable',
+  soybean: 'definitely_vegetable',
+  lotus_root: 'definitely_vegetable',
+  carrot: 'definitely_vegetable',
+  bamboo_shoot: 'definitely_vegetable',
+  onion: 'definitely_vegetable',
+  bell_pepper: 'definitely_vegetable',
+  pea: 'definitely_vegetable',
+  pak_choi: 'definitely_vegetable',
+  rocket: 'definitely_vegetable',
+};
+
+const BUCKET_ITEM_LABELS = Object.fromEntries(
+  bucketItems.map((item) => [item.id, item.name]),
+);
+
+function rankBucketColumn(votesById, total, columnId) {
+  return Object.entries(votesById)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 5)
+    .map(([id, votes], index) => ({
+      id,
+      name: BUCKET_ITEM_LABELS[id] ?? id,
+      votes,
+      share: votes / total,
+      rank: index + 1,
+      isYours: USER_BUCKETS[id] === columnId,
+    }));
+}
+
+function votesForColumn(columnId) {
+  return Object.fromEntries(
+    Object.entries(BUCKET_ITEM_VOTES).map(([id, split]) => [
+      id,
+      split[columnId],
+    ]),
+  );
+}
+
+function lookupRows(itemId) {
+  const split = BUCKET_ITEM_VOTES[itemId];
+  if (!split) return [];
+  return BUCKET_COLUMNS.map((column) => ({
+    id: column.id,
+    title: column.title,
+    votes: split[column.id],
+    share: split[column.id] / BUCKET_RESPONDENTS,
+  }));
+}
+
+function getBucketSection(category, region) {
+  const columns = BUCKET_COLUMNS.map((column) => {
+    const items = rankBucketColumn(
+      votesForColumn(column.id),
+      BUCKET_RESPONDENTS,
+      column.id,
+    );
+    const leader = items[0];
+    return {
+      ...column,
+      items,
+      leader,
+      yoursCount: items.filter((item) => item.isYours).length,
+    };
+  });
+
+  return {
+    ...category,
+    region,
+    columns,
+    lookupItems: bucketItems
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        userBucket: USER_BUCKETS[item.id] ?? null,
+        rows: lookupRows(item.id),
+      })),
+    items: [],
+    responseCount: BUCKET_RESPONDENTS,
+  };
+}
+
 function rankBoard(votesById) {
   const total = Object.values(votesById).reduce((sum, n) => sum + n, 0);
   return Object.entries(votesById)
@@ -295,13 +442,22 @@ export const CATEGORIES = [
     eyebrow: 'Question 1',
     title: 'First instincts',
     prompt: 'Which vegetable comes to mind first?',
+    layout: 'blades',
     userVoteId: 'broccoli',
+  },
+  {
+    id: 'sort-buckets',
+    eyebrow: 'Question 3',
+    title: 'Which of these count as vegetables?',
+    prompt: 'Not a vegetable, in-between, or definitely a vegetable?',
+    layout: 'buckets',
   },
   {
     id: 'most-vegetable',
     eyebrow: 'Question 5',
     title: 'The most vegetable vegetable',
     prompt: 'What feels most vegetabley?',
+    layout: 'blades',
     userVoteId: 'turnip',
   },
 ];
@@ -391,6 +547,9 @@ export function getRegion(regionId) {
 export function getSection(categoryId, regionId) {
   const category = getCategory(categoryId);
   const region = getRegion(regionId);
+  if (category.layout === 'buckets') {
+    return getBucketSection(category, region);
+  }
   const votes = BOARDS[region.id]?.[category.id] ?? BOARDS.global[category.id];
   return {
     ...category,

@@ -7,6 +7,9 @@
   --border: #d7cdbb;
   --green: #2c6a38;
   --green-deep: #1f4d28;
+  --carrot: #d98217;
+  --carrot-deep: #b56c12;
+  --carrot-soft: #f6e4c8;
   --tomato: #de4a2c;
   --tomato-soft: #fbe3dc;
   --shadow: 0 18px 40px rgba(47, 38, 22, 0.08);
@@ -664,7 +667,7 @@ body {
   gap: 20px;
 }
 
-.bucket-row {
+.buckets .bucket-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -748,7 +751,7 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .bucket-row {
+  .buckets .bucket-row {
     grid-template-columns: 1fr;
   }
 
