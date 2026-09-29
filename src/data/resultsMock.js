@@ -13,6 +13,9 @@ import potato from '../content/Potato.jpg';
 import pumpkin from '../content/Pumpkin.jpg';
 import tomato from '../content/Tomato.jpg';
 import turnip from '../content/Turnips.jpg';
+import placeholder from '../content/Placeholder.png';
+import { DEV_SPEEDRUN } from './devSpeedrun.js';
+import { getSpectrumSection } from './spectrumResults.js';
 
 export const VEGETABLE_ART = {
   broccoli,
@@ -453,6 +456,15 @@ export const CATEGORIES = [
     layout: 'buckets',
   },
   {
+    id: 'vegetabley-spectrum',
+    eyebrow: 'Question 4',
+    title: 'How vegetabley?',
+    prompt:
+      'Least vegetabley at the top, most at the bottom. Everyone ranked the same ten items.',
+    layout: 'spectrum',
+    userSpectrum: DEV_SPEEDRUN.spectrum,
+  },
+  {
     id: 'most-vegetable',
     eyebrow: 'Question 5',
     title: 'The most vegetable vegetable',
@@ -544,11 +556,18 @@ export function getRegion(regionId) {
   return REGIONS.find((item) => item.id === regionId) ?? REGIONS[0];
 }
 
+function artFor(id) {
+  return VEGETABLE_ART[id] ?? placeholder;
+}
+
 export function getSection(categoryId, regionId) {
   const category = getCategory(categoryId);
   const region = getRegion(regionId);
   if (category.layout === 'buckets') {
     return getBucketSection(category, region);
+  }
+  if (category.layout === 'spectrum') {
+    return getSpectrumSection(category, region, artFor);
   }
   const votes = BOARDS[region.id]?.[category.id] ?? BOARDS.global[category.id];
   return {

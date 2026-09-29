@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { WorldMap } from '../components/Results/WorldMap.jsx';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
+import { SpectrumList } from '../components/Results/SpectrumList.jsx';
 import {
   CATEGORIES,
   getCategory,
@@ -375,7 +376,9 @@ export function Results() {
     [category.id, regionId],
   );
   const nextId = nextCategoryId(category.id);
-  const alignment = category.layout === 'buckets' ? null : alignmentCopy(section);
+  const alignment =
+    category.layout === 'blades' ? alignmentCopy(section) : null;
+  const showMap = category.layout !== 'buckets';
   const bladesRef = useRef(null);
 
   useEffect(() => {
@@ -485,6 +488,13 @@ export function Results() {
 
           {category.layout === 'buckets' ? (
             <BucketColumns section={section} />
+          ) : category.layout === 'spectrum' ? (
+            <div className="blade-anchor" ref={bladesRef}>
+              <SpectrumList
+                key={`${category.id}-${regionId}`}
+                section={section}
+              />
+            </div>
           ) : (
             <div className="blade-anchor" ref={bladesRef}>
               <RankRail
@@ -516,7 +526,7 @@ export function Results() {
             </div>
           ) : null}
 
-          {category.layout === 'buckets' ? null : (
+          {showMap ? (
           <div className="map-panel">
             <div className="map-panel-head">
               <div>
@@ -567,7 +577,7 @@ export function Results() {
               ) : null}
             </p>
           </div>
-          )}
+          ) : null}
 
           {nextId ? (
             <div className="results-next-wrap">
