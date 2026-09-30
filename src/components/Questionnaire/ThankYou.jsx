@@ -46,10 +46,19 @@ export function ThankYou({ responseId }) {
   return (
     <QuestionContainer>
       <h1 className="question-title">That’s all — thank you.</h1>
-      <p className="microcopy">
-        Your answers are stored for this research. We didn’t take your name or
-        email.
-      </p>
+
+      <section className="thanks-block thanks-results-block">
+        <h2 className="thanks-block-title">Interactive results</h2>
+        <p className="microcopy">
+          On the results pages you can see where your answers sit, and rate
+          other people’s comments. The board is more fun after you have a code.
+        </p>
+        <div className="thanks-results-wrap">
+          <Link className="continue-button thanks-results-button" to={resultsTo}>
+            See the results
+          </Link>
+        </div>
+      </section>
 
       {responseId ? (
         <section className="thanks-block">
@@ -61,7 +70,11 @@ export function ThankYou({ responseId }) {
           <p className="thanks-code-row">
             <code className="response-code">{responseId}</code>
             <button
-              className="response-code-copy"
+              className={
+                copied
+                  ? 'response-code-copy is-copied'
+                  : 'response-code-copy'
+              }
               type="button"
               onClick={copyCode}
             >
@@ -71,30 +84,19 @@ export function ThankYou({ responseId }) {
         </section>
       ) : null}
 
-      <section className="thanks-block">
-        <h2 className="thanks-block-title">Interactive results</h2>
-        <p className="microcopy">
-          On the results pages you can see where your answers sit, and rate
-          other people’s comments. The board is more fun after you have a code.
-        </p>
-        <Link className="continue-button thanks-results-button" to={resultsTo}>
-          See the results
-        </Link>
-      </section>
-
       {responseId ? (
         <section className="thanks-block">
-          <h2 className="thanks-block-title">A note for the developer</h2>
+          <h2 className="thanks-block-title">Do you have any comments?</h2>
           <p className="microcopy">
-            Optional. This is not shown publicly and is not used in the
-            research — only the person who made this survey can read it.
+            Optional note for the developer. Just for user feedback, it won’t be
+            shown publicly and won’t be used in the research.
           </p>
           {sent ? (
             <p className="microcopy">Sent. Thank you.</p>
           ) : (
             <form className="thanks-note-form" onSubmit={sendNote}>
               <label className="sr-only" htmlFor="developer-note">
-                Message to the developer
+                Comments for the developer
               </label>
               <textarea
                 id="developer-note"

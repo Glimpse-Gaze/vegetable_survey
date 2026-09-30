@@ -9,6 +9,7 @@ import { Question5 } from './Question5.jsx';
 import { Question6 } from './Question6.jsx';
 import { Question7 } from './Question7.jsx';
 import { ThankYou } from './ThankYou.jsx';
+import { RankingCodeFill } from './RankingCodeFill.jsx';
 import { Toast } from './Toast.jsx';
 import { submitResponse } from '../../utils/submitResponse.js';
 import { writeMyCustomReason } from '../../utils/myCustomReason.js';
@@ -19,7 +20,7 @@ const LOCK_TOAST = 'First instinct locked. No wrong answers.';
 const BACK_LOCKED_TOAST =
   'Your initial intuition is locked. There are no bad answers!';
 const ANTARCTICA_TOAST = "I don't believe you.";
-const SPEEDRUN_TOAST = 'Dev speedrun loaded. Submit the last question to save.';
+const FILL_TOAST = 'Answers loaded from that ranking code.';
 
 const STEPS = {
   CONSENT: 'consent',
@@ -74,9 +75,11 @@ export function Questionnaire() {
   const [toastTick, setToastTick] = useState(0);
   const [resetKey, setResetKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [codePanel, setCodePanel] = useState(false);
 
   useEffect(() => {
     window.history.replaceState({ step }, '');
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [step]);
 
   useEffect(() => {
@@ -99,40 +102,72 @@ export function Questionnaire() {
   useEffect(() => {
     if (!import.meta.env.DEV) return undefined;
 
-    async function handleSpeedrun(event) {
+    function handleShortcut(event) {
       if (!(event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'd')) {
         return;
       }
       event.preventDefault();
-
-      const { DEV_SPEEDRUN } = await import('../../data/devSpeedrun.js');
-      const nextResponse = {
-        ...emptyResponse(),
-        ...DEV_SPEEDRUN,
-        responseId: crypto.randomUUID(),
-        timestamp: new Date().toISOString(),
-        processingConsent: {
-          agreed: true,
-          agreedAt: new Date().toISOString(),
-        },
-      };
-
-      setResetKey((key) => key + 1);
-      writeMyCustomReason(
-        nextResponse.customCriterion,
-        nextResponse.customCriterionPublic,
-      );
-      writeMyOpenNote(
-        nextResponse.openDescription?.text,
-        nextResponse.openDescription?.publicDisplay,
-      );
-      persist(STEPS.QUESTION_7, nextResponse);
-      showToast(SPEEDRUN_TOAST);
+      setCodePanel((open) => !open);
     }
 
-    window.addEventListener('keydown', handleSpeedrun);
-    return () => window.removeEventListener('keydown', handleSpeedrun);
+    window.addEventListener('keydown', handleShortcut);
+    return () => window.removeEventListener('keydown', handleShortcut);
   }, []);
+
+  async function loadFromRankingCode(code) {
+    const result = await fetch(
+      `/api/responses?id=${encodeURIComponent(code)}&fill=1`,
+    );
+    let body = null;
+    try {
+      body = await result.json();
+    } catch {
+      body = null;
+    }
+    if (!result.ok) {
+      throw new Error(body?.error ?? 'Unknown code.');
+    }
+
+    const nextResponse = {
+      ...emptyResponse(),
+      processingConsent: {
+        agreed: true,
+        agreedAt: new Date().toISOString(),
+      },
+      initialAssociation: body.initialAssociation ?? null,
+      initialCriteria: Array.isArray(body.initialCriteria)
+        ? body.initialCriteria
+        : [],
+      customCriterion: body.customCriterion ?? '',
+      customCriterionPublic: Boolean(body.customCriterionPublic),
+      sortBuckets: body.sortBuckets ?? null,
+      spectrum: body.spectrum ?? null,
+      mostVegetable: body.mostVegetable ?? null,
+      openDescription: body.openDescription ?? {
+        text: '',
+        publicDisplay: false,
+      },
+      background: body.background ?? emptyResponse().background,
+      submittedId: body.id,
+    };
+
+    setResetKey((key) => key + 1);
+    writeMyCustomReason(
+      nextResponse.customCriterion,
+      nextResponse.customCriterionPublic,
+    );
+    writeMyOpenNote(
+      nextResponse.openDescription?.text,
+      nextResponse.openDescription?.publicDisplay,
+    );
+    writeMyResponse(body.id, nextResponse);
+    persist(
+      step === STEPS.THANKS ? STEPS.THANKS : STEPS.QUESTION_7,
+      nextResponse,
+    );
+    setCodePanel(false);
+    showToast(FILL_TOAST);
+  }
 
   function handleConsent({ processingConsent }) {
     persist(STEPS.QUESTION_1, {
@@ -237,6 +272,7 @@ export function Questionnaire() {
 
   return (
     <main className="questionnaire">
+      {codePanel ? <RankingCodeFill onLoad={loadFromRankingCode} /> : null}
       <div className="questionnaire-inner" key={`${step}-${resetKey}`}>
         {step === STEPS.CONSENT ? (
           <PrivacyConsent

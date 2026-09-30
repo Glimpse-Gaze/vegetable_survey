@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { startTransition, useEffect, useRef, useState } from 'react';
 import mapMarkup from '../../assets/map/World_Equal.svg?raw';
 import { LIVE_COUNTRIES, VOTE_THRESHOLD } from '../../data/resultsMock.js';
 
@@ -65,6 +65,7 @@ export function WorldMap({ selectedId, onSelect }) {
   const [tip, setTip] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [panning, setPanning] = useState(false);
+  const tipEl = useRef(null);
 
   useEffect(() => {
     onSelectRef.current = onSelect;
@@ -81,7 +82,9 @@ export function WorldMap({ selectedId, onSelect }) {
     const live = iso3 ? LIVE_BY_ISO3[iso3] : null;
     if (!live) return;
     const current = selectedRef.current;
-    onSelectRef.current(live.id === current ? 'global' : live.id);
+    startTransition(() => {
+      onSelectRef.current(live.id === current ? 'global' : live.id);
+    });
   }
 
   useEffect(() => {
@@ -126,11 +129,10 @@ export function WorldMap({ selectedId, onSelect }) {
     }
 
     function onMove(event) {
-      setTip((current) =>
-        current
-          ? { ...current, x: event.clientX, y: event.clientY }
-          : current,
-      );
+      const el = tipEl.current;
+      if (!el) return;
+      el.style.left = `${event.clientX + 14}px`;
+      el.style.top = `${event.clientY + 14}px`;
     }
 
     function onLeave() {
@@ -139,7 +141,8 @@ export function WorldMap({ selectedId, onSelect }) {
 
     function onClick(event) {
       if (zoomRef.current > 1) return;
-      selectLiveGroup(event.currentTarget);
+      const group = event.target.closest?.('.country > g');
+      if (group) selectLiveGroup(group);
     }
 
     for (const group of groups) {
@@ -152,8 +155,9 @@ export function WorldMap({ selectedId, onSelect }) {
       group.addEventListener('pointerenter', onEnter);
       group.addEventListener('pointermove', onMove);
       group.addEventListener('pointerleave', onLeave);
-      group.addEventListener('click', onClick);
     }
+
+    svg.addEventListener('click', onClick);
 
     svg.querySelectorAll('title').forEach((node) => node.remove());
 
@@ -162,8 +166,8 @@ export function WorldMap({ selectedId, onSelect }) {
         group.removeEventListener('pointerenter', onEnter);
         group.removeEventListener('pointermove', onMove);
         group.removeEventListener('pointerleave', onLeave);
-        group.removeEventListener('click', onClick);
       }
+      svg.removeEventListener('click', onClick);
       groupsRef.current = [];
       svgRef.current = null;
       host.innerHTML = '';
@@ -297,6 +301,7 @@ export function WorldMap({ selectedId, onSelect }) {
       </div>
       {tip ? (
         <div
+          ref={tipEl}
           className="world-map-tip"
           style={{ left: tip.x + 14, top: tip.y + 14 }}
         >

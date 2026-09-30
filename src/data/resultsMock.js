@@ -15,6 +15,9 @@ import tomato from '../content/Tomato.jpg';
 import turnip from '../content/Turnips.jpg';
 import placeholder from '../content/Placeholder.png';
 import { DEV_SPEEDRUN } from './devSpeedrun.js';
+import { vegetables } from './vegetables.js';
+import { findCanonicalMatch } from '../utils/autocomplete.js';
+import { normalizeText } from '../utils/normalization.js';
 import { getSpectrumSection } from './spectrumResults.js';
 import { getReasonsSection } from './reasonResults.js';
 import { getNotesSection } from './noteResults.js';
@@ -50,6 +53,47 @@ export const VEGETABLE_LABELS = {
   tomato: 'Tomato',
   turnip: 'Turnip',
 };
+
+const CATALOGUE_NAMES = Object.fromEntries(
+  vegetables.map((item) => [item.id, item.name]),
+);
+
+/** Blades show this many leaders per region. Tune between 10 and 15. */
+export const BLADE_BOARD_SIZE = 12;
+
+function displayVoteName(answer) {
+  const raw = String(answer?.rawAnswer ?? '').trim();
+  if (raw) return raw;
+  const id = answer?.canonicalId;
+  return VEGETABLE_LABELS[id] ?? CATALOGUE_NAMES[id] ?? null;
+}
+
+function resolveVoteId(canonicalId, rawAnswer) {
+  if (canonicalId) return canonicalId;
+  return findCanonicalMatch(rawAnswer, vegetables);
+}
+
+function labelForVoteId(id) {
+  return VEGETABLE_LABELS[id] ?? CATALOGUE_NAMES[id] ?? null;
+}
+
+function humanizeVoteId(id) {
+  return String(id ?? '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function findRankedPick(ranked, userVoteId, userVoteName) {
+  if (userVoteId) {
+    const byId = ranked.find((item) => item.id === userVoteId);
+    if (byId) return byId;
+  }
+  const q = normalizeText(userVoteName);
+  if (!q) return null;
+  return (
+    ranked.find((item) => normalizeText(item.name) === q) ?? null
+  );
+}
 
 const BOARDS = {
   global: {
@@ -343,6 +387,7 @@ function overlayCategory(category, answers) {
     return {
       ...category,
       userVoteId: null,
+      userVoteName: null,
       userCriteria: [],
       userSpectrum: [],
       userBuckets: {},
@@ -350,14 +395,20 @@ function overlayCategory(category, answers) {
     };
   }
 
-  const userVoteId =
+  const association =
     category.id === 'most-vegetable'
-      ? answers.mostVegetable?.canonicalId ?? null
-      : answers.initialAssociation?.canonicalId ?? null;
+      ? answers.mostVegetable
+      : answers.initialAssociation;
+  const userVoteId = resolveVoteId(
+    association?.canonicalId,
+    association?.rawAnswer,
+  );
 
   return {
     ...category,
     userVoteId,
+    userVoteName:
+      displayVoteName(association) ?? labelForVoteId(userVoteId),
     userCriteria: answers.initialCriteria ?? [],
     userSpectrum: answers.spectrum ?? [],
     userBuckets: userBucketsFromAnswers(answers),
@@ -441,11 +492,11 @@ function rankBoard(votesById) {
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([id, votes], index) => ({
       id,
-      name: VEGETABLE_LABELS[id],
-      art: VEGETABLE_ART[id],
+      name: labelForVoteId(id) ?? humanizeVoteId(id),
+      art: VEGETABLE_ART[id] ?? placeholder,
       votes,
       total,
-      share: votes / total,
+      share: total ? votes / total : 0,
       rank: index + 1,
     }));
 }
@@ -604,10 +655,19 @@ export function getSection(categoryId, regionId, userAnswers = null) {
     return getNotesSection(category, region);
   }
   const votes = BOARDS[region.id]?.[category.id] ?? BOARDS.global[category.id];
+  const ranked = rankBoard(votes);
+  const items = ranked.slice(0, BLADE_BOARD_SIZE);
+  const userRanked = findRankedPick(
+    ranked,
+    category.userVoteId,
+    category.userVoteName,
+  );
   return {
     ...category,
     region,
-    items: rankBoard(votes),
+    items,
+    userRanked,
+    userOnBoard: Boolean(userRanked && userRanked.rank <= items.length),
     responseCount: region.votes,
   };
 }

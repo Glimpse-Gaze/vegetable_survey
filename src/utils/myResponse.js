@@ -1,10 +1,12 @@
 const RESPONSE_ID_KEY = 'veg-survey-response-id';
 const ANSWERS_KEY = 'veg-survey-my-answers';
-const RESPONSE_ID =
+const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const SHORT_CODE = /^[0-9A-Za-z]{12}$/;
 
 export function isResponseId(value) {
-  return RESPONSE_ID.test(String(value ?? ''));
+  const code = String(value ?? '').trim();
+  return UUID.test(code) || SHORT_CODE.test(code);
 }
 
 export function snapshotAnswers(payload) {

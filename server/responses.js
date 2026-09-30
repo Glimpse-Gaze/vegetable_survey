@@ -1,12 +1,17 @@
 import { neon } from '@neondatabase/serverless';
 import { consumeRateLimit } from './rateLimit.js';
+import {
+  generateRankingCode,
+  isPublicResponseCode,
+  isUuid,
+  publicResponseId,
+} from './rankingCode.js';
 
 const MAX_BODY_BYTES = 200_000;
 const MAX_DEV_MESSAGE = 1000;
-const RESPONSE_ID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 let ensuredDevColumn = false;
+let ensuredRankingCode = false;
 
 function isPlainObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
@@ -65,6 +70,55 @@ export async function ensureDeveloperMessageColumn(databaseUrl) {
   ensuredDevColumn = true;
 }
 
+export async function ensureRankingCodeColumn(databaseUrl) {
+  if (ensuredRankingCode) return;
+  const sql = neon(databaseUrl);
+  await sql`
+    ALTER TABLE responses
+    ADD COLUMN IF NOT EXISTS ranking_code text
+  `;
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS responses_ranking_code_idx
+    ON responses (ranking_code)
+    WHERE ranking_code IS NOT NULL
+  `;
+  ensuredRankingCode = true;
+}
+
+export async function findResponseRow(id, databaseUrl) {
+  const code = String(id ?? '').trim();
+  if (!isPublicResponseCode(code)) return null;
+  await ensureRankingCodeColumn(databaseUrl);
+  const sql = neon(databaseUrl);
+  if (isUuid(code)) {
+    const rows = await sql`
+      SELECT id, ranking_code, payload
+      FROM responses
+      WHERE id = ${code}
+      LIMIT 1
+    `;
+    return rows[0] ?? null;
+  }
+  const rows = await sql`
+    SELECT id, ranking_code, payload
+    FROM responses
+    WHERE ranking_code = ${code}
+    LIMIT 1
+  `;
+  return rows[0] ?? null;
+}
+
+async function uniqueRankingCode(sql) {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const code = generateRankingCode();
+    const rows = await sql`
+      SELECT 1 FROM responses WHERE ranking_code = ${code} LIMIT 1
+    `;
+    if (!rows.length) return code;
+  }
+  throw new Error('Could not mint a ranking code.');
+}
+
 export async function insertResponse(payload, databaseUrl) {
   const serialized = JSON.stringify(payload);
   if (serialized.length > MAX_BODY_BYTES) {
@@ -73,51 +127,74 @@ export async function insertResponse(payload, databaseUrl) {
 
   validateResponsePayload(payload);
   await ensureDeveloperMessageColumn(databaseUrl);
+  await ensureRankingCodeColumn(databaseUrl);
   const sql = neon(databaseUrl);
   const publicDisplay = Boolean(payload.openDescription?.publicDisplay);
+  const rankingCode = await uniqueRankingCode(sql);
   const rows = await sql`
-    INSERT INTO responses (payload, public_display)
-    VALUES (${serialized}::jsonb, ${publicDisplay})
-    RETURNING id, created_at
+    INSERT INTO responses (payload, public_display, ranking_code)
+    VALUES (${serialized}::jsonb, ${publicDisplay}, ${rankingCode})
+    RETURNING id, ranking_code, created_at
   `;
 
-  return rows[0];
+  return {
+    id: publicResponseId(rows[0]),
+    created_at: rows[0].created_at,
+  };
 }
 
 export async function lookupComparison(id, databaseUrl) {
-  if (!RESPONSE_ID.test(String(id ?? ''))) {
-    const error = new Error('Unknown code.');
-    error.status = 404;
-    throw error;
-  }
-  const sql = neon(databaseUrl);
-  const rows = await sql`
-    SELECT id, payload
-    FROM responses
-    WHERE id = ${id}
-    LIMIT 1
-  `;
-  if (!rows.length) {
+  const row = await findResponseRow(id, databaseUrl);
+  if (!row) {
     const error = new Error('Unknown code.');
     error.status = 404;
     throw error;
   }
   return {
-    id: rows[0].id,
-    ...comparisonFromPayload(rows[0].payload),
+    id: publicResponseId(row),
+    ...comparisonFromPayload(row.payload),
   };
 }
 
+export function fillFromPayload(payload, publicId) {
+  const publicCustom = Boolean(payload?.customCriterionPublic);
+  return {
+    id: publicId,
+    initialAssociation: payload?.initialAssociation ?? null,
+    initialCriteria: Array.isArray(payload?.initialCriteria)
+      ? payload.initialCriteria
+      : [],
+    customCriterion: payload?.customCriterion ?? '',
+    customCriterionPublic: publicCustom,
+    sortBuckets: payload?.sortBuckets ?? null,
+    spectrum: Array.isArray(payload?.spectrum) ? payload.spectrum : [],
+    mostVegetable: payload?.mostVegetable ?? null,
+    openDescription: payload?.openDescription ?? {
+      text: '',
+      publicDisplay: false,
+    },
+    background: payload?.background ?? null,
+  };
+}
+
+export async function lookupFillPayload(id, databaseUrl) {
+  const row = await findResponseRow(id, databaseUrl);
+  if (!row) {
+    const error = new Error('Unknown code.');
+    error.status = 404;
+    throw error;
+  }
+  return fillFromPayload(row.payload, publicResponseId(row));
+}
+
+export async function resolveResponseUuid(id, databaseUrl) {
+  const row = await findResponseRow(id, databaseUrl);
+  return row ? String(row.id) : null;
+}
+
 export async function responseExists(id, databaseUrl) {
-  if (!RESPONSE_ID.test(String(id ?? ''))) return false;
-  const sql = neon(databaseUrl);
-  const rows = await sql`
-    SELECT 1
-    FROM responses
-    WHERE id = ${id}
-    LIMIT 1
-  `;
-  return rows.length > 0;
+  const row = await findResponseRow(id, databaseUrl);
+  return Boolean(row);
 }
 
 export async function insertResponseLimited(payload, databaseUrl, bucket) {
@@ -126,7 +203,8 @@ export async function insertResponseLimited(payload, databaseUrl, bucket) {
 }
 
 export async function saveDeveloperMessage(id, message, databaseUrl) {
-  if (!RESPONSE_ID.test(String(id ?? ''))) {
+  const row = await findResponseRow(id, databaseUrl);
+  if (!row) {
     const error = new Error('Unknown code.');
     error.status = 404;
     throw error;
@@ -136,21 +214,22 @@ export async function saveDeveloperMessage(id, message, databaseUrl) {
     throw new Error('Write a little something, or skip this.');
   }
 
-  await consumeRateLimit(databaseUrl, `devnote:${id}`, 8, 15 * 60);
+  const uuid = String(row.id);
+  await consumeRateLimit(databaseUrl, `devnote:${uuid}`, 8, 15 * 60);
   await ensureDeveloperMessageColumn(databaseUrl);
   const sql = neon(databaseUrl);
   const rows = await sql`
     UPDATE responses
     SET developer_message = ${trimmed}
-    WHERE id = ${id}
-    RETURNING id
+    WHERE id = ${uuid}
+    RETURNING id, ranking_code
   `;
   if (!rows.length) {
     const error = new Error('Unknown code.');
     error.status = 404;
     throw error;
   }
-  return { id: rows[0].id };
+  return { id: publicResponseId(rows[0]) };
 }
 
 export async function readJsonBody(req) {

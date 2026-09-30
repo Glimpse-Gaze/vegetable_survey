@@ -429,6 +429,14 @@
   -webkit-user-drag: none;
 }
 
+.blade-scrim,
+.blade-copy,
+.blade-meter,
+.blade-crown,
+.blade-badge {
+  pointer-events: none;
+}
+
 .blade-scrim {
   position: absolute;
   inset: 28% 0 0;
@@ -1644,17 +1652,17 @@
   background: var(--tomato);
 }
 
-.bucket-card.is-in_between .bucket-card-summary strong,
-.bucket-card.is-in_between .bucket-row.is-leader .bucket-row-name {
+.bucket-card.is-in_between .bucket-card-summary strong {
   color: var(--carrot);
 }
 
+.bucket-card.is-in_between .bucket-row.is-leader .bucket-row-name,
 .bucket-card.is-in_between .bucket-row.is-leader .bucket-row-rank {
   color: var(--carrot-deep);
 }
 
 .bucket-card.is-in_between .bucket-row.is-leader {
-  background: var(--carrot-soft);
+  background: var(--carrot-wash);
   outline-color: var(--carrot);
 }
 
