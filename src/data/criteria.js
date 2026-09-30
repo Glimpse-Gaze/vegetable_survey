@@ -1,8 +1,8 @@
 export const criteria = [
   { id: 'green', label: "It's green" },
-  { id: 'plant', label: "It's a plant" },
-  { id: 'underground', label: 'It grows from the ground' },
-  { id: 'edible', label: "It's edible" },
+  { id: 'plant', label: "It's not a fruit" },
+  { id: 'underground', label: 'It grows underground' },
+  { id: 'edible', label: 'It has leaves' },
   { id: 'cooking', label: "It's used in cooking" },
   { id: 'savoury', label: "It's usually used in savoury dishes" },
   { id: 'healthy', label: "It's healthy" },
@@ -15,6 +15,8 @@ export const criteria = [
   { id: 'just_feels', label: 'It just feels vegetabley' },
   { id: 'other', label: 'Something else' },
 ];
+
+export const MAX_CUSTOM_CRITERION = 50;
 
 const PINNED_CRITERIA_IDS = ['just_feels', 'other'];
 

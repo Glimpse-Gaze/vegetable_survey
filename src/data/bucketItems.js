@@ -28,9 +28,14 @@ export const bucketItems = [
   { id: 'avocado', name: 'Avocado', family: 'Lauraceae' },
   { id: 'mushroom', name: 'Mushroom', family: 'Fungi' },
   { id: 'rhubarb', name: 'Rhubarb', family: 'Polygonaceae' },
-  { id: 'ginger', name: 'Ginger', family: 'Zingiberaceae' },
+  { id: 'turmeric', name: 'Turmeric', family: 'Zingiberaceae' },
   { id: 'cinnamon', name: 'Cinnamon', family: 'Lauraceae' },
   { id: 'tobacco', name: 'Tobacco', family: 'Solanaceae' },
+  { id: 'bell_pepper', name: 'Bell pepper', family: 'Solanaceae' },
+  { id: 'horseradish', name: 'Horseradish', family: 'Brassicaceae' },
+  { id: 'pea', name: 'Pea', family: 'Fabaceae' },
+  { id: 'pak_choi', name: 'Pak choi', family: 'Brassicaceae' },
+  { id: 'rocket', name: 'Rocket', family: 'Brassicaceae' },
 ];
 
 export function emptyBuckets() {

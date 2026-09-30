@@ -189,18 +189,24 @@ export function Question7({
             placeholder="Country, region, or continent..."
             autoFocus={false}
           />
-          <button
-            className="disclose-button"
-            type="button"
-            onClick={() =>
-              handlePlacePick({
-                id: DISCLOSE_ID,
-                name: 'I prefer not to disclose',
-              })
-            }
-          >
-            I prefer not to disclose
-          </button>
+          <label className="disclose-check">
+            <input
+              type="checkbox"
+              checked={placePicked?.id === DISCLOSE_ID}
+              onChange={(event) => {
+                if (event.target.checked) {
+                  handlePlacePick({
+                    id: DISCLOSE_ID,
+                    name: 'I prefer not to disclose',
+                  });
+                  return;
+                }
+                setPlaceValue('');
+                setPlacePicked(null);
+              }}
+            />
+            <span>I prefer not to disclose</span>
+          </label>
         </div>
 
         <div className="background-field">
@@ -231,13 +237,26 @@ export function Question7({
             placeholder="Type a language, then Enter..."
             autoFocus={false}
           />
-          <button
-            className="disclose-button"
-            type="button"
-            onClick={() => addLanguage({ id: DISCLOSE_ID, name: 'I prefer not to disclose' })}
-          >
-            I prefer not to disclose
-          </button>
+          <label className="disclose-check">
+            <input
+              type="checkbox"
+              checked={
+                languageItems.length === 1 &&
+                languageItems[0]?.canonicalId === DISCLOSE_ID
+              }
+              onChange={(event) => {
+                if (event.target.checked) {
+                  addLanguage({
+                    id: DISCLOSE_ID,
+                    name: 'I prefer not to disclose',
+                  });
+                  return;
+                }
+                setLanguageItems([]);
+              }}
+            />
+            <span>I prefer not to disclose</span>
+          </label>
         </div>
 
         <QuestionNav
