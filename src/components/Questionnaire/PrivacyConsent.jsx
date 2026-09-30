@@ -34,7 +34,7 @@ export function PrivacyConsent({ onContinue, onBack }) {
             One question includes a free-form written answer. It will only shown publicly if you agree to it through a checkbox; otherwise it stays in
             the research set only.
             The last, optional question, asks about your region and language. This is only used to add nuance to the results and is entirely optional.
-            We do not ask about your name, email, and we don't collect your IP address. Your answers will be stored anonymously and will not be linked to you in any way.
+            We do not ask about your name, email, and we don't collect your IP address with your answers. We may briefly count requests so the vote buttons cannot be flooded. Your answers will be stored anonymously and will not be linked to you in any way.
           </p>
           <label className="public-consent">
             <input

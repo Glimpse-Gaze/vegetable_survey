@@ -8,8 +8,9 @@ import {
   applyMyAnswerToRows,
   readMyCustomReason,
 } from '../../utils/myCustomReason.js';
+import { readMyResponseId } from '../../utils/myResponse.js';
+import { SurveyNudge } from './SurveyGate.jsx';
 
-const VISITOR_KEY = 'veg-survey-visitor';
 const MY_VOTES_KEY = 'veg-survey-reason-votes';
 const TAP_MS = 280;
 const HOLD_MS = 500;
@@ -26,19 +27,6 @@ function formatShare(share) {
   const pct = share * 100;
   if (pct < 1) return '<1%';
   return `${Math.round(pct)}%`;
-}
-
-function readVisitorId() {
-  try {
-    let id = localStorage.getItem(VISITOR_KEY);
-    if (!id) {
-      id = crypto.randomUUID();
-      localStorage.setItem(VISITOR_KEY, id);
-    }
-    return id;
-  } catch {
-    return crypto.randomUUID();
-  }
 }
 
 function readMyVotes() {
@@ -91,11 +79,9 @@ function netsFromScores(scores) {
   );
 }
 
-function snapshotRows(pool, nets = {}, myText = '') {
-  return applyMyAnswerToRows(
-    layoutCommentRows(rankComments(pool, nets), COMMENT_DISPLAY_COUNT),
-    myText,
-  );
+function snapshotRows(pool, nets = {}, myText = '', pinMine = true) {
+  const rows = layoutCommentRows(rankComments(pool, nets), COMMENT_DISPLAY_COUNT);
+  return pinMine ? applyMyAnswerToRows(rows, myText) : rows;
 }
 
 function pointFromEvent(event) {
@@ -112,7 +98,7 @@ function pointFromEvent(event) {
   };
 }
 
-function DriftRow({ row, myVotes, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
+function DriftRow({ row, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
   const loop = [...row.items, ...row.items];
 
   return (
@@ -131,9 +117,11 @@ function DriftRow({ row, myVotes, onVote, onHoldStart, onHoldMove, onHoldEnd }) 
               mine === 1 ? 'is-liked' : '',
               mine === -1 ? 'is-disliked' : '',
               item.isMine ? 'is-mine' : '',
+              canVote ? '' : 'is-locked',
             ]
               .filter(Boolean)
               .join(' ')}
+            disabled={!canVote}
             data-comment-id={item.id}
             data-boosts={item.score}
             aria-pressed={mine === 1}
@@ -142,15 +130,29 @@ function DriftRow({ row, myVotes, onVote, onHoldStart, onHoldMove, onHoldEnd }) 
             }${
               mine === 1 ? 'Liked' : mine === -1 ? 'Sunk' : 'Not voted'
             }. Click to like, double-click, right-click, or hold to sink.`}
-            onPointerDown={(event) => onHoldStart(event, item.id)}
-            onPointerMove={(event) => onHoldMove(event)}
+            onPointerDown={(event) => {
+              if (!canVote) return;
+              onHoldStart(event, item.id);
+            }}
+            onPointerMove={(event) => {
+              if (!canVote) return;
+              onHoldMove(event);
+            }}
             onPointerUp={(event) => {
+              if (!canVote) return;
               onHoldEnd();
               onVote(event, item.id);
             }}
-            onPointerCancel={() => onHoldEnd()}
-            onContextMenu={(event) => onVote(event, item.id)}
+            onPointerCancel={() => {
+              if (!canVote) return;
+              onHoldEnd();
+            }}
+            onContextMenu={(event) => {
+              if (!canVote) return;
+              onVote(event, item.id);
+            }}
             onKeyDown={(event) => {
+              if (!canVote) return;
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 onVote(event, item.id);
@@ -168,12 +170,18 @@ function DriftRow({ row, myVotes, onVote, onHoldStart, onHoldMove, onHoldEnd }) 
   );
 }
 
-export function ReasonResults({ section }) {
-  const visitorId = useMemo(() => readVisitorId(), []);
-  const myReason = useMemo(() => readMyCustomReason(), []);
+export function ReasonResults({ section, viewingOwn = true }) {
+  const responseId = useMemo(() => readMyResponseId(), []);
+  const canVote = Boolean(responseId);
+  const myReason = useMemo(
+    () => (viewingOwn ? readMyCustomReason() : ''),
+    [viewingOwn],
+  );
   const pool = section.commentPool ?? [];
   const [myVotes, setMyVotes] = useState(readMyVotes);
-  const [rows, setRows] = useState(() => snapshotRows(pool, {}, myReason));
+  const [rows, setRows] = useState(() =>
+    snapshotRows(pool, {}, myReason, viewingOwn),
+  );
   const tapTimer = useRef(0);
   const tapTarget = useRef(null);
   const tapPoint = useRef(null);
@@ -196,7 +204,7 @@ export function ReasonResults({ section }) {
         if (!result.ok) return;
         const body = await result.json();
         if (cancelled || layoutLocked.current || !body?.scores) return;
-        setRows(snapshotRows(pool, netsFromScores(body.scores), myReason));
+        setRows(snapshotRows(pool, netsFromScores(body.scores), myReason, viewingOwn));
       } catch {
         // keep the seed snapshot
       } finally {
@@ -208,7 +216,7 @@ export function ReasonResults({ section }) {
     return () => {
       cancelled = true;
     };
-  }, [pool, myReason]);
+  }, [pool, myReason, viewingOwn]);
 
   useEffect(
     () => () => {
@@ -249,6 +257,7 @@ export function ReasonResults({ section }) {
   }
 
   function applyVote(commentId, nextValue, point) {
+    if (!responseId) return;
     const votesNow = readMyVotes();
     const previous = votesNow[commentId] ?? 0;
     if (previous === nextValue) return;
@@ -274,7 +283,7 @@ export function ReasonResults({ section }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         commentId,
-        visitorId,
+        responseId,
         value: nextValue,
       }),
     }).catch(() => {
@@ -294,8 +303,9 @@ export function ReasonResults({ section }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        visitorId,
+        responseId,
         reset: true,
+        family: 'reasons',
       }),
     }).catch(() => {
       // markings already cleared locally
@@ -453,12 +463,14 @@ export function ReasonResults({ section }) {
 
       <div className="reason-drift-wrap">
         <h2 className="reason-drift-title">Custom user answers</h2>
+        {canVote ? null : <SurveyNudge kind="vote" />}
         <div className="reason-drift" aria-label="Custom user answers">
           {rows.map((row) => (
             <DriftRow
               key={row.id}
               row={row}
               myVotes={myVotes}
+              canVote={canVote}
               onVote={onVote}
               onHoldStart={onHoldStart}
               onHoldMove={onHoldMove}
@@ -477,7 +489,7 @@ export function ReasonResults({ section }) {
           <button
             className="reason-reset"
             type="button"
-            disabled={!Object.keys(myVotes).length}
+            disabled={!canVote || !Object.keys(myVotes).length}
             onClick={resetVotes}
           >
             Reset input

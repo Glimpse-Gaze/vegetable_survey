@@ -1,9 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { WorldMap } from '../components/Results/WorldMap.jsx';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
+import { NoteResults } from '../components/Results/NoteResults.jsx';
+import { ResponseCodeCard, SurveyNudge } from '../components/Results/SurveyGate.jsx';
+import {
+  isResponseId,
+  readMyAnswers,
+  readMyResponseId,
+} from '../utils/myResponse.js';
 import {
   CATEGORIES,
   getCategory,
@@ -371,12 +378,19 @@ function RankRail({ section, pauseAutoplay }) {
 export function Results() {
   const navigate = useNavigate();
   const { categoryId } = useParams();
+  const [searchParams] = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
   const [regionId, setRegionId] = useState('global');
+  const [sharedAnswers, setSharedAnswers] = useState(null);
+  const codeParam = searchParams.get('code');
+  const myResponseId = useMemo(() => readMyResponseId(), []);
+  const myAnswers = useMemo(() => readMyAnswers(), []);
+  const viewingOther = isResponseId(codeParam) && codeParam !== myResponseId;
+  const userAnswers = viewingOther ? sharedAnswers : myAnswers;
   const category = getCategory(categoryId);
   const section = useMemo(
-    () => getSection(category.id, regionId),
-    [category.id, regionId],
+    () => getSection(category.id, regionId, userAnswers),
+    [category.id, regionId, userAnswers],
   );
   const nextId = nextCategoryId(category.id);
   const alignment =
@@ -386,8 +400,32 @@ export function Results() {
   const bladesRef = useRef(null);
 
   useEffect(() => {
+    if (!isResponseId(codeParam) || codeParam === myResponseId) {
+      setSharedAnswers(null);
+      return undefined;
+    }
+    let cancelled = false;
+    fetch(`/api/responses?id=${encodeURIComponent(codeParam)}`)
+      .then((result) => (result.ok ? result.json() : null))
+      .then((body) => {
+        if (!cancelled) setSharedAnswers(body);
+      })
+      .catch(() => {
+        if (!cancelled) setSharedAnswers(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [codeParam, myResponseId]);
+
+  useEffect(() => {
     if (categoryId && categoryId !== category.id) {
-      navigate('/results/first-instincts', { replace: true });
+      navigate(
+        codeParam
+          ? `/results/first-instincts?code=${encodeURIComponent(codeParam)}`
+          : '/results/first-instincts',
+        { replace: true },
+      );
     }
   }, [category, categoryId, navigate]);
 
@@ -406,7 +444,12 @@ export function Results() {
 
   function goTo(id) {
     setMenuOpen(false);
-    navigate(`/results/${id}`);
+    const code = searchParams.get('code');
+    navigate(
+      code
+        ? `/results/${id}?code=${encodeURIComponent(code)}`
+        : `/results/${id}`,
+    );
   }
 
   function revealBlades() {
@@ -506,7 +549,7 @@ export function Results() {
           {category.layout === 'buckets' ? (
             <BucketColumns section={section} />
           ) : category.layout === 'reasons' ? (
-            <ReasonResults section={section} />
+            <ReasonResults section={section} viewingOwn={!viewingOther} />
           ) : category.layout === 'spectrum' ? (
             <div className="blade-anchor" ref={bladesRef}>
               <SpectrumList
@@ -514,6 +557,8 @@ export function Results() {
                 section={section}
               />
             </div>
+          ) : category.layout === 'notes' ? (
+            <NoteResults section={section} viewingOwn={!viewingOther} />
           ) : (
             <div className="blade-anchor" ref={bladesRef}>
               <RankRail
@@ -617,6 +662,15 @@ export function Results() {
               </Link>
             </div>
           )}
+
+          <div className="results-survey-foot">
+            {myResponseId ? null : <SurveyNudge />}
+            <ResponseCodeCard
+              code={viewingOther ? codeParam : myResponseId}
+              categoryId={category.id}
+              viewingOther={viewingOther}
+            />
+          </div>
         </section>
       </div>
     </div>

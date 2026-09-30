@@ -17,6 +17,7 @@ import placeholder from '../content/Placeholder.png';
 import { DEV_SPEEDRUN } from './devSpeedrun.js';
 import { getSpectrumSection } from './spectrumResults.js';
 import { getReasonsSection } from './reasonResults.js';
+import { getNotesSection } from './noteResults.js';
 
 export const VEGETABLE_ART = {
   broccoli,
@@ -325,50 +326,43 @@ const BUCKET_ITEM_VOTES = {
   lotus_root: { not_vegetable: 175, in_between: 245, definitely_vegetable: 280 },
 };
 
-const USER_BUCKETS = {
-  rhubarb: 'not_vegetable',
-  cinnamon: 'not_vegetable',
-  garlic: 'not_vegetable',
-  turmeric: 'not_vegetable',
-  tobacco: 'not_vegetable',
-  mushroom: 'not_vegetable',
-  horseradish: 'not_vegetable',
-  pumpkin: 'in_between',
-  cucumber: 'in_between',
-  avocado: 'in_between',
-  olive: 'in_between',
-  tomato: 'in_between',
-  potato: 'definitely_vegetable',
-  cabbage: 'definitely_vegetable',
-  spinach: 'definitely_vegetable',
-  broccoli: 'definitely_vegetable',
-  soybean: 'definitely_vegetable',
-  lotus_root: 'definitely_vegetable',
-  carrot: 'definitely_vegetable',
-  bamboo_shoot: 'definitely_vegetable',
-  onion: 'definitely_vegetable',
-  bell_pepper: 'definitely_vegetable',
-  pea: 'definitely_vegetable',
-  pak_choi: 'definitely_vegetable',
-  rocket: 'definitely_vegetable',
-};
-
 const BUCKET_ITEM_LABELS = Object.fromEntries(
   bucketItems.map((item) => [item.id, item.name]),
 );
 
-function rankBucketColumn(votesById, total, columnId) {
-  return Object.entries(votesById)
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, 5)
-    .map(([id, votes], index) => ({
-      id,
-      name: BUCKET_ITEM_LABELS[id] ?? id,
-      votes,
-      share: votes / total,
-      rank: index + 1,
-      isYours: USER_BUCKETS[id] === columnId,
-    }));
+function userBucketsFromAnswers(answers) {
+  const map = {};
+  for (const [column, ids] of Object.entries(answers?.sortBuckets ?? {})) {
+    for (const id of ids ?? []) map[id] = column;
+  }
+  return map;
+}
+
+function overlayCategory(category, answers) {
+  if (!answers) {
+    return {
+      ...category,
+      userVoteId: null,
+      userCriteria: [],
+      userSpectrum: [],
+      userBuckets: {},
+      userNoteText: '',
+    };
+  }
+
+  const userVoteId =
+    category.id === 'most-vegetable'
+      ? answers.mostVegetable?.canonicalId ?? null
+      : answers.initialAssociation?.canonicalId ?? null;
+
+  return {
+    ...category,
+    userVoteId,
+    userCriteria: answers.initialCriteria ?? [],
+    userSpectrum: answers.spectrum ?? [],
+    userBuckets: userBucketsFromAnswers(answers),
+    userNoteText: answers.openDescription?.text ?? '',
+  };
 }
 
 function votesForColumn(columnId) {
@@ -391,12 +385,28 @@ function lookupRows(itemId) {
   }));
 }
 
+function rankBucketColumn(votesById, total, columnId, userBuckets) {
+  return Object.entries(votesById)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 5)
+    .map(([id, votes], index) => ({
+      id,
+      name: BUCKET_ITEM_LABELS[id] ?? id,
+      votes,
+      share: votes / total,
+      rank: index + 1,
+      isYours: userBuckets[id] === columnId,
+    }));
+}
+
 function getBucketSection(category, region) {
+  const userBuckets = category.userBuckets ?? {};
   const columns = BUCKET_COLUMNS.map((column) => {
     const items = rankBucketColumn(
       votesForColumn(column.id),
       BUCKET_RESPONDENTS,
       column.id,
+      userBuckets,
     );
     const leader = items[0];
     return {
@@ -417,7 +427,7 @@ function getBucketSection(category, region) {
       .map((item) => ({
         id: item.id,
         name: item.name,
-        userBucket: USER_BUCKETS[item.id] ?? null,
+        userBucket: userBuckets[item.id] ?? null,
         rows: lookupRows(item.id),
       })),
     items: [],
@@ -480,6 +490,15 @@ export const CATEGORIES = [
     prompt: 'What feels most vegetabley?',
     layout: 'blades',
     userVoteId: 'turnip',
+  },
+  {
+    id: 'vegetabley-words',
+    eyebrow: 'Question 6',
+    title: 'What makes something feel vegetabley?',
+    prompt:
+      'People wrote freely and agreed to show it. Twenty notes at a time; the first set is the one the room is keeping.',
+    layout: 'notes',
+    userNoteText: DEV_SPEEDRUN.openDescription.text,
   },
 ];
 
@@ -569,8 +588,8 @@ function artFor(id) {
   return VEGETABLE_ART[id] ?? placeholder;
 }
 
-export function getSection(categoryId, regionId) {
-  const category = getCategory(categoryId);
+export function getSection(categoryId, regionId, userAnswers = null) {
+  const category = overlayCategory(getCategory(categoryId), userAnswers);
   const region = getRegion(regionId);
   if (category.layout === 'buckets') {
     return getBucketSection(category, region);
@@ -580,6 +599,9 @@ export function getSection(categoryId, regionId) {
   }
   if (category.layout === 'spectrum') {
     return getSpectrumSection(category, region, artFor);
+  }
+  if (category.layout === 'notes') {
+    return getNotesSection(category, region);
   }
   const votes = BOARDS[region.id]?.[category.id] ?? BOARDS.global[category.id];
   return {

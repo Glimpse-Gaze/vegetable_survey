@@ -19,7 +19,7 @@ export function BucketColumns({ section }) {
     <>
       <div className="bucket-results">
         {section.columns.map((column) => (
-          <article key={column.id} className="bucket-card">
+          <article key={column.id} className={`bucket-card is-${column.id}`}>
             <header className="bucket-card-head">
               <p className="bucket-card-kicker">Top 5</p>
               <h2 className="bucket-card-title">{column.title}</h2>
@@ -116,9 +116,12 @@ export function BucketColumns({ section }) {
                 {selected.rows.map((row) => (
                   <tr
                     key={row.id}
-                    className={
-                      row.id === selected.userBucket ? 'is-yours' : undefined
-                    }
+                    className={[
+                      row.id === selected.userBucket ? 'is-yours' : '',
+                      `is-${row.id}`,
+                    ]
+                      .filter(Boolean)
+                      .join(' ') || undefined}
                   >
                     <th scope="row">{row.title}</th>
                     <td>{formatVotes(row.votes)}</td>

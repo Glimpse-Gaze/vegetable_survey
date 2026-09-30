@@ -12,6 +12,8 @@ import { ThankYou } from './ThankYou.jsx';
 import { Toast } from './Toast.jsx';
 import { submitResponse } from '../../utils/submitResponse.js';
 import { writeMyCustomReason } from '../../utils/myCustomReason.js';
+import { writeMyOpenNote } from '../../utils/myOpenNote.js';
+import { writeMyResponse } from '../../utils/myResponse.js';
 
 const LOCK_TOAST = 'First instinct locked. No wrong answers.';
 const BACK_LOCKED_TOAST =
@@ -116,6 +118,14 @@ export function Questionnaire() {
       };
 
       setResetKey((key) => key + 1);
+      writeMyCustomReason(
+        nextResponse.customCriterion,
+        nextResponse.customCriterionPublic,
+      );
+      writeMyOpenNote(
+        nextResponse.openDescription?.text,
+        nextResponse.openDescription?.publicDisplay,
+      );
       persist(STEPS.QUESTION_7, nextResponse);
       showToast(SPEEDRUN_TOAST);
     }
@@ -178,6 +188,7 @@ export function Questionnaire() {
   }
 
   function handleQuestion6({ openDescription }) {
+    writeMyOpenNote(openDescription?.text, openDescription?.publicDisplay);
     persist(STEPS.QUESTION_7, {
       ...response,
       openDescription,
@@ -192,6 +203,11 @@ export function Questionnaire() {
       background,
     };
 
+    writeMyOpenNote(
+      nextResponse.openDescription?.text,
+      nextResponse.openDescription?.publicDisplay,
+    );
+
     setIsSubmitting(true);
     const result = await submitResponse(nextResponse);
     setIsSubmitting(false);
@@ -201,7 +217,8 @@ export function Questionnaire() {
       return;
     }
 
-    persist(STEPS.THANKS, nextResponse);
+        writeMyResponse(result.id, nextResponse);
+        persist(STEPS.THANKS, { ...nextResponse, submittedId: result.id });
   }
 
   function handleBack() {
@@ -278,7 +295,9 @@ export function Questionnaire() {
             continueHint={isSubmitting ? 'Saving your answers…' : undefined}
           />
         ) : null}
-        {step === STEPS.THANKS ? <ThankYou /> : null}
+        {step === STEPS.THANKS ? (
+          <ThankYou responseId={response.submittedId} />
+        ) : null}
       </div>
 
       <Toast message={toastMessage} visible={toastVisible} />

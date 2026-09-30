@@ -1,5 +1,4 @@
 import { criteria } from './criteria.js';
-import { DEV_SPEEDRUN } from './devSpeedrun.js';
 
 export const COMMENT_DISPLAY_COUNT = 22;
 const REASON_RESPONDENTS = 700;
@@ -115,7 +114,7 @@ export function layoutCommentRows(ranked, limit = COMMENT_DISPLAY_COUNT) {
 
 export function getReasonsSection(category, region) {
   const labels = Object.fromEntries(criteria.map((item) => [item.id, item.label]));
-  const userCriteria = new Set(category.userCriteria ?? DEV_SPEEDRUN.initialCriteria);
+  const userCriteria = new Set(category.userCriteria ?? []);
   const respondents = Math.max(1, region.votes);
   const scale = respondents / REASON_RESPONDENTS;
   const items = Object.entries(REASON_VOTES)
