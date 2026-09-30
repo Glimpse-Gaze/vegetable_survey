@@ -85,7 +85,7 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
         <QuestionNav
           onBack={onBack}
           continueDisabled={!canContinue}
-          continueHint={!canContinue ? 'Sort all twenty items' : undefined}
+          continueHint={!canContinue ? 'Sort every item' : undefined}
           continueHintId="bucket-hint"
         />
       </form>

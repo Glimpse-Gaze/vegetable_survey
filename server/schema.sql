@@ -3,8 +3,13 @@ CREATE TABLE IF NOT EXISTS responses (
   created_at timestamptz NOT NULL DEFAULT now(),
   payload jsonb NOT NULL,
   public_display boolean NOT NULL DEFAULT false,
-  developer_message text
+  developer_message text,
+  ranking_code text
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS responses_ranking_code_idx
+  ON responses (ranking_code)
+  WHERE ranking_code IS NOT NULL;
 
 CREATE INDEX IF NOT EXISTS responses_created_at_idx ON responses (created_at DESC);
 CREATE INDEX IF NOT EXISTS responses_public_display_idx ON responses (public_display)

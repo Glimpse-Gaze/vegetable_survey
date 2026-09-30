@@ -426,27 +426,31 @@ export function NoteResults({ section, viewingOwn = true }) {
         })}
       </div>
 
-      <p className="reason-drift-hint">
-        Click or tap once to like, or to clear a marked note. Double-click,
-        right-click, or press and hold a clear note to sink it; double-click a
-        red note to like it. You can like up to {MAX_LIKES} and sink up to{' '}
-        {MAX_DISLIKES}. Reshuffle shows the next {NOTE_PAGE_SIZE}; liked notes
-        can move onto the first set.
-      </p>
-      <div className="reason-reset-row">
-        <button
-          className="reason-reset"
-          type="button"
-          disabled={!canVote || !Object.keys(myVotes).length}
-          onClick={resetVotes}
-        >
-          Reset input
-          <span className="reason-reset-tip">
-            Clears your 5 likes and 5 dislikes so you can vote on 10 answers
-            again.
-          </span>
-        </button>
-      </div>
+      {canVote ? (
+        <>
+          <p className="reason-drift-hint">
+            Click or tap once to like, or to clear a marked note. Double-click,
+            right-click, or press and hold a clear note to sink it; double-click a
+            red note to like it. You can like up to {MAX_LIKES} and sink up to{' '}
+            {MAX_DISLIKES}. Reshuffle shows the next {NOTE_PAGE_SIZE}; liked notes
+            can move onto the first set.
+          </p>
+          <div className="reason-reset-row">
+            <button
+              className="reason-reset"
+              type="button"
+              disabled={!Object.keys(myVotes).length}
+              onClick={resetVotes}
+            >
+              Reset input
+              <span className="reason-reset-tip">
+                Clears your 5 likes and 5 dislikes so you can vote on 10 answers
+                again.
+              </span>
+            </button>
+          </div>
+        </>
+      ) : null}
 
       {puff ? (
         <p

@@ -478,27 +478,31 @@ export function ReasonResults({ section, viewingOwn = true }) {
             />
           ))}
         </div>
-        <p className="reason-drift-hint">
-          Click or tap once to like, or to clear a marked pill. Double-click,
-          right-click, or press and hold a clear pill to sink it; double-click a
-          red pill to like it. You can like up to {MAX_LIKES} and sink up to{' '}
-          {MAX_DISLIKES}. The ribbons keep this snapshot until the page is
-          refreshed.
-        </p>
-        <div className="reason-reset-row">
-          <button
-            className="reason-reset"
-            type="button"
-            disabled={!canVote || !Object.keys(myVotes).length}
-            onClick={resetVotes}
-          >
-            Reset input
-            <span className="reason-reset-tip">
-              Clears your 5 likes and 5 dislikes so you can vote on 10 answers
-              again.
-            </span>
-          </button>
-        </div>
+        {canVote ? (
+          <>
+            <p className="reason-drift-hint">
+              Click or tap once to like, or to clear a marked pill. Double-click,
+              right-click, or press and hold a clear pill to sink it; double-click a
+              red pill to like it. You can like up to {MAX_LIKES} and sink up to{' '}
+              {MAX_DISLIKES}. The ribbons keep this snapshot until the page is
+              refreshed.
+            </p>
+            <div className="reason-reset-row">
+              <button
+                className="reason-reset"
+                type="button"
+                disabled={!Object.keys(myVotes).length}
+                onClick={resetVotes}
+              >
+                Reset input
+                <span className="reason-reset-tip">
+                  Clears your 5 likes and 5 dislikes so you can vote on 10 answers
+                  again.
+                </span>
+              </button>
+            </div>
+          </>
+        ) : null}
       </div>
       {puff ? (
         <p

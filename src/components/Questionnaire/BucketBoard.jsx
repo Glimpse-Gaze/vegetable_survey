@@ -85,6 +85,7 @@ export function BucketBoard({
         {BUCKET_IDS.map((bucketId) => {
           const className = [
             'bucket',
+            `is-${bucketId}`,
             activeBucket === bucketId ? 'is-active' : '',
             overBucket === bucketId ? 'is-over' : '',
           ]

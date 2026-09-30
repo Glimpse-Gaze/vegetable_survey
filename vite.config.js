@@ -3,6 +3,7 @@ import { defineConfig, loadEnv } from 'vite';
 import {
   insertResponseLimited,
   lookupComparison,
+  lookupFillPayload,
   readJsonBody,
   saveDeveloperMessage,
   validateResponsePayload,
@@ -127,7 +128,11 @@ function surveyApiPlugin(databaseUrl, rateSecret) {
 
           if (req.method === 'GET') {
             const url = new URL(req.url ?? '', 'http://localhost');
-            const row = await lookupComparison(url.searchParams.get('id'), databaseUrl);
+            const id = url.searchParams.get('id');
+            const row =
+              url.searchParams.get('fill') === '1'
+                ? await lookupFillPayload(id, databaseUrl)
+                : await lookupComparison(id, databaseUrl);
             res.statusCode = 200;
             res.end(JSON.stringify(row));
             return;

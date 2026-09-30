@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { WorldMap } from '../components/Results/WorldMap.jsx';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
@@ -22,7 +21,12 @@ import {
 } from '../data/resultsMock.js';
 import '../styles/results.css';
 
-const VISIBLE_LEADERS = 5;
+const WorldMap = lazy(() =>
+  import('../components/Results/WorldMap.jsx').then((mod) => ({
+    default: mod.WorldMap,
+  })),
+);
+
 const AUTO_PX_PER_MS = 0.048;
 const DRAG_THRESHOLD = 6;
 const IDLE_MS = 5000;
@@ -98,14 +102,18 @@ function alignmentTone(rank) {
 }
 
 function alignmentCopy(section) {
-  const picked = section.items.find((item) => item.id === section.userVoteId);
-  const name = picked?.name ?? VEGETABLE_LABELS[section.userVoteId];
+  const picked = section.userOnBoard ? section.userRanked : null;
+  const name =
+    picked?.name ??
+    VEGETABLE_LABELS[section.userVoteId] ??
+    section.userVoteName;
   if (!name) return null;
 
   const place = placeLabel(section.region);
   if (!picked) {
+    const share = section.userRanked?.share ?? 0;
     return {
-      kicker: `${formatShare(0)} of people voted with you`,
+      kicker: `${share > 0 ? 'Only ' : ''}${formatShare(share)} of people voted with you`,
       name,
       tone: 'lose',
       connector: 'It',
@@ -113,11 +121,10 @@ function alignmentCopy(section) {
     };
   }
 
-  const onTheList = picked.rank <= VISIBLE_LEADERS;
   const votedWithYou = `${formatShare(picked.share)} of people voted with you`;
 
   return {
-    kicker: onTheList ? votedWithYou : `Only ${votedWithYou}`,
+    kicker: votedWithYou,
     name,
     tone: alignmentTone(picked.rank),
     connector: 'It is',
@@ -188,8 +195,6 @@ function RankRail({ section, pauseAutoplay }) {
   const nudgePauseRef = useRef(false);
   const directionRef = useRef(1);
   const resumeTimer = useRef(0);
-  const userItem = section.items.find((item) => item.id === section.userVoteId);
-  const userOutsideLeaders = userItem && userItem.rank > VISIBLE_LEADERS;
 
   function holdNudge() {
     nudgePauseRef.current = true;
@@ -219,13 +224,18 @@ function RankRail({ section, pauseAutoplay }) {
     let idleMs = 0;
     let warmupElapsed = 0;
     let frame = 0;
+    let hidden = document.hidden;
+
+    function onVisibility() {
+      hidden = document.hidden;
+    }
 
     function tick(now) {
       const dt = Math.min(48, now - last);
       last = now;
       const dragging = dragRef.current != null;
       const busy =
-        menuPauseRef.current || nudgePauseRef.current || dragging;
+        hidden || menuPauseRef.current || nudgePauseRef.current || dragging;
       if (busy) {
         idleMs = 0;
         warmupElapsed = 0;
@@ -267,7 +277,11 @@ function RankRail({ section, pauseAutoplay }) {
     }
 
     frame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frame);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   useEffect(() => {
@@ -347,7 +361,7 @@ function RankRail({ section, pauseAutoplay }) {
             <Blade
               key={item.id}
               item={item}
-              isYours={item.id === section.userVoteId}
+              isYours={section.userOnBoard && item.id === section.userRanked?.id}
               variant={item.rank === 1 ? 'champion' : 'field'}
             />
           ))}
@@ -361,16 +375,6 @@ function RankRail({ section, pauseAutoplay }) {
           ›
         </button>
       </div>
-      {userOutsideLeaders ? (
-        <div className="outlier-row">
-          <p className="outlier-label">Your pick sits outside the leading five</p>
-          <Blade
-            item={userItem}
-            isYours
-            variant="outlier"
-          />
-        </div>
-      ) : null}
     </>
   );
 }
@@ -457,7 +461,9 @@ export function Results() {
   }
 
   function selectRegion(id) {
-    setRegionId(id);
+    startTransition(() => {
+      setRegionId(id);
+    });
     revealBlades();
   }
 
@@ -626,7 +632,9 @@ export function Results() {
                 </select>
               </label>
             </div>
-            <WorldMap selectedId={regionId} onSelect={selectRegion} />
+            <Suspense fallback={null}>
+              <WorldMap selectedId={regionId} onSelect={selectRegion} />
+            </Suspense>
             <p className="map-status">
               Showing {section.region.name} · {section.responseCount} answers
               {regionId !== 'global' ? (

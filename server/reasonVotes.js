@@ -1,10 +1,8 @@
 import { neon } from '@neondatabase/serverless';
 import { consumeRateLimit } from './rateLimit.js';
-import { responseExists } from './responses.js';
+import { resolveResponseUuid } from './responses.js';
 
 const COMMENT_ID = /^[a-z0-9_-]{1,40}$/i;
-const RESPONSE_ID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MAX_LIKES = 5;
 const MAX_DISLIKES = 5;
 
@@ -49,11 +47,9 @@ export async function ensureReasonVotesTable(databaseUrl) {
 }
 
 export async function requireSurveyBallot(databaseUrl, responseId) {
-  if (!RESPONSE_ID.test(String(responseId ?? ''))) {
-    throw surveyRequiredError();
-  }
-  const exists = await responseExists(responseId, databaseUrl);
-  if (!exists) throw surveyRequiredError();
+  const uuid = await resolveResponseUuid(responseId, databaseUrl);
+  if (!uuid) throw surveyRequiredError();
+  return uuid;
 }
 
 export async function listReasonVoteScores(databaseUrl) {
@@ -92,8 +88,8 @@ export async function upsertReasonVote(
     throw new Error('Vote must be like, dislike, or clear.');
   }
 
-  await requireSurveyBallot(databaseUrl, responseId);
-  await consumeRateLimit(databaseUrl, `vote:${responseId}`, 40, 10 * 60);
+  const ballotId = await requireSurveyBallot(databaseUrl, responseId);
+  await consumeRateLimit(databaseUrl, `vote:${ballotId}`, 40, 10 * 60);
   await ensureReasonVotesTable(databaseUrl);
   const sql = sqlClient(databaseUrl);
   const family = voteFamily(commentId);
@@ -102,7 +98,7 @@ export async function upsertReasonVote(
     const existing = await sql`
       SELECT comment_id, value
       FROM custom_reason_votes
-      WHERE visitor_id = ${responseId}
+      WHERE visitor_id = ${ballotId}
     `;
     const current = existing.find((row) => row.comment_id === commentId);
     if (Number(current?.value) !== value) {
@@ -124,12 +120,12 @@ export async function upsertReasonVote(
   if (value === 0) {
     await sql`
       DELETE FROM custom_reason_votes
-      WHERE comment_id = ${commentId} AND visitor_id = ${responseId}
+      WHERE comment_id = ${commentId} AND visitor_id = ${ballotId}
     `;
   } else {
     await sql`
       INSERT INTO custom_reason_votes (comment_id, visitor_id, value, updated_at)
-      VALUES (${commentId}, ${responseId}, ${value}, now())
+      VALUES (${commentId}, ${ballotId}, ${value}, now())
       ON CONFLICT (comment_id, visitor_id)
       DO UPDATE SET value = EXCLUDED.value, updated_at = now()
     `;
@@ -143,26 +139,26 @@ export async function clearVisitorReasonVotes(
   responseId,
   family = null,
 ) {
-  await requireSurveyBallot(databaseUrl, responseId);
-  await consumeRateLimit(databaseUrl, `vote:${responseId}`, 40, 10 * 60);
+  const ballotId = await requireSurveyBallot(databaseUrl, responseId);
+  await consumeRateLimit(databaseUrl, `vote:${ballotId}`, 40, 10 * 60);
   await ensureReasonVotesTable(databaseUrl);
   const sql = sqlClient(databaseUrl);
   if (family === 'notes') {
     await sql`
       DELETE FROM custom_reason_votes
-      WHERE visitor_id = ${responseId}
+      WHERE visitor_id = ${ballotId}
         AND (comment_id LIKE 'n%' OR comment_id = 'my-note')
     `;
   } else if (family === 'reasons') {
     await sql`
       DELETE FROM custom_reason_votes
-      WHERE visitor_id = ${responseId}
+      WHERE visitor_id = ${ballotId}
         AND NOT (comment_id LIKE 'n%' OR comment_id = 'my-note')
     `;
   } else {
     await sql`
       DELETE FROM custom_reason_votes
-      WHERE visitor_id = ${responseId}
+      WHERE visitor_id = ${ballotId}
     `;
   }
   return listReasonVoteScores(databaseUrl);

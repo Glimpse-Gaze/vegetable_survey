@@ -1,9 +1,17 @@
+import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom';
-import { Questionnaire } from './components/Questionnaire/Questionnaire.jsx';
 import { Home } from './pages/Home.jsx';
-import { Results } from './pages/Results.jsx';
 import './styles/questionnaire.css';
 import './styles/pages.css';
+
+const Questionnaire = lazy(() =>
+  import('./components/Questionnaire/Questionnaire.jsx').then((mod) => ({
+    default: mod.Questionnaire,
+  })),
+);
+const Results = lazy(() =>
+  import('./pages/Results.jsx').then((mod) => ({ default: mod.Results })),
+);
 
 function ResultsIndex() {
   const [params] = useSearchParams();
@@ -16,19 +24,21 @@ function ResultsIndex() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route
-        path="/survey"
-        element={
-          <div className="app-shell">
-            <Questionnaire />
-          </div>
-        }
-      />
-      <Route path="/results" element={<ResultsIndex />} />
-      <Route path="/results/:categoryId" element={<Results />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <Suspense fallback={null}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/survey"
+          element={
+            <div className="app-shell">
+              <Questionnaire />
+            </div>
+          }
+        />
+        <Route path="/results" element={<ResultsIndex />} />
+        <Route path="/results/:categoryId" element={<Results />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 }

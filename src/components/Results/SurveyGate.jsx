@@ -49,7 +49,9 @@ export function ResponseCodeCard({
           Your code{' '}
           <code className="response-code">{code}</code>
           <button
-            className="response-code-copy"
+            className={
+              copied ? 'response-code-copy is-copied' : 'response-code-copy'
+            }
             type="button"
             onClick={copyCode}
           >

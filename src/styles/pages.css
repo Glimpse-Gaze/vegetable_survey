@@ -130,6 +130,13 @@
   font-size: 0.72rem;
   font-weight: 650;
   cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.response-code-copy.is-copied {
+  background: var(--green);
+  border-color: var(--green);
+  color: #f7fff6;
 }
 
 .response-code-hint,
