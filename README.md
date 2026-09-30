@@ -1,6 +1,6 @@
 # The most vegetable vegetable
 
-A short, playful questionnaire about what people actually mean by **vegetable** — first instinct, why it feels vegetabley, a ranking of awkward cases (tomato, mushroom, sweet potato…), then a few optional background questions.
+A short, playful questionnaire about what people actually mean by **vegetable** — first instinct, reasons, sorting, a ranking of awkward cases, a written definition, then optional background.
 
 This is a research prototype, not a botany test. There are no wrong answers.
 
@@ -11,36 +11,30 @@ npm install
 npm run dev
 ```
 
-Open the local URL Vite prints (usually `http://localhost:5173/`).
+Open the URL Vite prints (usually `http://localhost:5173/`). Needs `DATABASE_URL` (Neon) for saving answers and comment votes.
 
 ```bash
-npm run build    # production build
-npm run preview  # serve that build
-npm run lint     # oxlint
+npm run build
+npm run preview
+npm run lint
 ```
+
+Dev survey fill: on `/survey`, **Ctrl+Shift+D**.
 
 ## What exists today
 
-Five questions in the browser, with answers kept in `sessionStorage` for the tab only:
-
-1. What comes to mind when you hear “vegetable”?
-2. Why does that feel vegetabley? (up to five reasons)
-3. Rank ten named items from least to most vegetabley
-4. In your own words, what makes something feel like a vegetable?
-5. Optional: where you grew up, and languages you speak
-
-After that you currently get a **developer JSON recap** so we can inspect the payload. That screen is not meant for participants.
-
-There is **no server** yet. Refreshing the same tab restores progress; a new tab starts over.
+- `/` foyer, `/survey` (consent + 7 questions + thank-you), `/results/:categoryId` mock standings with optional personal overlay.
+- Answers POST to Neon once, on the last survey question. Thank-you shows a ranking code (also stored in the browser). Optional private developer note is a separate column, not research data.
+- Results comment boards can be liked/sunk only after a completed survey in that browser.
 
 ## Stack
 
-Vite, React 19, JavaScript, CSS. No TypeScript, no animation library.
+Vite, React 19, JavaScript, CSS, React Router, Neon Postgres.
 
-## For the next person building this
+## For the next person
 
-Start with [`HANDOVER.md`](./HANDOVER.md). It records the research constraints, the response schema, and the planned path: confirm Q1 wording, add a real thank-you ending, persist ~1,000 anonymous responses, then deploy.
+Start with [`HANDOVER.md`](./HANDOVER.md): research locks, file map, test flows, and notes for a **mobile layout** pass.
 
-## License / data
+## Data
 
-Responses are anonymous by design. Do not add precise geolocation. A public privacy note still needs to be written before a live launch.
+Responses are anonymous. Do not add precise geolocation. Rate limits may hash IPs for spam control; they are not stored with answers.

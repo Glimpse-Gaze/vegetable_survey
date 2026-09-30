@@ -1,232 +1,200 @@
 # Handover: The Most Vegetable Vegetable
 
-For the next implementation agent. Read this before changing the questionnaire. The original research brief lived at `vegetable_questionnaire_handover.md` (Downloads); this file is the current source of truth for **what exists now** and **what to do next**.
+For the next agent (especially **mobile layout**). Read this before changing UI. This replaces the old “five questions, no backend, JSON recap” notes.
+
+Stack: **Vite 8 + React 19 + JavaScript + CSS**. React Router 7. Neon Postgres. No TypeScript.
+
+Run: `npm install` then `npm run dev` (usually `http://localhost:5173/`). Dev survey shortcut: **Ctrl+Shift+D** on `/survey` (loads `src/data/devSpeedrun.js`, jumps to Q7).
+
+Branch at last wrap: `Database` (results + voting + thank-you). `main` is older (privacy + first DB wrap).
 
 ---
 
-## What this software is
+## What this product is
 
-A client-only interactive questionnaire that captures folk concepts of “vegetable”: first association, reasons for that association, a ranking of ten conceptually awkward items, an open definition, then optional cultural background.
+A folk-concept questionnaire (not a botanical quiz). Unusual answers are valid. Do not prime Q1 with a vegetable catalogue.
 
-It is **not** a botanical quiz and **not** a conventional survey product. Unusual answers are valid. The UI must not prime people with a vegetable catalogue before they have produced their own answer.
+Routes:
 
-Target later: ~1,000 anonymous respondents. There is **no backend yet**. After the last question, a **developer recap** dumps JSON. That screen is not public-facing.
-
-Stack: **Vite + React 19 + JavaScript + CSS**. No TypeScript, no Motion/Framer, no backend, no results explorer.
-
-Run: `npm install` then `npm run dev` (often `http://localhost:5173/` or `5174` if 5173 is busy).
+| Path | Page |
+| --- | --- |
+| `/` | Foyer (`src/pages/Home.jsx`) — survey + results links. **Do not spoil results here.** |
+| `/survey` | Seven questions + consent + thank-you |
+| `/results` | Redirects to `/results/first-instincts`, keeping `?code=` |
+| `/results/:categoryId` | Results for one question |
 
 ---
 
-## Current flow (5 questions + recap)
+## Before merging `Database` → `main`
 
-Progress copy is `Question X out of 5` in the old eyebrow slot.
+Not blockers for **local** testing, but check before a public merge:
 
-| Step | Component | Purpose |
+1. **Production `DATABASE_URL`** on Vercel must point at the same Neon project you use for submits. Schema lives in `server/schema.sql`. Extra columns/tables are also created at runtime (`developer_message` on `responses`, `custom_reason_votes`, `api_rate_limits`).
+2. **README.md was stale** (five questions, no server). Keep it aligned with this file.
+3. **Results boards are still mock standings** (`src/data/resultsMock.js`, `reasonResults.js`, `spectrumResults.js`, `noteResults.js`). Live Neon rows are used for **survey payloads**, **comment votes**, and **developer notes** — not yet for Q1–Q5 tallies. Do not tell testers that the bars are real global counts.
+4. **Cursor preview vs your browser** do not share `localStorage`. Test the “completed survey” path in **one** browser.
+5. Optional: `npm run build` and `npm run lint` once on the branch.
+6. The two flows below are the right merge tests. Mobile can wait for a separate pass.
+
+Do **not** “fix” these without asking: Q1 no pre-catalogue; never rewrite typed text; thank-you is not a JSON recap; results colours (green leader, tomato least/not-veg, carrot mid, cabbage = your marks); privacy (no IP stored with answers).
+
+---
+
+## How to test (your next two passes)
+
+### A. Results **without** completing a survey
+
+Use a private window or clear site data for `localhost`.
+
+1. Open `/results` (or `/results/first-instincts`).
+2. You should **not** see “Your vote” / alignment as if you were the speedrun person.
+3. Q2 pills and Q6 notes should **not** be votable (`disabled` / locked).
+4. At the **bottom** (under Next category): *Complete the survey to compare your votes with others* plus **Open a ranking code**.
+5. On Q2/Q6: *Complete the survey to rate answers.*
+6. Pasting someone else’s code (or `?code=<uuid>`) should overlay **their** ranking if that id exists in Neon. It must **not** turn you into them for voting.
+
+### B. Complete survey, then results
+
+Same browser, do not clear storage.
+
+1. `/survey` → consent → all seven questions. Q2 “something else” + public checkbox and Q6 public checkbox control whether **your words** can appear as a flair/pin, not whether the survey saves.
+2. Thank-you must show: thanks, **ranking code** + copy, interactive-results copy + **See the results**, optional private **note for the developer**.
+3. Code is stored automatically (`localStorage`: `veg-survey-response-id`, `veg-survey-my-answers`). **See the results** should work with no paste.
+4. Check each category: Q1 blades, Q2 top-5 + drifting pills, Q3 three columns, Q4 spectrum, Q5 blades, Q6 sticky notes.
+5. Your answers should mark **Your vote** / **Your answer** (cabbage/purple flair). Q3 column you sorted into should highlight in the lookup.
+6. Q2/Q6 voting: single tap like or clear; hold / right-click / double-tap sink; 5+5 cap; Reset input. Needs a stored response id.
+7. Copy the code, then (optional) another browser: paste code → **see** ranking; voting stays locked until that browser has completed a survey.
+
+Speedrun: Ctrl+Shift+D, submit Q7. Open description in the speedrun is public and matches mock note `n01`.
+
+---
+
+## Survey behaviour (do not break)
+
+Orchestrator: `src/components/Questionnaire/Questionnaire.jsx`.
+
+| # | UI | Component | Stored on |
+| --- | --- | --- | --- |
+| — | Privacy | `PrivacyConsent.jsx` | `processingConsent` |
+| 1 | First association | `Question1.jsx` | `initialAssociation` |
+| 2 | Why vegetabley | `Question2.jsx` | `initialCriteria`, `customCriterion`, `customCriterionPublic` |
+| 3 | Three buckets | `Question3.jsx` | `sortBuckets` |
+| 4 | Rank ten items | `Question4.jsx` | `spectrum` (ids, least → most) |
+| 5 | Most vegetable | `Question5.jsx` | `mostVegetable` |
+| 6 | Free writing | `Question6.jsx` | `openDescription.text`, `publicDisplay` |
+| 7 | Place + languages | `Question7.jsx` | `background` — **this POST `/api/responses`** |
+| — | Thanks | `ThankYou.jsx` | ranking code; optional POST `/api/developer-message` |
+
+Q1 Back is locked (toast). Q1 cannot be edited later. Browser history does not walk questions (`replaceState`).
+
+Submit: `src/utils/submitResponse.js` → `server/responses.js` → Neon `responses(payload jsonb, public_display, developer_message)`.
+
+Local helpers after submit: `src/utils/myResponse.js`, `myCustomReason.js`, `myOpenNote.js`.
+
+---
+
+## Results behaviour (do not break)
+
+Shell: `src/pages/Results.jsx`.
+
+Category ids (hamburger + `nextCategoryId`):
+
+- `first-instincts` — blades (`RankRail` in `Results.jsx`)
+- `why-vegetabley` — `ReasonResults.jsx` (top 5 + marquee pills)
+- `sort-buckets` — `BucketColumns.jsx`
+- `vegetabley-spectrum` — `SpectrumList.jsx`
+- `most-vegetable` — blades again
+- `vegetabley-words` — `NoteResults.jsx` (5×4 notes, Reshuffle)
+
+Overlay of “you”: `getSection(id, region, userAnswers)` in `src/data/resultsMock.js` (`overlayCategory`). No local response → empty overlay. `?code=` fetch: `GET /api/responses?id=`.
+
+Map: Q1 and Q4 only (`WorldMap.jsx`). Region filter state lives in `Results.jsx`.
+
+Survey nudge + code card: `SurveyGate.jsx`, rendered in **`.results-survey-foot` under Next**, not in the title.
+
+### Colour language (results only)
+
+Tokens: `:root` in `src/styles/questionnaire.css`, extras on `.results-page` in `src/styles/results.css`.
+
+| Meaning | Colour |
+| --- | --- |
+| Winner / most-vegetabley / definite veg | Green (`--green`, `--green-soft`, `--green-bright`) |
+| Least-vegetabley / not a vegetable | Tomato |
+| In-between / Q4 middle band | Carrot |
+| **Your** vote, badge, histogram bar, alignment “on the list but not #1” | Cabbage purple (`--cabbage`, `--cabbage-soft`, `--cabbage-bright`) |
+
+Survey UI still uses **green** for selected cards. Do not theme the questionnaire with the results palette.
+
+Q4: least three **blades** have fully red histograms; Your vote bar stays cabbage. Q3: per-column bar/leader tints (tomato / carrot / green).
+
+### Voting (Q2 + Q6)
+
+- Server: `POST /api/reason-votes` with **`responseId`** (must exist in `responses`). Caps 5 like / 5 sink **per family** (`c*` reasons vs `n*` notes).
+- Rate limits: `server/rateLimit.js` (hashed IP for submit, per-code for votes). Not stored on the research payload.
+- Client SM: `ReasonResults.jsx` / `NoteResults.jsx` — tap, hold 500ms, right-click, double-tap. Layout snapshot frozen until refresh (Q2) or Reshuffle (Q6).
+- Reset is **reallocate**, not extra votes; it deletes that visitor’s rows for that family.
+
+---
+
+## Where crucial UI lives
+
+| Surface | Code | Styles |
 | --- | --- | --- |
-| 1 | `Question1.jsx` | Spontaneous association to the word “vegetable” |
-| 2 | `Question2.jsx` | Why that answer feels vegetabley (criteria, max 5) |
-| 3 | `Question3.jsx` | Rank 10 items on a least→most vegetabley scale |
-| 4 | `Question4.jsx` | Open definition after ranking |
-| 5 | `Question5.jsx` | Optional grew-up place + languages |
-| recap | `DeveloperRecap.jsx` | JSON dump + Start over |
+| Home | `src/pages/Home.jsx` | `src/styles/pages.css` |
+| Survey chrome, tokens, Q1–Q7, thanks | `src/components/Questionnaire/*` | `src/styles/questionnaire.css` |
+| Results chrome, blades, map, buckets, spectrum, notes, pills | `src/pages/Results.jsx`, `src/components/Results/*` | `src/styles/results.css` |
+| Shared code card / survey nudge | `SurveyGate.jsx` | mostly `pages.css` (`.survey-nudge`, `.response-code-*`); foot layout in `results.css` (`.results-survey-foot`) |
+| Mock data | `src/data/resultsMock.js`, `reasonResults.js`, `spectrumResults.js`, `noteResults.js`, `spectrumVegetables.js` | — |
+| APIs | `api/responses.js`, `api/reason-votes.js`, `api/developer-message.js` | Vite plugin mirrors them in `vite.config.js` |
 
-**Back** exists on every question:
-
-- Q1: greyed, nowhere to go.
-- Q2: greyed. Clicking it toasts *“Your initial intuition is locked. There are no bad answers!”* Q1 cannot be edited.
-- Q3–Q5: real back. Earlier answers hydrate from `sessionStorage`.
-
-Browser history uses `history.replaceState` only. The in-app Back button is the navigation model; the browser Back button does not walk questions.
+Photos: `src/content/*.jpg` via `VEGETABLE_ART` in `resultsMock.js`. Spectrum copy/trivia: `spectrumVegetables.js` only.
 
 ---
 
-## Locked research / product decisions
+## Mobile pass — constraints
 
-Do not “improve these away” without asking the researcher.
+Existing breakpoints (extend, don’t fight, unless you unify them on purpose):
 
-### Measurement
+- Questionnaire: **720px** (spectrum + Q3 buckets stack), **640px** (nav).
+- Home: **640px**.
+- Results: **1200px** (notes 4 columns), **900px** (almost everything stacks; notes 2 columns; blades narrower).
+- `hover: none` already shows blade arrows; `prefers-reduced-motion` kills blade pulse, drift, puffs, buoyancy.
 
-- **Q1 must not show a vegetable catalogue, examples, popular picks, or a grid before typing.** Autocomplete appears only after **2 characters**.
-- **Never rewrite visible typed text.** `potatos` stays `potatos` in the field. Canonical IDs live only in stored data.
-- `selectionMethod` is `"autocomplete"` only when the respondent **explicitly picks** a suggestion. Typing a known name and hitting Continue is `"free_text"` plus a silent `canonicalId` if a match exists.
-- Unknown / non-vegetable answers are first-class (`canonicalId: null`).
-- Q2 is about **that specific first answer**, not a general definition. The later open question is Q4.
-- Q2 criteria stay heterogeneous (botanical, culinary, cultural, “it just feels vegetabley”). Do not sort them into a scientific taxonomy. Shuffle all except the last two, which stay pinned: `just_feels`, `other`.
-- At least one Q2 criterion is required; `just_feels` is the escape hatch. Max **5**. Hover on disabled Continue: “Select at least one”.
-- Spectrum items must **not** be called “vegetables” in instructions. Use “these” / “item”. Vegetable-hood is what is being judged. Mushroom is in the set, so do not say “edible plant”.
-- Spectrum uses **names only** (no photos) to avoid lighting/produce-aisle bias. Ten items, one per botanical family / outlier (tomato Solanaceae, mushroom Fungi, sweet potato not potato so it is not another nightshade).
-- Scale is **vertical**: least vegetabley at the **top**, most at the **bottom**, pool on the right.
-- Arrow left of the scale is **grayscale**, not a traffic-light gradient: empty outline at the top, filled dark at the bottom. Colour must not imply meaning.
-- Q5 skip (empty Continue) records **I prefer not to disclose**. Custom typed places/languages are allowed. Continents and contested regions (Taiwan, Tibet, Hong Kong, Palestine, Kosovo, Kurdistan, Western Sahara, UK nations, etc.) are in the list.
-- **Antarctica** is an Easter egg: it cannot be chosen. Toast *“I don't believe you.”* Keep the country list open (`onPickSuggestion` returning `false` prevents close).
+**Likely pain (test at ~390px and ~768px):**
 
-### Copy that already drifted — confirm before changing Q1 again
+- Q3 bucket board and Q4 spectrum (`questionnaire.css` `.spectrum`, `.buckets`).
+- Results hamburger + `.results-now` title chip vs `.results-region-status` (fixed top-left).
+- Blade rail horizontal scroll (`RankRail` in `Results.jsx`).
+- Q2 drifting rows (`.reason-drift`); mask/overflow on narrow screens.
+- Q6 notes: 5-col desktop → 2-col at 900px; equal card height 12.6rem may clip long text (cards already scroll inside).
+- Thank-you code (`word-break` on `.response-code`).
+- “Your vote” badge on wrapping Q2/Q3 names (`.bucket-row-topline` nowrap).
+- Touch: Q2/Q6 hold-to-sink vs scroll; `touch-action: manipulation` is on chips/notes. Do not put `preventDefault` on `touchmove` for the whole page.
+- Voting hover-only hints must have a tap equivalent (already do).
 
-Original locked Q1 was first-vegetable recall:
+**Do not:**
 
-> When you hear the word “vegetable”, which vegetable comes to your mind?
-> Placeholder: Type a vegetable...
+- Change vote state machine or API bodies to “make tap easier” without checking hold vs contextmenu vs double-tap.
+- Recolour winners to carrot or your-vote to orange.
+- Restore mock “you” (broccoli/turnip) when there is no stored response.
+- Move survey nudge back into `.results-section-head`.
+- Put a vegetable grid on Q1.
+- Animate Q2 pills hopping rows live (was rejected; freeze snapshot).
 
-Current live copy is more open, to avoid pre-classifying the answer as a vegetable:
-
-> When you hear the word “vegetable”, what comes to your mind?
-> Placeholder: Type what comes to mind...
-
-That re-opens free association (`health`, `green`, `mom’s soup`). **Ask whether Q1 should go back to first-vegetable recall** before collecting real data.
-
-### UX tone
-
-Playful, curious, slightly absurd. Not a corporate survey. No “SUBMIT SURVEY”, no badges, no fake science, no long explanations. Green selected Q2 cards (not red). Tiny CSS transitions are enough.
+Verify in a **real phone or device mode with touch**, not only a resized desktop window. Cursor’s browser and Chrome do not share storage.
 
 ---
 
-## Data model (session only)
+## Desired mobile outcome
 
-`sessionStorage` key: `vegetable-survey-q1q5`.
-
-Shape after a full run:
-
-```js
-{
-  responseId: "uuid",
-  timestamp: "ISO-8601",
-  initialAssociation: {
-    rawAnswer: "potatos",
-    canonicalId: "potato",       // or null
-    selectionMethod: "free_text" // or "autocomplete"
-  },
-  initialCriteria: ["just_feels", "cooking"],
-  customCriterion: "",
-  spectrum: [
-    "mushroom", "tomato", "corn", "cucumber", "onion",
-    "pea", "lettuce", "carrot", "sweet_potato", "broccoli"
-  ], // length 10, least → most, item ids
-  openDescription: {
-    text: "...",
-    publicDisplay: false // checkbox, default false
-  },
-  background: {
-    grewUp: {
-      rawAnswer: "Taiwan",
-      canonicalId: "taiwan",
-      skipped: false
-    },
-    languages: {
-      items: [
-        { rawAnswer: "English", canonicalId: "english" },
-        { rawAnswer: "Silesian", canonicalId: null }
-      ],
-      skipped: false
-    }
-  }
-}
-```
-
-Empty Q5 fields become `canonicalId: "prefer_not_to_disclose"` and `skipped: true`.
+Same information hierarchy as desktop: question first, results graphic, then Next, then code/nudge. Type readable without pinch-zoom. Primary taps ≥ ~44px. No overlapping fixed chrome (menu, region status, blade arrows). Q3/Q4 completable with a thumb.
 
 ---
 
-## Repo map
+## Still not in this branch (later)
 
-```text
-src/
-  App.jsx
-  components/Questionnaire/
-    Questionnaire.jsx      # steps, session, toasts, back
-    Question1.jsx … Question5.jsx
-    QuestionContainer.jsx  # “Question X out of 5”
-    QuestionNav.jsx        # Back + Continue
-    AutocompleteInput.jsx  # combobox; return false from onPick to keep open
-    CriteriaSelector.jsx
-    SpectrumBoard.jsx
-    SpectrumArrow.jsx
-    Toast.jsx
-    DeveloperRecap.jsx
-  data/
-    vegetables.js          # generous world list + aliases
-    criteria.js
-    spectrumVegetables.js  # the 10 ranked items
-    countries.js
-    languages.js           # includes Brazilian Portuguese
-  utils/
-    normalization.js       # lowercase, NFD strip, collapse space
-    autocomplete.js        # findCanonicalMatch, getSuggestions, getLookupSuggestions
-  styles/questionnaire.css
-```
-
-Helpers:
-
-- `getSuggestions(query, items, limit)` — prefix on name then alias; empty until 2 chars; default limit 6.
-- `getLookupSuggestions(query, items, { featuredIds, browseAll, limit })` — countries use `browseAll: true` so empty focus shows continents then a **scrollable A–Z** list (`max-height` on `.autocomplete-list`).
-
----
-
-## Interaction notes (easy to break)
-
-- Autocomplete lists are **in-flow**, not `position: absolute`, so they do not cover Continue.
-- Q2 native checkboxes are visually hidden (`appearance: none`); clicks go to the card. Do not restore default checkbox UI without checking toggling.
-- Q3 placement: click a slot, then a tile, or HTML5 drag-and-drop. **Slots do not auto-advance** after a place. Swaps/displaces if the slot is filled.
-- Going back to Q3 reshuffles the remaining palette; filled slots restore from `response.spectrum`.
-- Q5 Continue is always enabled. Pending language text (typed, no Enter) is committed on submit.
-- Toasts: Q1 continue (*First instinct locked. No wrong answers.*), Q2 locked Back, Antarctica.
-
----
-
-## Desired roadmap
-
-Do this in order unless the researcher says otherwise. Keep Q1–Q5 modular; later stages should **append** to the response object, not rename existing fields.
-
-### 1. Confirm instrument (short conversation)
-
-- Q1 wording: first-vegetable vs open association.
-- Whether a **sixth question** is still wanted after the spectrum: *“After all this, what would you call the most vegetabley vegetable?”* (in the original brief, not built).
-- Public display of Q4 text, privacy copy, and whether background is optional (currently skippable).
-
-### 2. Replace the developer recap with a real ending
-
-Thank-you screen, short privacy/data-use note, no JSON. Keep a hidden recap or `?debug=1` for development. “Start over” can stay for testing only.
-
-### 3. Persist responses (~1,000)
-
-- Anonymous `responseId` already exists client-side; send **once** on completion (not per keystroke).
-- Store raw + canonical separately; no precise geolocation.
-- SQLite / Postgres / Supabase — pick whatever matches deployment.
-- Do not treat `sessionStorage` as the database.
-
-### 4. Deploy a public URL
-
-Vercel (or similar) is enough. Add an env-based API URL. Test mobile (iPhone width) on Q3’s two-column spectrum.
-
-### 5. Remaining product polish (same app)
-
-- Q3: auto-advance to the next empty slot after placing; persist palette order across Back.
-- Optional in-app progress that does not look like a 40-item survey (already “Question X of 5”).
-- Slightly richer CSS transitions if it still feels like a slide deck; no animation library unless it clearly earns its keep.
-- Keyboard: Q3 is mouse/touch-first; improve if time.
-- Tests around canonical match, Q5 skip→disclose, Antarctica block, Q1 selectionMethod.
-
-### 6. Out of this repo unless explicitly in scope
-
-- Results grid / WebGL explorer (original brief: **separate page/project**, possibly another stack).
-- Turning Q1 into a catalogue, adding stock photos to the spectrum, or colouring the arrow like a heat map.
-
----
-
-## How to verify before shipping a change
-
-1. Q1 empty field: **no** vegetable names. Type `car` → suggestions. Type `potatos` → Continue; recap keeps raw `potatos`.
-2. Q2 Back stays locked with toast; criteria restore if you go Q3→Q2.
-3. Q3: all 10 placed, least at top; arrow outline-top / fill-bottom; copy does not say “vegetables to place”.
-4. Q4 required text; public checkbox defaults off.
-5. Q5: continents then A–Z countries, Taiwan/Tibet present, skip = disclose, custom language via Enter, Antarctica toast with list still open.
-6. Recap JSON matches the schema above. Reset returns to Q1.
-
----
-
-## Open questions for the researcher
-
-1. Revert Q1 to “which vegetable comes to your mind?” or keep the open prompt?
-2. Add the post-spectrum “most vegetabley vegetable” item, and if so, before or after Q4?
-3. Preferred backend/host for the first 1,000 responses?
-4. Should Q4 `publicDisplay` actually control a future public wall, or is it consent storage only for now?
+- Live aggregation of Q1–Q5 from Neon (still mock boards).
+- Public Q6/Q2 custom text appearing for **everyone** from the DB (today: mock pools + local pin of *your* public text).
+- Restoring **voting** after clearing site data using only a pasted code (by design, so shared links cannot spend someone else’s likes).
+- Vercel WAF rate-limit rules (app-level limits exist).
+|
