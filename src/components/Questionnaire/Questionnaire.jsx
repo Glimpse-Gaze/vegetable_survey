@@ -15,6 +15,10 @@ import { submitResponse } from '../../utils/submitResponse.js';
 import { writeMyCustomReason } from '../../utils/myCustomReason.js';
 import { writeMyOpenNote } from '../../utils/myOpenNote.js';
 import { writeMyResponse } from '../../utils/myResponse.js';
+import {
+  consumeRankingCodePanelFlag,
+  subscribeRankingCodePanel,
+} from '../../utils/vegSurveyConsole.js';
 
 const LOCK_TOAST = 'First instinct locked. No wrong answers.';
 const BACK_LOCKED_TOAST =
@@ -100,6 +104,11 @@ export function Questionnaire() {
   }
 
   useEffect(() => {
+    if (consumeRankingCodePanelFlag()) setCodePanel(true);
+    return subscribeRankingCodePanel(() => setCodePanel(true));
+  }, []);
+
+  useEffect(() => {
     if (!import.meta.env.DEV) return undefined;
 
     function handleShortcut(event) {
@@ -115,9 +124,11 @@ export function Questionnaire() {
   }, []);
 
   async function loadFromRankingCode(code) {
-    const result = await fetch(
-      `/api/responses?id=${encodeURIComponent(code)}&fill=1`,
-    );
+    const encoded = encodeURIComponent(code);
+    let result = await fetch(`/api/responses?id=${encoded}&fill=1`);
+    if (!result.ok) {
+      result = await fetch(`/api/responses?id=${encoded}`);
+    }
     let body = null;
     try {
       body = await result.json();
@@ -161,10 +172,7 @@ export function Questionnaire() {
       nextResponse.openDescription?.publicDisplay,
     );
     writeMyResponse(body.id, nextResponse);
-    persist(
-      step === STEPS.THANKS ? STEPS.THANKS : STEPS.QUESTION_7,
-      nextResponse,
-    );
+    persist(STEPS.THANKS, nextResponse);
     setCodePanel(false);
     showToast(FILL_TOAST);
   }
