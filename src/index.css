@@ -2,6 +2,20 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+.copy-coarse {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .copy-fine {
+    display: none;
+  }
+
+  .copy-coarse {
+    display: inline;
+  }
+}
+
 body {
   margin: 0;
 }

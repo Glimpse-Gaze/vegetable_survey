@@ -5,21 +5,36 @@ import {
   getBucketItem,
 } from '../../data/bucketItems.js';
 
-function BucketTile({ item, onPlace, onDragStart, onDragEnd }) {
+function BucketTile({ item, onPlace, onDragStart, onDragEnd, onRemove }) {
   return (
-    <button
-      type="button"
-      className="spectrum-tile"
-      draggable="true"
-      onClick={(event) => {
-        event.stopPropagation();
-        onPlace(item.id);
-      }}
-      onDragStart={(event) => onDragStart(event, item.id)}
-      onDragEnd={onDragEnd}
-    >
-      <span className="spectrum-tile-label">{item.name}</span>
-    </button>
+    <div className="bucket-tile">
+      <button
+        type="button"
+        className="spectrum-tile"
+        draggable="true"
+        onClick={(event) => {
+          event.stopPropagation();
+          onPlace(item.id);
+        }}
+        onDragStart={(event) => onDragStart(event, item.id)}
+        onDragEnd={onDragEnd}
+      >
+        <span className="spectrum-tile-label">{item.name}</span>
+      </button>
+      {onRemove ? (
+        <button
+          type="button"
+          className="tile-remove"
+          aria-label={`Return ${item.name} to the list`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemove();
+          }}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      ) : null}
+    </div>
   );
 }
 
@@ -112,6 +127,7 @@ export function BucketBoard({
                       onPlace={() => onPlace(id, activeBucket ?? bucketId)}
                       onDragStart={handleDragStart}
                       onDragEnd={handleDragEnd}
+                      onRemove={() => onReturnToPalette(id)}
                     />
                   );
                 })}

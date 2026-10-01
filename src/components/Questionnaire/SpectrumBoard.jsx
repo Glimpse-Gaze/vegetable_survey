@@ -203,6 +203,18 @@ export function SpectrumBoard({
                         >
                           <ChevronDownIcon />
                         </button>
+                        <button
+                          type="button"
+                          className="spectrum-rank-button is-remove"
+                          aria-label={`Return ${vegetable.name} to the list`}
+                          onPointerDown={(event) => event.stopPropagation()}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onReturnToPalette(vegetable.id);
+                          }}
+                        >
+                          <span aria-hidden="true">×</span>
+                        </button>
                       </div>
                     </>
                   ) : (

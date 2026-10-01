@@ -234,7 +234,7 @@ export function Question7({
             onPickSuggestion={addLanguage}
             onCommit={addLanguage}
             suggestions={languageSuggestions}
-            placeholder="Type a language, then Enter..."
+            placeholder="Type a language..."
             autoFocus={false}
           />
           <label className="disclose-check">

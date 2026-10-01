@@ -129,7 +129,7 @@ function DriftRow({ row, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHo
               item.isMine ? 'Your answer. ' : ''
             }${
               mine === 1 ? 'Liked' : mine === -1 ? 'Sunk' : 'Not voted'
-            }. Click to like, double-click, right-click, or hold to sink.`}
+            }. Tap or click to like. Double-tap, hold, or right-click to sink.`}
             onPointerDown={(event) => {
               if (!canVote) return;
               onHoldStart(event, item.id);

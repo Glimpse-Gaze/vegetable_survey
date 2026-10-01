@@ -92,8 +92,15 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
       </h1>
       <p className="microcopy">
         Degree matters now. Place each item from least vegetabley at the top to
-        most at the bottom. Drag and drop, or click a slot and then an item.
-        Use arrows to nudge a placed item up or down.
+        most at the bottom.{' '}
+        <span className="copy-fine">
+          Drag and drop, or click a slot and then an item. Use arrows to nudge a
+          placed item up or down.
+        </span>
+        <span className="copy-coarse">
+          Tap a rank, then tap an item. Use the arrows to move it, or × to put
+          it back.
+        </span>
       </p>
 
       <form className="question-form" onSubmit={handleSubmit}>

@@ -469,42 +469,44 @@ export function Results() {
 
   return (
     <div className={menuOpen ? 'results-page is-menu-open' : 'results-page'}>
-      <div className="results-chrome">
-        <button
-          className="results-now"
-          type="button"
-          onClick={() => setMenuOpen(true)}
-        >
-          {category.title}
-        </button>
-        <button
-          className="results-menu-btn"
-          type="button"
-          aria-expanded={menuOpen}
-          aria-controls="results-drawer"
-          aria-label={menuOpen ? 'Close categories' : 'Open categories'}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span className="results-menu-lines" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-        </button>
-      </div>
-      {regionId !== 'global' ? (
-        <p className="results-region-status">
-          Showing {section.region.name} · {section.region.votes} answers
-          {' · '}
+      <header className="results-topbar">
+        <div className="results-chrome">
           <button
-            className="map-clear"
+            className="results-now"
             type="button"
-            onClick={() => selectRegion('global')}
+            onClick={() => setMenuOpen(true)}
           >
-            Show the world
+            {category.title}
           </button>
-        </p>
-      ) : null}
+          <button
+            className="results-menu-btn"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="results-drawer"
+            aria-label={menuOpen ? 'Close categories' : 'Open categories'}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span className="results-menu-lines" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+          </button>
+        </div>
+        {regionId !== 'global' ? (
+          <p className="results-region-status">
+            Showing {section.region.name} · {section.region.votes} answers
+            {' · '}
+            <button
+              className="map-clear"
+              type="button"
+              onClick={() => selectRegion('global')}
+            >
+              Show the world
+            </button>
+          </p>
+        ) : null}
+      </header>
 
       {menuOpen ? (
         <button
