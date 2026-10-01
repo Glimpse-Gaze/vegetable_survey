@@ -16,6 +16,7 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
     () => initialSpectrum ?? emptySpectrumSlots(),
   );
   const [activeSlot, setActiveSlot] = useState(0);
+  const [armedId, setArmedId] = useState(null);
   const remaining = slots.filter((id) => id == null).length;
   const canContinue = remaining === 0;
   const palette = paletteOrder.filter((vegetable) => !slots.includes(vegetable.id));
@@ -24,6 +25,7 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
     function handlePointerDown(event) {
       if (event.target.closest('.spectrum-slot, .spectrum-tile')) return;
       setActiveSlot(null);
+      setArmedId(null);
     }
 
     document.addEventListener('pointerdown', handlePointerDown);
@@ -31,7 +33,10 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
   }, []);
 
   function handlePlace(id, slotIndex = activeSlot) {
-    if (slotIndex == null || slotIndex < 0) return;
+    if (slotIndex == null || slotIndex < 0) {
+      setArmedId((current) => (current === id ? null : id));
+      return;
+    }
 
     setSlots((current) => {
       const next = [...current];
@@ -48,6 +53,7 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
       return next;
     });
 
+    setArmedId(null);
     setActiveSlot((currentActive) => {
       if (slotIndex !== currentActive && slotIndex != null) {
         return slotIndex;
@@ -76,6 +82,10 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
   }
 
   function handleActivateSlot(index) {
+    if (armedId) {
+      handlePlace(armedId, index);
+      return;
+    }
     setActiveSlot(index);
   }
 
@@ -98,8 +108,8 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
           placed item up or down.
         </span>
         <span className="copy-coarse">
-          Tap a rank, then tap an item. Use the arrows to move it, or × to put
-          it back.
+          Tap a rank, then an item — or tap an item, then a rank. Use the arrows
+          to move it, or × to put it back.
         </span>
       </p>
 
@@ -112,6 +122,7 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
           onPlace={handlePlace}
           onMove={handleMove}
           onReturnToPalette={handleReturnToPalette}
+          armedId={armedId}
         />
 
         <QuestionNav

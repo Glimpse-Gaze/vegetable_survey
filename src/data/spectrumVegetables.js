@@ -53,7 +53,7 @@ export const spectrumVegetables = [
     botany: 'a fruit — botanically a berry',
     kin: ['potato', 'bell pepper', 'aubergine', 'tobacco'],
     fact: 'Tomato originated in western South America. It is a fruit — botanically a berry — and belongs to the nightshade family (Solanaceae). Other familiar members include potato, bell pepper, aubergine, and tobacco.',
-    note: 'The problem child of the fruit vs. vegetable debate.',
+    note: 'The poster child of the fruit vs. vegetable debate.',
   },
   {
     id: 'turnip',

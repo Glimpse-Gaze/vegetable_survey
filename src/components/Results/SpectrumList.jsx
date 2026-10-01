@@ -40,17 +40,11 @@ function Spread({ item }) {
       <div className="spectrum-spread-ends">
         {item.slotShares.map((_, index) => {
           const slot = index + 1;
-          const isYours = slot === item.userSlot;
-          const showLeast = slot === 1 && !isYours;
-          const showMost = slot === 10 && !isYours;
 
           return (
             <span key={slot} className="spectrum-spread-end">
-              {showLeast ? 'Least' : null}
-              {isYours ? (
-                <span className="spectrum-blade-badge">Your vote</span>
-              ) : null}
-              {showMost ? 'Most' : null}
+              {slot === 1 ? 'Least' : null}
+              {slot === 10 ? 'Most' : null}
             </span>
           );
         })}
@@ -80,6 +74,9 @@ function SpectrumBlade({ item, bandId }) {
         <div className="spectrum-blade-topline">
           <span className="spectrum-blade-rank">#{item.rank}</span>
           <h3 className="spectrum-blade-name">{item.name}</h3>
+          {item.userSlot ? (
+            <span className="spectrum-blade-badge">Your vote</span>
+          ) : null}
         </div>
         <Spread item={item} />
         <p className="spectrum-blade-fact">{item.fact}</p>

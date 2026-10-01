@@ -14,6 +14,7 @@ export function AutocompleteInput({
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const containerRef = useRef(null);
   const inputRef = useRef(null);
+  const listRef = useRef(null);
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const listId = `${inputId}-listbox`;
@@ -34,6 +35,46 @@ export function AutocompleteInput({
       inputRef.current?.focus();
     }
   }, [autoFocus]);
+
+  useEffect(() => {
+    if (!showList) return undefined;
+    const input = inputRef.current;
+    const viewport = window.visualViewport;
+
+    function placeList() {
+      if (!input) return;
+      const coarse = window.matchMedia('(pointer: coarse)').matches;
+      if (!coarse) return;
+      const view = window.visualViewport;
+      const offset = view ? view.offsetTop : 0;
+      const height = view ? view.height : window.innerHeight;
+      const rect = input.getBoundingClientRect();
+      const inputTop = rect.top - offset;
+      const inputBottom = rect.bottom - offset;
+      const space = height - inputBottom;
+      if (space < 180) {
+        const shift = Math.min(Math.max(0, inputTop - 8), 180 - space);
+        if (shift > 4) window.scrollBy(0, shift);
+      }
+
+      const list = listRef.current;
+      if (!list) return;
+      const nextRect = input.getBoundingClientRect();
+      const nextBottom = nextRect.bottom - offset;
+      const nextSpace = height - nextBottom - 10;
+      list.style.maxHeight = `${Math.max(140, Math.min(nextSpace, 320))}px`;
+    }
+
+    placeList();
+    const later = window.setTimeout(placeList, 300);
+    viewport?.addEventListener('resize', placeList);
+    viewport?.addEventListener('scroll', placeList);
+    return () => {
+      window.clearTimeout(later);
+      viewport?.removeEventListener('resize', placeList);
+      viewport?.removeEventListener('scroll', placeList);
+    };
+  }, [showList, suggestions.length]);
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -131,7 +172,12 @@ export function AutocompleteInput({
       />
 
       {showList ? (
-        <ul id={listId} className="autocomplete-list" role="listbox">
+        <ul
+          id={listId}
+          className="autocomplete-list"
+          role="listbox"
+          ref={listRef}
+        >
           {suggestions.map((vegetable, index) => {
             const highlighted = index === highlightIndex;
             return (

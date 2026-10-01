@@ -153,22 +153,23 @@ export function NoteResults({ section, viewingOwn = true }) {
     [],
   );
 
-  function clampPoint(point) {
+  function clampPoint(point, tip = false) {
     const pad = 16;
+    const half = tip ? Math.min(128, (window.innerWidth - 32) / 2) : 0;
     return {
       x: Math.min(
-        window.innerWidth - pad,
-        Math.max(pad, point?.x ?? window.innerWidth / 2),
+        window.innerWidth - pad - half,
+        Math.max(pad + half, point?.x ?? window.innerWidth / 2),
       ),
       y: Math.min(
         window.innerHeight - pad,
-        Math.max(pad, point?.y ?? window.innerHeight / 2),
+        Math.max(pad + (tip ? 64 : 0), point?.y ?? window.innerHeight / 2),
       ),
     };
   }
 
   function showCapTip(kind, point) {
-    const { x, y } = clampPoint(point);
+    const { x, y } = clampPoint(point, true);
     setCapTip({ id: Date.now(), kind, x, y });
     if (capTipTimer.current) window.clearTimeout(capTipTimer.current);
     capTipTimer.current = window.setTimeout(() => setCapTip(null), 1800);

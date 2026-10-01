@@ -49,11 +49,11 @@ function ChevronDownIcon() {
   );
 }
 
-function PaletteTile({ vegetable, onPlace, onDragStart }) {
+function PaletteTile({ vegetable, armed, onPlace, onDragStart }) {
   return (
     <button
       type="button"
-      className="spectrum-tile"
+      className={armed ? 'spectrum-tile is-armed' : 'spectrum-tile'}
       draggable="true"
       onClick={(event) => {
         event.stopPropagation();
@@ -74,6 +74,7 @@ export function SpectrumBoard({
   onPlace,
   onMove,
   onReturnToPalette,
+  armedId = null,
 }) {
   const [dragId, setDragId] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
@@ -239,6 +240,7 @@ export function SpectrumBoard({
             <PaletteTile
               key={vegetable.id}
               vegetable={vegetable}
+              armed={armedId === vegetable.id}
               onPlace={() => onPlace(vegetable.id, activeSlot)}
               onDragStart={handleDragStart}
             />

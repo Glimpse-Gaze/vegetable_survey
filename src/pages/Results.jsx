@@ -28,10 +28,9 @@ const WorldMap = lazy(() =>
 );
 
 const AUTO_PX_PER_MS = 0.048;
-const DRAG_THRESHOLD = 6;
 const IDLE_MS = 5000;
 const NUDGE_SETTLE_MS = 450;
-const WARMUP_MS = 4000;
+const WARMUP_MS = 1100;
 const EDGE_PX = 110;
 const EDGE_FLOOR = 0.64;
 
@@ -41,12 +40,7 @@ function clamp01(value) {
 
 function warmupGain(elapsed) {
   const t = clamp01(elapsed / WARMUP_MS);
-  if (t <= 0.1) {
-    const u = t / 0.1;
-    return 0.05 * u * u * u * u;
-  }
-  const u = (t - 0.1) / 0.9;
-  return 0.05 + 0.95 * (u * u);
+  return t * t * (3 - 2 * t);
 }
 
 function edgeGain(position, max, direction) {
@@ -168,13 +162,19 @@ function Blade({ item, isYours, variant }) {
       {isChampion ? <Crown /> : null}
       <div className="blade-face">
         {isYours ? <span className="blade-badge">Your vote</span> : null}
-        <img src={item.art} alt="" draggable={false} />
+        <img
+          src={item.art}
+          alt=""
+          draggable={false}
+          decoding="async"
+          loading={item.rank > 2 ? 'lazy' : 'eager'}
+        />
         <div className="blade-scrim" />
         <div className="blade-copy">
           <div className="blade-topline">
             <span className="blade-rank">#{item.rank}</span>
           </div>
-          <h3 className="blade-name">{item.name}</h3>
+          <p className="blade-name">{item.name}</p>
           <p className="blade-meta">
             {formatVotes(item.votes)} · {formatShare(item.share)}
           </p>
@@ -191,10 +191,12 @@ function RankRail({ section, pauseAutoplay }) {
   const railRef = useRef(null);
   const stageRef = useRef(null);
   const menuPauseRef = useRef(false);
-  const dragRef = useRef(null);
   const nudgePauseRef = useRef(false);
   const directionRef = useRef(1);
   const resumeTimer = useRef(0);
+  const scrollPause = useRef(0);
+  const drivingRef = useRef(false);
+  const drivenAt = useRef(0);
 
   function holdNudge() {
     nudgePauseRef.current = true;
@@ -233,9 +235,8 @@ function RankRail({ section, pauseAutoplay }) {
     function tick(now) {
       const dt = Math.min(48, now - last);
       last = now;
-      const dragging = dragRef.current != null;
       const busy =
-        hidden || menuPauseRef.current || nudgePauseRef.current || dragging;
+        hidden || menuPauseRef.current || nudgePauseRef.current;
       if (busy) {
         idleMs = 0;
         warmupElapsed = 0;
@@ -259,6 +260,8 @@ function RankRail({ section, pauseAutoplay }) {
           if (step !== 0) {
             carry -= step;
             const next = rail.scrollLeft + step;
+            drivingRef.current = true;
+            drivenAt.current = performance.now();
             if (next >= max) {
               rail.scrollLeft = max;
               directionRef.current = -1;
@@ -270,6 +273,7 @@ function RankRail({ section, pauseAutoplay }) {
             } else {
               rail.scrollLeft = next;
             }
+            drivingRef.current = false;
           }
         }
       }
@@ -285,57 +289,45 @@ function RankRail({ section, pauseAutoplay }) {
   }, []);
 
   useEffect(() => {
-    return () => window.clearTimeout(resumeTimer.current);
+    return () => {
+      window.clearTimeout(resumeTimer.current);
+      window.clearTimeout(scrollPause.current);
+    };
   }, []);
 
   function nudge(direction) {
     const rail = railRef.current;
     if (!rail) return;
     holdNudge();
-    const step = Math.round(rail.clientWidth * 0.72);
-    rail.scrollBy({ left: direction * step, behavior: 'smooth' });
+    const blade = rail.querySelector('.blade');
+    const gap = parseFloat(getComputedStyle(rail).columnGap) || 19;
+    const stride = (blade?.getBoundingClientRect().width ?? rail.clientWidth) + gap;
+    const count = rail.clientWidth > stride * 1.6 ? 2 : 1;
+    rail.scrollBy({ left: direction * stride * count, behavior: 'auto' });
     releaseNudge();
   }
 
-  function onPointerDown(event) {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
+  function onUserHold(event) {
     if (event.target.closest('.blade-arrow')) return;
-    const rail = railRef.current;
-    if (!rail) return;
-    dragRef.current = {
-      id: event.pointerId,
-      x: event.clientX,
-      scroll: rail.scrollLeft,
-      moved: false,
-    };
-    rail.setPointerCapture(event.pointerId);
+    holdNudge();
   }
 
-  function onPointerMove(event) {
-    const drag = dragRef.current;
-    const rail = railRef.current;
-    if (!drag || drag.id !== event.pointerId || !rail) return;
-    const dx = event.clientX - drag.x;
-    if (!drag.moved && Math.abs(dx) < DRAG_THRESHOLD) return;
-    drag.moved = true;
-    rail.scrollLeft = drag.scroll - dx;
-    stageRef.current?.classList.add('is-dragging');
+  function onUserRelease(event) {
+    if (event.target.closest('.blade-arrow')) return;
+    releaseNudge();
   }
 
-  function endDrag(event) {
-    const drag = dragRef.current;
-    const rail = railRef.current;
-    if (!drag || (event && drag.id !== event.pointerId)) return;
-    const moved = drag.moved;
-    dragRef.current = null;
-    stageRef.current?.classList.remove('is-dragging');
-    if (rail?.hasPointerCapture(drag.id)) {
-      rail.releasePointerCapture(drag.id);
-    }
-    if (moved) {
-      holdNudge();
-      releaseNudge();
-    }
+  function onRailScroll() {
+    if (drivingRef.current || performance.now() - drivenAt.current < 40) return;
+    const stage = stageRef.current;
+    if (!stage) return;
+    stage.classList.add('is-scrolling');
+    window.clearTimeout(scrollPause.current);
+    scrollPause.current = window.setTimeout(() => {
+      stage.classList.remove('is-scrolling');
+    }, 140);
+    holdNudge();
+    releaseNudge();
   }
 
   return (
@@ -352,10 +344,10 @@ function RankRail({ section, pauseAutoplay }) {
         <div
           className="blade-rail"
           ref={railRef}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
+          onPointerDown={onUserHold}
+          onPointerUp={onUserRelease}
+          onPointerCancel={onUserRelease}
+          onScroll={onRailScroll}
         >
           {section.items.map((item) => (
             <Blade
@@ -434,6 +426,7 @@ export function Results() {
   }, [category, categoryId, navigate]);
 
   useEffect(() => {
+    setMenuOpen(false);
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [category.id]);
 
@@ -447,7 +440,10 @@ export function Results() {
   }, [menuOpen]);
 
   function goTo(id) {
-    setMenuOpen(false);
+    if (id === category.id) {
+      setMenuOpen(false);
+      return;
+    }
     const code = searchParams.get('code');
     navigate(
       code
@@ -546,7 +542,7 @@ export function Results() {
         </Link>
       </aside>
 
-      <div className="results-main">
+      <main className="results-main">
         <section className="results-section">
           <header className="results-section-head">
             <p className="eyebrow">{section.eyebrow}</p>
@@ -682,7 +678,7 @@ export function Results() {
             />
           </div>
         </section>
-      </div>
+      </main>
     </div>
   );
 }
