@@ -128,6 +128,8 @@ export function NoteResults({ section, viewingOwn = true }) {
   const canPin = Boolean(viewingOwn && storedNote.text && storedNote.isPublic);
   const pool = section.notePool ?? [];
   const [myVotes, setMyVotes] = useState(readMyVotes);
+  const [resetDone, setResetDone] = useState(false);
+  const resetFlash = useRef(0);
   const [board, setBoard] = useState(() =>
     snapshotPage(pool, readMyVotes(), 0, myNote, canPin),
   );
@@ -222,6 +224,9 @@ export function NoteResults({ section, viewingOwn = true }) {
     if (!Object.keys(votesNow).length) return;
     writeMyVotes({});
     setMyVotes({});
+    setResetDone(true);
+    window.clearTimeout(resetFlash.current);
+    resetFlash.current = window.setTimeout(() => setResetDone(false), 1400);
     fetch('/api/reason-votes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -438,12 +443,12 @@ export function NoteResults({ section, viewingOwn = true }) {
           </p>
           <div className="reason-reset-row">
             <button
-              className="reason-reset"
+              className={resetDone ? 'reason-reset is-cleared' : 'reason-reset'}
               type="button"
-              disabled={!Object.keys(myVotes).length}
+              disabled={!Object.keys(myVotes).length && !resetDone}
               onClick={resetVotes}
             >
-              Reset input
+              {resetDone ? 'Cleared' : 'Reset input'}
             </button>
             <p className="reason-reset-tip">
               Clears your 5 likes and 5 dislikes so you can vote on 10 answers

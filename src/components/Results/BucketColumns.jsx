@@ -108,7 +108,6 @@ export function BucketColumns({ section }) {
                 <tr>
                   <th>Category</th>
                   <th>Votes</th>
-                  <th>Share</th>
                   <th className="is-bar"> </th>
                 </tr>
               </thead>
@@ -125,7 +124,6 @@ export function BucketColumns({ section }) {
                   >
                     <th scope="row">{row.title}</th>
                     <td>{formatVotes(row.votes)}</td>
-                    <td>{formatShare(row.share)}</td>
                     <td className="is-bar">
                       <span className="bucket-lookup-meter" aria-hidden="true">
                         <span style={{ width: `${row.share * 100}%` }} />

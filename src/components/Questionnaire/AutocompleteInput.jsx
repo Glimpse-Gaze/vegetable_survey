@@ -9,16 +9,19 @@ export function AutocompleteInput({
   placeholder,
   autoFocus = true,
   onCommit,
+  disabled = false,
 }) {
   const [open, setOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
+  const [fieldHeld, setFieldHeld] = useState(false);
   const containerRef = useRef(null);
   const inputRef = useRef(null);
   const listRef = useRef(null);
+  const parkedScroll = useRef(0);
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const listId = `${inputId}-listbox`;
-  const showList = open && suggestions.length > 0;
+  const showList = open && !disabled && suggestions.length > 0;
   const activeDescendant =
     showList && highlightIndex >= 0
       ? `${listId}-option-${highlightIndex}`
@@ -37,25 +40,78 @@ export function AutocompleteInput({
   }, [autoFocus]);
 
   useEffect(() => {
+    const input = inputRef.current;
+    if (!input || disabled) return undefined;
+    const shell = document.querySelector('.app-shell');
+    const previousPadding = shell?.style.paddingBottom ?? '';
+    let held = false;
+    let blurTimer = 0;
+
+    function keyboardInset() {
+      const view = window.visualViewport;
+      const viewHeight = view?.height ?? window.innerHeight;
+      return Math.max(
+        0,
+        window.innerHeight - ((view?.offsetTop ?? 0) + viewHeight),
+      );
+    }
+
+    function holdPadding() {
+      if (!window.matchMedia('(pointer: coarse)').matches || !shell) return;
+      const focused = document.activeElement === input;
+      const keyboard = keyboardInset();
+      if (!focused && keyboard <= 80) return;
+      shell.style.paddingBottom = `${Math.max(keyboard + 24, 80)}px`;
+      held = true;
+    }
+
+    function releasePadding() {
+      setFieldHeld(false);
+      if (held && shell) {
+        shell.style.paddingBottom = previousPadding;
+        held = false;
+      }
+    }
+
+    function onFocus() {
+      window.clearTimeout(blurTimer);
+      holdPadding();
+    }
+
+    function onBlur() {
+      window.clearTimeout(blurTimer);
+      blurTimer = window.setTimeout(() => {
+        if (document.activeElement === input) return;
+        releasePadding();
+      }, 160);
+    }
+
+    input.addEventListener('focus', onFocus);
+    input.addEventListener('blur', onBlur);
+    const view = window.visualViewport;
+    view?.addEventListener('resize', holdPadding);
+    view?.addEventListener('scroll', holdPadding);
+
+    return () => {
+      window.clearTimeout(blurTimer);
+      input.removeEventListener('focus', onFocus);
+      input.removeEventListener('blur', onBlur);
+      view?.removeEventListener('resize', holdPadding);
+      view?.removeEventListener('scroll', holdPadding);
+      if (shell) shell.style.paddingBottom = previousPadding;
+    };
+  }, [disabled]);
+
+  useEffect(() => {
     if (!showList) return undefined;
     const input = inputRef.current;
     const coarse = window.matchMedia('(pointer: coarse)').matches;
     if (!coarse || !input) return undefined;
-    const shell = document.querySelector('.app-shell');
-    const previousPadding = shell?.style.paddingBottom ?? '';
     const listNode = listRef.current;
 
     function placeList(smooth) {
       const view = window.visualViewport;
       const viewHeight = view?.height ?? window.innerHeight;
-      const keyboard = Math.max(
-        0,
-        window.innerHeight - ((view?.offsetTop ?? 0) + viewHeight),
-      );
-      if (shell) {
-        shell.style.paddingBottom = `${Math.max(keyboard + 24, 80)}px`;
-      }
-
       const rect = input.getBoundingClientRect();
       const room = 220;
       const space = viewHeight - rect.bottom;
@@ -73,20 +129,33 @@ export function AutocompleteInput({
       list.style.maxHeight = `${Math.max(120, Math.min(nextSpace, 320))}px`;
     }
 
+    function rememberScroll() {
+      parkedScroll.current = window.scrollY;
+    }
+
     placeList(false);
+    rememberScroll();
     const later = window.setTimeout(() => placeList(true), 320);
     const view = window.visualViewport;
     const onViewport = () => placeList(false);
     view?.addEventListener('resize', onViewport);
     view?.addEventListener('scroll', onViewport);
+    window.addEventListener('scroll', rememberScroll, { passive: true });
     return () => {
       window.clearTimeout(later);
       view?.removeEventListener('resize', onViewport);
       view?.removeEventListener('scroll', onViewport);
-      if (shell) shell.style.paddingBottom = previousPadding;
+      window.removeEventListener('scroll', rememberScroll);
       if (listNode) listNode.style.maxHeight = '';
+      const parked = parkedScroll.current;
+      if (!input.isConnected || document.activeElement !== input || parked < 8) return;
+      window.requestAnimationFrame(() => {
+        if (document.activeElement === input && window.scrollY + 8 < parked) {
+          window.scrollTo({ top: parked, behavior: 'auto' });
+        }
+      });
     };
-  }, [showList, suggestions.length]);
+  }, [showList]);
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -170,15 +239,20 @@ export function AutocompleteInput({
         aria-activedescendant={activeDescendant}
         placeholder={placeholder}
         value={value}
+        disabled={disabled}
         onChange={(event) => {
+          if (disabled) return;
           onChange(event.target.value);
           setOpen(true);
+          if (window.matchMedia('(pointer: coarse)').matches) setFieldHeld(true);
         }}
         onFocus={() => {
+          if (disabled) return;
+          if (window.matchMedia('(pointer: coarse)').matches) setFieldHeld(true);
           if (suggestions.length > 0) setOpen(true);
         }}
         onClick={() => {
-          if (suggestions.length > 0) setOpen(true);
+          if (!disabled && suggestions.length > 0) setOpen(true);
         }}
         onKeyDown={handleKeyDown}
       />
@@ -213,6 +287,9 @@ export function AutocompleteInput({
             );
           })}
         </ul>
+      ) : null}
+      {fieldHeld && !showList ? (
+        <div className="autocomplete-hold" aria-hidden="true" />
       ) : null}
     </div>
   );

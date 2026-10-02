@@ -85,7 +85,7 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
         </span>
       </p>
 
-      <form className="question-form" onSubmit={handleSubmit}>
+      <form className="question-form is-no-select" onSubmit={handleSubmit}>
         <BucketBoard
           palette={palette}
           buckets={buckets}

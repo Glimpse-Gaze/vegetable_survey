@@ -195,7 +195,6 @@ function RankRail({ section, pauseAutoplay }) {
   const nudgePauseRef = useRef(false);
   const directionRef = useRef(1);
   const resumeTimer = useRef(0);
-  const scrollPause = useRef(0);
   const drivingRef = useRef(false);
   const drivenAt = useRef(0);
   const nudgeAnim = useRef(0);
@@ -293,7 +292,6 @@ function RankRail({ section, pauseAutoplay }) {
   useEffect(() => {
     return () => {
       window.clearTimeout(resumeTimer.current);
-      window.clearTimeout(scrollPause.current);
       window.cancelAnimationFrame(nudgeAnim.current);
     };
   }, []);
@@ -351,13 +349,6 @@ function RankRail({ section, pauseAutoplay }) {
 
   function onRailScroll() {
     if (drivingRef.current || performance.now() - drivenAt.current < 40) return;
-    const stage = stageRef.current;
-    if (!stage) return;
-    stage.classList.add('is-scrolling');
-    window.clearTimeout(scrollPause.current);
-    scrollPause.current = window.setTimeout(() => {
-      stage.classList.remove('is-scrolling');
-    }, 140);
     holdNudge();
     releaseNudge();
   }
@@ -548,7 +539,7 @@ export function Results() {
       <aside
         className={menuOpen ? 'results-drawer is-open' : 'results-drawer'}
         id="results-drawer"
-        aria-hidden={menuOpen ? undefined : true}
+        inert={menuOpen ? undefined : true}
       >
         <p className="results-nav-kicker">Categories</p>
         <p className="results-nav-meta">

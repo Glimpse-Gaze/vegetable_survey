@@ -41,22 +41,33 @@ export function Question7({
   continueHint,
 }) {
   const grewUp = initialBackground?.grewUp;
-  const skippedPlace = !grewUp || grewUp.skipped;
   const languagesState = initialBackground?.languages;
-  const skippedLanguages = !languagesState || languagesState.skipped;
 
+  const placeWithheld = Boolean(
+    grewUp && (grewUp.skipped || grewUp.canonicalId === DISCLOSE_ID),
+  );
   const [placeValue, setPlaceValue] = useState(
-    skippedPlace ? '' : (grewUp.rawAnswer ?? ''),
+    placeWithheld ? '' : (grewUp?.rawAnswer ?? ''),
   );
   const [placePicked, setPlacePicked] = useState(
-    skippedPlace || !grewUp.canonicalId
-      ? null
-      : { id: grewUp.canonicalId, name: grewUp.rawAnswer },
+    placeWithheld
+      ? { id: DISCLOSE_ID, name: 'I prefer not to disclose' }
+      : grewUp?.canonicalId
+        ? { id: grewUp.canonicalId, name: grewUp.rawAnswer }
+        : null,
   );
   const [languageValue, setLanguageValue] = useState('');
-  const [languageItems, setLanguageItems] = useState(
-    skippedLanguages ? [] : (languagesState.items ?? []),
-  );
+  const [languageItems, setLanguageItems] = useState(() => {
+    if (languagesState?.skipped) {
+      return [
+        {
+          rawAnswer: 'I prefer not to disclose',
+          canonicalId: DISCLOSE_ID,
+        },
+      ];
+    }
+    return languagesState?.items ?? [];
+  });
 
   const placeSuggestions = getLookupSuggestions(placeValue, countries, {
     featuredIds: featuredCountryIds,
@@ -75,6 +86,11 @@ export function Question7({
     if (item.id === ANTARCTICA_ID) {
       onBlockedAntarctica?.();
       return false;
+    }
+    if (item.id === DISCLOSE_ID) {
+      setPlaceValue('');
+      setPlacePicked(item);
+      return;
     }
     setPlaceValue(item.name);
     setPlacePicked(item);
@@ -175,17 +191,25 @@ export function Question7({
       </p>
 
       <form className="question-form" onSubmit={handleSubmit}>
-        <div className="background-field">
+        <div
+          className={
+            placePicked?.id === DISCLOSE_ID
+              ? 'background-field is-withheld'
+              : 'background-field'
+          }
+        >
           <label htmlFor="grew-up">In which country or region did you grow up?</label>
           <AutocompleteInput
             id="grew-up"
             value={placeValue}
+            disabled={placePicked?.id === DISCLOSE_ID}
             onChange={(next) => {
+              if (placePicked?.id === DISCLOSE_ID) return;
               setPlaceValue(next);
               setPlacePicked(null);
             }}
             onPickSuggestion={handlePlacePick}
-            suggestions={placeSuggestions}
+            suggestions={placePicked?.id === DISCLOSE_ID ? [] : placeSuggestions}
             placeholder="Country, region, or continent..."
             autoFocus={false}
           />
@@ -209,31 +233,57 @@ export function Question7({
           </label>
         </div>
 
-        <div className="background-field">
+        <div
+          className={
+            languageItems.length === 1 &&
+            languageItems[0]?.canonicalId === DISCLOSE_ID
+              ? 'background-field is-withheld'
+              : 'background-field'
+          }
+        >
           <label htmlFor="languages-spoken">What language(s) do you speak?</label>
-          {languageItems.length > 0 ? (
+          {languageItems.some((entry) => entry.canonicalId !== DISCLOSE_ID) ? (
             <ul className="chip-list">
-              {languageItems.map((entry, index) => (
-                <li key={`${entry.canonicalId ?? entry.rawAnswer}-${index}`}>
-                  <button
-                    type="button"
-                    className="chip"
-                    onClick={() => removeLanguage(index)}
-                  >
-                    {entry.rawAnswer}
-                    <span aria-hidden="true"> ×</span>
-                  </button>
-                </li>
-              ))}
+              {languageItems.map((entry, index) =>
+                entry.canonicalId === DISCLOSE_ID ? null : (
+                  <li key={`${entry.canonicalId ?? entry.rawAnswer}-${index}`}>
+                    <button
+                      type="button"
+                      className="chip"
+                      onClick={() => removeLanguage(index)}
+                    >
+                      {entry.rawAnswer}
+                      <span aria-hidden="true"> ×</span>
+                    </button>
+                  </li>
+                ),
+              )}
             </ul>
           ) : null}
           <AutocompleteInput
             id="languages-spoken"
             value={languageValue}
-            onChange={setLanguageValue}
+            disabled={
+              languageItems.length === 1 &&
+              languageItems[0]?.canonicalId === DISCLOSE_ID
+            }
+            onChange={(next) => {
+              if (
+                languageItems.length === 1 &&
+                languageItems[0]?.canonicalId === DISCLOSE_ID
+              ) {
+                return;
+              }
+              setLanguageValue(next);
+            }}
             onPickSuggestion={addLanguage}
             onCommit={addLanguage}
-            suggestions={languageSuggestions}
+            suggestions={
+              languageItems.length === 1 &&
+              languageItems[0]?.canonicalId === DISCLOSE_ID
+                ? []
+                : languageSuggestions
+            }
             placeholder="Type a language..."
             autoFocus={false}
           />

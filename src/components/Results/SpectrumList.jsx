@@ -33,6 +33,9 @@ function Spread({ item }) {
               title={`#${slot}: ${Math.round(share * 100)}%`}
             >
               <span className="spectrum-spread-bar" />
+              {slot === item.userSlot ? (
+                <span className="spectrum-blade-badge">Your vote</span>
+              ) : null}
             </span>
           );
         })}
@@ -49,11 +52,6 @@ function Spread({ item }) {
           );
         })}
       </div>
-      {item.userSlot ? (
-        <p className="spectrum-vote-line" style={{ '--vote-slot': item.userSlot }}>
-          <span className="spectrum-blade-badge">Your vote</span>
-        </p>
-      ) : null}
     </div>
   );
 }

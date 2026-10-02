@@ -44,22 +44,45 @@ export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
 
   useEffect(() => {
     let origin = null;
+    let dragged = false;
+
+    function rememberMove(event) {
+      if (!origin || origin.pointerId !== event.pointerId) return;
+      const dx = event.clientX - origin.x;
+      const dy = event.clientY - origin.y;
+      if (dx * dx + dy * dy > 16) dragged = true;
+    }
 
     function onPointerDown(event) {
       origin = {
         x: event.clientX,
         y: event.clientY,
         pointerId: event.pointerId,
+        scrollY: window.scrollY,
       };
+      dragged = false;
+    }
+
+    function onScroll() {
+      if (!origin) return;
+      if (Math.abs(window.scrollY - origin.scrollY) > 2) dragged = true;
     }
 
     function onPointerUp(event) {
       if (!origin || origin.pointerId !== event.pointerId) return;
       const dx = event.clientX - origin.x;
       const dy = event.clientY - origin.y;
+      const scrolled = Math.abs(window.scrollY - origin.scrollY) > 2;
+      const wasDrag = dragged || scrolled || dx * dx + dy * dy > 16;
       origin = null;
-      if (dx * dx + dy * dy > 64) return;
-      if (event.target.closest('.spectrum-scale, .spectrum-tile, .spectrum-rank-button')) {
+      dragged = false;
+      if (wasDrag) return;
+      if (
+        event.target instanceof Element &&
+        event.target.closest(
+          '.spectrum-scale, .spectrum-pool, .spectrum-tile, .spectrum-rank-button',
+        )
+      ) {
         return;
       }
       setActiveSlot(null);
@@ -68,13 +91,20 @@ export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
 
     function onPointerCancel() {
       origin = null;
+      dragged = false;
     }
 
     document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointermove', rememberMove);
+    document.addEventListener('touchmove', rememberMove, { passive: true });
+    window.addEventListener('scroll', onScroll, true);
     document.addEventListener('pointerup', onPointerUp);
     document.addEventListener('pointercancel', onPointerCancel);
     return () => {
       document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('pointermove', rememberMove);
+      document.removeEventListener('touchmove', rememberMove);
+      window.removeEventListener('scroll', onScroll, true);
       document.removeEventListener('pointerup', onPointerUp);
       document.removeEventListener('pointercancel', onPointerCancel);
     };

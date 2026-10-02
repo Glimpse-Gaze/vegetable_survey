@@ -108,7 +108,7 @@ export const spectrumVegetables = [
     botany: 'a leaf',
     kin: ['sunflower', 'artichoke', 'chicory', 'endive'],
     fact: 'Lettuce originated in the eastern Mediterranean. It is a leaf, and belongs to the daisy family (Asteraceae). Other familiar members include sunflower, artichoke, chicory, and endive.',
-    note: 'In ancient Egypt, lettuce was a sacred sex symbol.',
+    note: 'In ancient Egypt, lettuce was a sacred sex\u00A0symbol.',
   },
   {
     id: 'cucumber',

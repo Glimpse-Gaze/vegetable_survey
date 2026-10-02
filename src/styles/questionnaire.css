@@ -104,6 +104,13 @@ body {
   gap: 20px;
 }
 
+.question-form.is-no-select,
+.question-form.is-no-select * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 .autocomplete {
   position: relative;
 }
@@ -129,6 +136,18 @@ body {
 .criterion-card:focus-within {
   outline: 3px solid rgba(44, 106, 56, 0.35);
   outline-offset: 2px;
+}
+
+.autocomplete-input:disabled {
+  background: #e6e0d4;
+  color: #8d867c;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.autocomplete-hold {
+  height: 320px;
 }
 
 .autocomplete-list {
@@ -882,6 +901,7 @@ body {
   width: 100%;
   min-width: 0;
   height: var(--tile-h);
+  touch-action: none;
 }
 
 .bucket-items .spectrum-tile {
@@ -1059,6 +1079,19 @@ body {
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
+  animation: results-invite 1.8s ease-out infinite;
+}
+
+@keyframes results-invite {
+  0% {
+    box-shadow: 0 0 0 0 rgba(44, 106, 56, 0.48);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(44, 106, 56, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(44, 106, 56, 0);
+  }
 }
 
 .thanks-note-form {
@@ -1281,7 +1314,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bucket.is-active {
+  .bucket.is-active,
+  .thanks-results-button {
     animation: none;
   }
 }
