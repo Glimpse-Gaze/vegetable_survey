@@ -13,7 +13,7 @@ import potato from '../content/Potato.jpg';
 import pumpkin from '../content/Pumpkin.jpg';
 import tomato from '../content/Tomato.jpg';
 import turnip from '../content/Turnips.jpg';
-import placeholder from '../content/Placeholder.png';
+import placeholder from '../content/Placeholder.jpg';
 import { DEV_SPEEDRUN } from './devSpeedrun.js';
 import { vegetables } from './vegetables.js';
 import { findCanonicalMatch } from '../utils/autocomplete.js';

@@ -49,6 +49,11 @@ function Spread({ item }) {
           );
         })}
       </div>
+      {item.userSlot ? (
+        <p className="spectrum-vote-line">
+          <span className="spectrum-blade-badge">Your vote</span>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -74,9 +79,6 @@ function SpectrumBlade({ item, bandId }) {
         <div className="spectrum-blade-topline">
           <span className="spectrum-blade-rank">#{item.rank}</span>
           <h3 className="spectrum-blade-name">{item.name}</h3>
-          {item.userSlot ? (
-            <span className="spectrum-blade-badge">Your vote</span>
-          ) : null}
         </div>
         <Spread item={item} />
         <p className="spectrum-blade-fact">{item.fact}</p>

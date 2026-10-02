@@ -167,7 +167,8 @@ function Blade({ item, isYours, variant }) {
           alt=""
           draggable={false}
           decoding="async"
-          loading={item.rank > 2 ? 'lazy' : 'eager'}
+          loading="eager"
+          fetchPriority={item.rank <= 2 ? 'high' : 'auto'}
         />
         <div className="blade-scrim" />
         <div className="blade-copy">
@@ -197,6 +198,7 @@ function RankRail({ section, pauseAutoplay }) {
   const scrollPause = useRef(0);
   const drivingRef = useRef(false);
   const drivenAt = useRef(0);
+  const nudgeAnim = useRef(0);
 
   function holdNudge() {
     nudgePauseRef.current = true;
@@ -292,23 +294,53 @@ function RankRail({ section, pauseAutoplay }) {
     return () => {
       window.clearTimeout(resumeTimer.current);
       window.clearTimeout(scrollPause.current);
+      window.cancelAnimationFrame(nudgeAnim.current);
     };
   }, []);
 
   function nudge(direction) {
     const rail = railRef.current;
     if (!rail) return;
+    window.cancelAnimationFrame(nudgeAnim.current);
     holdNudge();
     const blade = rail.querySelector('.blade');
     const gap = parseFloat(getComputedStyle(rail).columnGap) || 19;
     const stride = (blade?.getBoundingClientRect().width ?? rail.clientWidth) + gap;
     const count = rail.clientWidth > stride * 1.6 ? 2 : 1;
-    rail.scrollBy({ left: direction * stride * count, behavior: 'auto' });
-    releaseNudge();
+    const start = rail.scrollLeft;
+    const max = Math.max(0, rail.scrollWidth - rail.clientWidth);
+    const target = Math.max(0, Math.min(max, start + direction * stride * count));
+    const distance = target - start;
+    if (Math.abs(distance) < 2) {
+      releaseNudge();
+      return;
+    }
+    const duration = Math.min(560, 280 + Math.abs(distance) * 0.35);
+    const began = performance.now();
+    drivingRef.current = true;
+
+    function step(now) {
+      const t = Math.min(1, (now - began) / duration);
+      const eased = 1 - (1 - t) ** 3;
+      rail.scrollLeft = start + distance * eased;
+      drivenAt.current = now;
+      if (t < 1) {
+        nudgeAnim.current = window.requestAnimationFrame(step);
+        return;
+      }
+      nudgeAnim.current = 0;
+      drivingRef.current = false;
+      releaseNudge();
+    }
+
+    nudgeAnim.current = window.requestAnimationFrame(step);
   }
 
   function onUserHold(event) {
     if (event.target.closest('.blade-arrow')) return;
+    window.cancelAnimationFrame(nudgeAnim.current);
+    nudgeAnim.current = 0;
+    drivingRef.current = false;
     holdNudge();
   }
 

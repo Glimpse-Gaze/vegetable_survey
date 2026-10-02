@@ -17,6 +17,7 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
     initialBuckets?.not_vegetable ? initialBuckets : emptyBuckets(),
   );
   const [activeBucket, setActiveBucket] = useState(null);
+  const [armedId, setArmedId] = useState(null);
   const placed = placedBucketIds(buckets);
   const palette = paletteOrder.filter((item) => !placed.includes(item.id));
   const canContinue = placed.length === bucketItems.length;
@@ -25,6 +26,7 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
     function handlePointerDown(event) {
       if (event.target.closest('.bucket, .spectrum-tile')) return;
       setActiveBucket(null);
+      setArmedId(null);
     }
 
     document.addEventListener('pointerdown', handlePointerDown);
@@ -32,7 +34,10 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
   }, []);
 
   function handlePlace(id, bucketId = activeBucket) {
-    if (!bucketId) return;
+    if (!bucketId) {
+      setArmedId((current) => (current === id ? null : id));
+      return;
+    }
 
     setBuckets((current) => {
       const next = {
@@ -46,6 +51,7 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
       return next;
     });
     setActiveBucket(bucketId);
+    setArmedId(null);
   }
 
   function handleReturnToPalette(id) {
@@ -74,8 +80,8 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
           Drag them, or click a bucket and then an item.
         </span>
         <span className="copy-coarse">
-          Tap a bucket, then tap each item. Tap × on a sorted item to put it
-          back.
+          Tap a bucket, then an item — or tap an item, then a bucket. Hold an
+          item to drag it. Tap × on a sorted item to put it back.
         </span>
       </p>
 
@@ -84,7 +90,14 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
           palette={palette}
           buckets={buckets}
           activeBucket={activeBucket}
-          onActivateBucket={setActiveBucket}
+          armedId={armedId}
+          onActivateBucket={(bucketId) => {
+            if (armedId) {
+              handlePlace(armedId, bucketId);
+              return;
+            }
+            setActiveBucket(bucketId);
+          }}
           onPlace={handlePlace}
           onReturnToPalette={handleReturnToPalette}
         />

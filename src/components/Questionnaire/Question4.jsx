@@ -8,6 +8,23 @@ import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
 import { SpectrumBoard } from './SpectrumBoard.jsx';
 
+function nextOpenSlot(slots, fromIndex) {
+  for (let index = fromIndex + 1; index < slots.length; index += 1) {
+    if (slots[index] == null) return index;
+  }
+  let closest = null;
+  let best = Infinity;
+  for (let index = 0; index < fromIndex; index += 1) {
+    if (slots[index] != null) continue;
+    const distance = fromIndex - index;
+    if (distance < best) {
+      best = distance;
+      closest = index;
+    }
+  }
+  return closest;
+}
+
 export function Question4({ onContinue, onBack, initialSpectrum }) {
   const [paletteOrder] = useState(() =>
     shuffleSpectrumVegetables(spectrumVegetables),
@@ -37,29 +54,16 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
       setArmedId((current) => (current === id ? null : id));
       return;
     }
+    if (slots[slotIndex] === id) return;
 
-    setSlots((current) => {
-      const next = [...current];
-      const fromIndex = next.indexOf(id);
-      if (fromIndex === slotIndex) return current;
-
-      const displaced = next[slotIndex];
-      if (fromIndex !== -1) {
-        next[fromIndex] = displaced;
-        next[slotIndex] = id;
-      } else {
-        next[slotIndex] = id;
-      }
-      return next;
+    const placed = slots.map((item, index) => {
+      if (index === slotIndex) return id;
+      if (item === id) return slots[slotIndex] ?? null;
+      return item;
     });
-
+    setSlots(placed);
     setArmedId(null);
-    setActiveSlot((currentActive) => {
-      if (slotIndex !== currentActive && slotIndex != null) {
-        return slotIndex;
-      }
-      return currentActive;
-    });
+    setActiveSlot(nextOpenSlot(placed, slotIndex));
   }
 
   function handleMove(index, delta) {

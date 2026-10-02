@@ -1,11 +1,12 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   BUCKET_IDS,
   bucketLabels,
   getBucketItem,
 } from '../../data/bucketItems.js';
 
-const HOLD_MS = 200;
+const ARM_MS = 180;
+const DETACH_MS = 500;
 const SLOP = 12;
 
 const nativeDrag =
@@ -16,13 +17,13 @@ function BucketTile({
   item,
   pressed,
   dragging,
+  armed,
+  detached,
   onPlace,
   onDragStart,
   onDragEnd,
   onRemove,
   onTouchStart,
-  onTouchMove,
-  onTouchEnd,
 }) {
   return (
     <div className="bucket-tile">
@@ -31,7 +32,9 @@ function BucketTile({
         className={[
           'spectrum-tile',
           pressed ? 'is-pressed' : '',
+          armed ? 'is-armed' : '',
           dragging ? 'is-dragging' : '',
+          detached ? 'is-detached' : '',
         ]
           .filter(Boolean)
           .join(' ')}
@@ -40,12 +43,10 @@ function BucketTile({
           event.stopPropagation();
           onPlace(item.id);
         }}
+        onContextMenu={(event) => event.preventDefault()}
         onDragStart={(event) => onDragStart(event, item.id)}
         onDragEnd={onDragEnd}
         onPointerDown={(event) => onTouchStart(event, item)}
-        onPointerMove={onTouchMove}
-        onPointerUp={onTouchEnd}
-        onPointerCancel={onTouchEnd}
       >
         <span className="spectrum-tile-label">{item.name}</span>
       </button>
@@ -71,6 +72,7 @@ export function BucketBoard({
   palette,
   buckets,
   activeBucket,
+  armedId,
   onActivateBucket,
   onPlace,
   onReturnToPalette,
@@ -129,7 +131,11 @@ export function BucketBoard({
 
   function clearSession() {
     const current = session.current;
-    if (current) window.clearTimeout(current.timer);
+    if (current) {
+      window.clearTimeout(current.timer);
+      window.clearTimeout(current.detachTimer);
+      unlisten(current);
+    }
     session.current = null;
     setPressedId(null);
     setGhost(null);
@@ -138,36 +144,87 @@ export function BucketBoard({
     setOverPalette(false);
   }
 
+  useEffect(() => {
+    function blockScroll(event) {
+      if (session.current?.armed) event.preventDefault();
+    }
+    document.addEventListener('touchmove', blockScroll, { passive: false });
+    return () => document.removeEventListener('touchmove', blockScroll);
+  }, []);
+
+  function findDrop(x, y) {
+    for (const node of document.elementsFromPoint(x, y)) {
+      if (!(node instanceof Element)) continue;
+      if (node.closest('.touch-drag-ghost')) continue;
+      const bucketId = node.closest('[data-bucket]')?.getAttribute('data-bucket');
+      if (bucketId) return { bucketId };
+      if (node.closest('.spectrum-palette')) return { palette: true };
+    }
+    return null;
+  }
+
   function highlightUnder(x, y) {
-    const hit = document.elementFromPoint(x, y);
-    const bucketId = hit?.closest?.('[data-bucket]')?.getAttribute('data-bucket');
-    const paletteHit = Boolean(hit?.closest?.('.spectrum-palette'));
-    setOverBucket(bucketId ?? null);
-    setOverPalette(paletteHit && !bucketId);
+    const hit = findDrop(x, y);
+    setOverBucket(hit?.bucketId ?? null);
+    setOverPalette(Boolean(hit?.palette));
+  }
+
+  function detach(current) {
+    if (current.detached) return;
+    current.detached = true;
+    suppressClick.current = true;
+    setDragId(current.id);
+    setGhost({
+      x: current.lastX ?? current.x,
+      y: current.lastY ?? current.y,
+      name: current.name,
+    });
+  }
+
+  function unlisten(current) {
+    if (!current?.onMove) return;
+    window.removeEventListener('pointermove', current.onMove);
+    window.removeEventListener('pointerup', current.onUp);
+    window.removeEventListener('pointercancel', current.onUp);
   }
 
   function onTouchStart(event, item) {
     if (event.pointerType === 'mouse') return;
-    const current = session.current;
-    if (current) window.clearTimeout(current.timer);
+    if (event.button != null && event.button !== 0) return;
+    const previous = session.current;
+    if (previous) {
+      window.clearTimeout(previous.timer);
+      window.clearTimeout(previous.detachTimer);
+      unlisten(previous);
+    }
     const next = {
       id: item.id,
       name: item.name,
       pointerId: event.pointerId,
       x: event.clientX,
       y: event.clientY,
+      lastX: event.clientX,
+      lastY: event.clientY,
       armed: false,
-      target: event.currentTarget,
+      detached: false,
       timer: 0,
+      detachTimer: 0,
+      onMove: null,
+      onUp: null,
     };
     next.timer = window.setTimeout(() => {
       if (session.current !== next) return;
       next.armed = true;
-      suppressClick.current = true;
-      next.target.setPointerCapture?.(next.pointerId);
-      setDragId(item.id);
-      setGhost({ x: next.x, y: next.y, name: item.name });
-    }, HOLD_MS);
+    }, ARM_MS);
+    next.detachTimer = window.setTimeout(() => {
+      if (session.current !== next || !next.armed) return;
+      detach(next);
+    }, DETACH_MS);
+    next.onMove = (moveEvent) => onTouchMove(moveEvent);
+    next.onUp = (endEvent) => onTouchEnd(endEvent);
+    window.addEventListener('pointermove', next.onMove);
+    window.addEventListener('pointerup', next.onUp);
+    window.addEventListener('pointercancel', next.onUp);
     session.current = next;
     setPressedId(item.id);
   }
@@ -175,16 +232,22 @@ export function BucketBoard({
   function onTouchMove(event) {
     const current = session.current;
     if (!current || current.pointerId !== event.pointerId) return;
+    current.lastX = event.clientX;
+    current.lastY = event.clientY;
     const dx = event.clientX - current.x;
     const dy = event.clientY - current.y;
     if (!current.armed) {
       if (dx * dx + dy * dy > SLOP * SLOP) {
         window.clearTimeout(current.timer);
+        window.clearTimeout(current.detachTimer);
+        unlisten(current);
         session.current = null;
         setPressedId(null);
       }
       return;
     }
+    if (dx * dx + dy * dy > SLOP * SLOP) detach(current);
+    if (!current.detached) return;
     setGhost({ x: event.clientX, y: event.clientY, name: current.name });
     highlightUnder(event.clientX, event.clientY);
   }
@@ -193,14 +256,21 @@ export function BucketBoard({
     const current = session.current;
     if (!current || current.pointerId !== event.pointerId) return;
     window.clearTimeout(current.timer);
+    window.clearTimeout(current.detachTimer);
+    unlisten(current);
+    const detached = current.detached;
+    const id = current.id;
     session.current = null;
-    if (!current.armed) return;
-
-    const hit = document.elementFromPoint(event.clientX, event.clientY);
-    const bucketId = hit?.closest?.('[data-bucket]')?.getAttribute('data-bucket');
-    const paletteHit = Boolean(hit?.closest?.('.spectrum-palette'));
-    if (bucketId) onPlace(current.id, bucketId);
-    else if (paletteHit) onReturnToPalette(current.id);
+    if (!detached) {
+      setPressedId(null);
+      return;
+    }
+    window.setTimeout(() => {
+      suppressClick.current = false;
+    }, 400);
+    const hit = findDrop(event.clientX, event.clientY);
+    if (hit?.bucketId) onPlace(id, hit.bucketId);
+    else if (hit?.palette) onReturnToPalette(id);
     clearSession();
   }
 
@@ -249,14 +319,14 @@ export function BucketBoard({
                       key={id}
                       item={item}
                       pressed={pressedId === id}
+                      armed={armedId === id}
                       dragging={dragId === id}
+                      detached={Boolean(ghost) && dragId === id}
                       onPlace={() => placeFromTap(id, activeBucket ?? bucketId)}
                       onDragStart={handleDragStart}
                       onDragEnd={handleDragEnd}
                       onRemove={() => onReturnToPalette(id)}
                       onTouchStart={onTouchStart}
-                      onTouchMove={onTouchMove}
-                      onTouchEnd={onTouchEnd}
                     />
                   );
                 })}
@@ -280,21 +350,24 @@ export function BucketBoard({
               key={item.id}
               item={item}
               pressed={pressedId === item.id}
+              armed={armedId === item.id}
               dragging={dragId === item.id}
+              detached={Boolean(ghost) && dragId === item.id}
               onPlace={() => placeFromTap(item.id, activeBucket)}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
             />
           ))}
         </div>
       </div>
       {ghost ? (
-        <p className="touch-drag-ghost" style={{ left: ghost.x, top: ghost.y }}>
-          {ghost.name}
-        </p>
+        <div
+          className="touch-drag-ghost spectrum-tile"
+          style={{ left: ghost.x, top: ghost.y }}
+        >
+          <span className="spectrum-tile-label">{ghost.name}</span>
+        </div>
       ) : null}
     </div>
   );

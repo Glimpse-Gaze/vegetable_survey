@@ -682,6 +682,9 @@ body {
   color: var(--ink);
   font: inherit;
   cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   transition: background 160ms ease, border-color 160ms ease, transform 120ms ease,
     box-shadow 160ms ease;
 }
@@ -718,6 +721,11 @@ body {
   background: #e7dcc8;
   border-color: var(--green);
   box-shadow: 0 0 0 3px rgba(44, 106, 56, 0.28);
+}
+
+.spectrum-tile.is-detached {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .spectrum-tile:focus-visible {
@@ -765,11 +773,12 @@ body {
 
 .bucket.is-not_vegetable.is-active,
 .bucket.is-not_vegetable.is-over {
+  --bucket-ring: rgba(207, 64, 36, 0.34);
   border-style: solid;
   border-width: 3px;
   border-color: var(--tomato);
   background: #f4cbbf;
-  box-shadow: 0 0 0 5px rgba(207, 64, 36, 0.28);
+  box-shadow: 0 0 0 5px var(--bucket-ring);
 }
 
 .bucket.is-in_between {
@@ -783,11 +792,12 @@ body {
 
 .bucket.is-in_between.is-active,
 .bucket.is-in_between.is-over {
+  --bucket-ring: rgba(209, 121, 13, 0.34);
   border-style: solid;
   border-width: 3px;
   border-color: var(--carrot);
   background: #f3d7a4;
-  box-shadow: 0 0 0 5px rgba(209, 121, 13, 0.28);
+  box-shadow: 0 0 0 5px var(--bucket-ring);
 }
 
 .bucket.is-definitely_vegetable {
@@ -801,11 +811,26 @@ body {
 
 .bucket.is-definitely_vegetable.is-active,
 .bucket.is-definitely_vegetable.is-over {
+  --bucket-ring: rgba(44, 106, 56, 0.34);
   border-style: solid;
   border-width: 3px;
   border-color: var(--green);
   background: #cfe6cc;
-  box-shadow: 0 0 0 5px rgba(44, 106, 56, 0.28);
+  box-shadow: 0 0 0 5px var(--bucket-ring);
+}
+
+.bucket.is-active {
+  animation: bucket-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes bucket-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px var(--bucket-ring, rgba(44, 106, 56, 0.28));
+  }
+  50% {
+    box-shadow: 0 0 0 8px var(--bucket-ring, rgba(44, 106, 56, 0.28));
+  }
 }
 
 .bucket-label {
@@ -829,13 +854,6 @@ body {
 
 .bucket.is-active .bucket-label {
   background: rgba(255, 250, 242, 0.72);
-}
-
-.bucket.is-active .bucket-label::after {
-  content: "Selected";
-  font-size: 0.72rem;
-  font-weight: 750;
-  letter-spacing: 0.12em;
 }
 
 .bucket-items {
@@ -1195,18 +1213,12 @@ body {
 
 .touch-drag-ghost {
   position: fixed;
-  z-index: 70;
+  z-index: 80;
   margin: 0;
-  padding: 8px 14px;
-  border: 1.5px solid var(--green);
-  border-radius: 14px;
-  background: #fff;
-  color: var(--ink);
-  font-weight: 650;
-  line-height: 1.2;
-  box-shadow: 0 10px 24px rgba(47, 38, 22, 0.18);
   pointer-events: none;
-  transform: translate(-50%, -120%);
+  transform: translate(-50%, -50%) scale(1.04);
+  box-shadow: 0 16px 32px rgba(47, 38, 22, 0.24);
+  transition: none;
 }
 
 .sr-only {
@@ -1256,6 +1268,12 @@ body {
   .back-hint {
     white-space: normal;
     max-width: min(18rem, calc(100vw - 48px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bucket.is-active {
+    animation: none;
   }
 }
 

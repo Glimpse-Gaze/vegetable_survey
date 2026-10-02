@@ -113,7 +113,12 @@ export function WorldMap({ selectedId, onSelect }) {
     const groups = [...svg.querySelectorAll('.country > g')];
     groupsRef.current = groups;
 
+    const hoverTip = window.matchMedia(
+      '(hover: hover) and (pointer: fine)',
+    ).matches;
+
     function onEnter(event) {
+      if (!hoverTip) return;
       const group = event.currentTarget;
       const title = group.getAttribute('data-name');
       if (!title) return;

@@ -988,6 +988,12 @@
   justify-content: flex-end;
 }
 
+.spectrum-vote-line {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 0;
+}
+
 .spectrum-blade-fact,
 .spectrum-blade-note {
   margin: 10px 0 0;
@@ -1557,6 +1563,21 @@
   border: 1.5px solid var(--border);
   border-radius: 18px;
   background: var(--card);
+}
+
+.bucket-card.is-not_vegetable {
+  outline: 2px solid var(--tomato);
+  outline-offset: 0;
+}
+
+.bucket-card.is-in_between {
+  outline: 2px solid var(--carrot);
+  outline-offset: 0;
+}
+
+.bucket-card.is-definitely_vegetable {
+  outline: 2px solid var(--green);
+  outline-offset: 0;
 }
 
 .bucket-card-kicker {
