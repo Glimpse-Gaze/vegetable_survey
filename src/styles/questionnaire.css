@@ -839,10 +839,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-height: 64px;
-  margin: -4px -4px 14px;
-  padding: 12px 12px 14px;
+  min-height: 0;
+  margin: 0 0 8px;
+  padding: 8px 10px;
   border-radius: 12px;
+  background: rgba(255, 250, 242, 0.72);
   font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -853,7 +854,7 @@ body {
 }
 
 .bucket.is-active .bucket-label {
-  background: rgba(255, 250, 242, 0.72);
+  background: rgba(255, 250, 242, 0.92);
 }
 
 .bucket-items {
@@ -1219,6 +1220,14 @@ body {
   transform: translate(-50%, -50%) scale(1.04);
   box-shadow: 0 16px 32px rgba(47, 38, 22, 0.24);
   transition: none;
+}
+
+.buckets .touch-drag-ghost.spectrum-tile {
+  flex: none;
+  width: auto;
+  max-width: none;
+  min-height: 0;
+  height: auto;
 }
 
 .sr-only {

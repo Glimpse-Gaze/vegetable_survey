@@ -216,6 +216,12 @@ export function Questionnaire() {
     });
   }
 
+  function handleSpectrumDraft(spectrum) {
+    setResponse((current) => (
+      current.spectrum === spectrum ? current : { ...current, spectrum }
+    ));
+  }
+
   function handleQuestion4({ spectrum }) {
     persist(STEPS.QUESTION_5, {
       ...response,
@@ -312,6 +318,7 @@ export function Questionnaire() {
           <Question4
             initialSpectrum={response.spectrum}
             onContinue={handleQuestion4}
+            onDraft={handleSpectrumDraft}
             onBack={handleBack}
           />
         ) : null}

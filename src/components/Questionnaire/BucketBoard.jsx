@@ -5,8 +5,7 @@ import {
   getBucketItem,
 } from '../../data/bucketItems.js';
 
-const ARM_MS = 180;
-const DETACH_MS = 500;
+const GHOST_MS = 300;
 const SLOP = 12;
 
 const nativeDrag =
@@ -133,7 +132,6 @@ export function BucketBoard({
     const current = session.current;
     if (current) {
       window.clearTimeout(current.timer);
-      window.clearTimeout(current.detachTimer);
       unlisten(current);
     }
     session.current = null;
@@ -169,16 +167,22 @@ export function BucketBoard({
     setOverPalette(Boolean(hit?.palette));
   }
 
+  function ghostFrom(current, x, y) {
+    return {
+      x,
+      y,
+      name: current.name,
+      width: current.width,
+      height: current.height,
+    };
+  }
+
   function detach(current) {
     if (current.detached) return;
     current.detached = true;
     suppressClick.current = true;
     setDragId(current.id);
-    setGhost({
-      x: current.lastX ?? current.x,
-      y: current.lastY ?? current.y,
-      name: current.name,
-    });
+    setGhost(ghostFrom(current, current.lastX ?? current.x, current.lastY ?? current.y));
   }
 
   function unlisten(current) {
@@ -194,9 +198,9 @@ export function BucketBoard({
     const previous = session.current;
     if (previous) {
       window.clearTimeout(previous.timer);
-      window.clearTimeout(previous.detachTimer);
       unlisten(previous);
     }
+    const box = event.currentTarget.getBoundingClientRect();
     const next = {
       id: item.id,
       name: item.name,
@@ -205,21 +209,19 @@ export function BucketBoard({
       y: event.clientY,
       lastX: event.clientX,
       lastY: event.clientY,
+      width: box.width,
+      height: box.height,
       armed: false,
       detached: false,
       timer: 0,
-      detachTimer: 0,
       onMove: null,
       onUp: null,
     };
     next.timer = window.setTimeout(() => {
       if (session.current !== next) return;
       next.armed = true;
-    }, ARM_MS);
-    next.detachTimer = window.setTimeout(() => {
-      if (session.current !== next || !next.armed) return;
       detach(next);
-    }, DETACH_MS);
+    }, GHOST_MS);
     next.onMove = (moveEvent) => onTouchMove(moveEvent);
     next.onUp = (endEvent) => onTouchEnd(endEvent);
     window.addEventListener('pointermove', next.onMove);
@@ -239,16 +241,14 @@ export function BucketBoard({
     if (!current.armed) {
       if (dx * dx + dy * dy > SLOP * SLOP) {
         window.clearTimeout(current.timer);
-        window.clearTimeout(current.detachTimer);
         unlisten(current);
         session.current = null;
         setPressedId(null);
       }
       return;
     }
-    if (dx * dx + dy * dy > SLOP * SLOP) detach(current);
     if (!current.detached) return;
-    setGhost({ x: event.clientX, y: event.clientY, name: current.name });
+    setGhost(ghostFrom(current, event.clientX, event.clientY));
     highlightUnder(event.clientX, event.clientY);
   }
 
@@ -256,7 +256,6 @@ export function BucketBoard({
     const current = session.current;
     if (!current || current.pointerId !== event.pointerId) return;
     window.clearTimeout(current.timer);
-    window.clearTimeout(current.detachTimer);
     unlisten(current);
     const detached = current.detached;
     const id = current.id;
@@ -364,7 +363,12 @@ export function BucketBoard({
       {ghost ? (
         <div
           className="touch-drag-ghost spectrum-tile"
-          style={{ left: ghost.x, top: ghost.y }}
+          style={{
+            left: ghost.x,
+            top: ghost.y,
+            width: ghost.width,
+            height: ghost.height,
+          }}
         >
           <span className="spectrum-tile-label">{ghost.name}</span>
         </div>

@@ -28,7 +28,7 @@ const WorldMap = lazy(() =>
 );
 
 const AUTO_PX_PER_MS = 0.048;
-const IDLE_MS = 5000;
+const IDLE_MS = 4000;
 const NUDGE_SETTLE_MS = 450;
 const WARMUP_MS = 1100;
 const EDGE_PX = 110;

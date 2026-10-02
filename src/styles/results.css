@@ -989,9 +989,18 @@
 }
 
 .spectrum-vote-line {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0 0;
+  position: relative;
+  height: 1.2rem;
+  margin: 2px 0 0;
+}
+
+.spectrum-vote-line .spectrum-blade-badge {
+  position: absolute;
+  top: 0;
+  left: calc(
+    (var(--vote-slot) - 1) * ((100% - 27px) / 10 + 3px) + (100% - 27px) / 20
+  );
+  transform: translateX(-50%);
 }
 
 .spectrum-blade-fact,
@@ -1071,7 +1080,9 @@
 
 .reason-reset-row {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   margin-top: 10px;
 }
 
@@ -1105,30 +1116,13 @@
 }
 
 .reason-reset-tip {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 8px);
-  z-index: 4;
-  width: max-content;
-  max-width: 16rem;
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: var(--ink);
-  color: #fffaf2;
-  font-size: 0.75rem;
+  margin: 0;
+  max-width: 22rem;
+  color: var(--muted);
+  font-size: 0.78rem;
   font-weight: 500;
   line-height: 1.35;
   text-align: center;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, 4px);
-  transition: opacity 140ms ease, transform 140ms ease;
-}
-
-.reason-reset:hover:not(:disabled) .reason-reset-tip,
-.reason-reset:focus-visible .reason-reset-tip {
-  opacity: 1;
-  transform: translateX(-50%);
 }
 
 .reason-drift-row {
@@ -2058,16 +2052,6 @@
     padding-right: 16px;
   }
 
-  .blade.is-champion {
-    flex-basis: 22.08rem;
-    width: 22.08rem;
-    --blade-face-height: 13.92rem;
-  }
-
-  .blade.is-champion .blade-name {
-    font-size: 1.78rem;
-  }
-
   .map-select {
     min-width: 0;
     width: 100%;
@@ -2082,13 +2066,13 @@
     position: sticky;
     top: 0;
     z-index: 40;
-    gap: 5px;
+    gap: 2px;
     padding:
-      max(8px, env(safe-area-inset-top))
+      max(6px, env(safe-area-inset-top))
       max(12px, env(safe-area-inset-right))
-      6px
+      2px
       max(12px, env(safe-area-inset-left));
-    background: rgba(243, 238, 227, 0.94);
+    background: rgba(243, 238, 227, 0.85);
     backdrop-filter: blur(8px);
   }
 
@@ -2120,13 +2104,17 @@
   }
 
   .results-region-status .map-clear {
-    min-height: 40px;
+    min-height: 32px;
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 
   .results-main {
-    padding-top: 12px;
+    padding-top: 8px;
+  }
+
+  .blade-anchor {
+    scroll-margin-top: calc(5.25rem + env(safe-area-inset-top));
   }
 
   .results-section {
@@ -2165,44 +2153,27 @@
   }
 
   .blade,
-  .blade.is-champion,
   .blade.is-outlier {
-    flex-basis: min(22rem, calc(100vw - 4.75rem));
-    width: min(22rem, calc(100vw - 4.75rem));
+    flex-basis: min(19.5rem, calc(100vw - 6.25rem));
+    width: min(19.5rem, calc(100vw - 6.25rem));
+    --blade-face-height: 13rem;
   }
 
-  .blade-name,
+  .blade.is-champion {
+    flex-basis: min(23.2rem, calc(100vw - 3.1rem));
+    width: min(23.2rem, calc(100vw - 3.1rem));
+    --blade-face-height: 15.6rem;
+  }
+
+  .blade-name {
+    font-size: 1.2rem;
+  }
+
   .blade.is-champion .blade-name {
-    font-size: 1.35rem;
+    font-size: 1.55rem;
   }
 
   .note-board {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (hover: none) {
-  .reason-reset {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: min(22rem, 100%);
-    padding: 12px 18px;
-    text-align: center;
-  }
-
-  .reason-reset-tip {
-    position: static;
-    display: block;
-    width: auto;
-    max-width: none;
-    margin-top: 6px;
-    padding: 0;
-    background: transparent;
-    color: var(--muted);
-    font-weight: 500;
-    text-align: center;
-    opacity: 1;
-    transform: none;
   }
 }

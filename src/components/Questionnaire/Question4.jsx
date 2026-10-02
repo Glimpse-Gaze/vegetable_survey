@@ -25,7 +25,7 @@ function nextOpenSlot(slots, fromIndex) {
   return closest;
 }
 
-export function Question4({ onContinue, onBack, initialSpectrum }) {
+export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
   const [paletteOrder] = useState(() =>
     shuffleSpectrumVegetables(spectrumVegetables),
   );
@@ -39,14 +39,45 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
   const palette = paletteOrder.filter((vegetable) => !slots.includes(vegetable.id));
 
   useEffect(() => {
-    function handlePointerDown(event) {
-      if (event.target.closest('.spectrum-slot, .spectrum-tile')) return;
+    onDraft?.(slots);
+  }, [slots, onDraft]);
+
+  useEffect(() => {
+    let origin = null;
+
+    function onPointerDown(event) {
+      origin = {
+        x: event.clientX,
+        y: event.clientY,
+        pointerId: event.pointerId,
+      };
+    }
+
+    function onPointerUp(event) {
+      if (!origin || origin.pointerId !== event.pointerId) return;
+      const dx = event.clientX - origin.x;
+      const dy = event.clientY - origin.y;
+      origin = null;
+      if (dx * dx + dy * dy > 64) return;
+      if (event.target.closest('.spectrum-scale, .spectrum-tile, .spectrum-rank-button')) {
+        return;
+      }
       setActiveSlot(null);
       setArmedId(null);
     }
 
-    document.addEventListener('pointerdown', handlePointerDown);
-    return () => document.removeEventListener('pointerdown', handlePointerDown);
+    function onPointerCancel() {
+      origin = null;
+    }
+
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointerup', onPointerUp);
+    document.addEventListener('pointercancel', onPointerCancel);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('pointercancel', onPointerCancel);
+    };
   }, []);
 
   function handlePlace(id, slotIndex = activeSlot) {

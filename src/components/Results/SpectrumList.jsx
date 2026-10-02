@@ -50,7 +50,7 @@ function Spread({ item }) {
         })}
       </div>
       {item.userSlot ? (
-        <p className="spectrum-vote-line">
+        <p className="spectrum-vote-line" style={{ '--vote-slot': item.userSlot }}>
           <span className="spectrum-blade-badge">Your vote</span>
         </p>
       ) : null}
@@ -73,7 +73,12 @@ function SpectrumBlade({ item, bandId }) {
         .join(' ')}
     >
       <div className="spectrum-blade-art">
-        <img src={item.art} alt="" />
+        <img
+          src={item.art}
+          alt=""
+          decoding="async"
+          loading={item.rank <= 2 ? 'eager' : 'lazy'}
+        />
       </div>
       <div className="spectrum-blade-copy">
         <div className="spectrum-blade-topline">

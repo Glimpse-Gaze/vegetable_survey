@@ -39,40 +39,52 @@ export function AutocompleteInput({
   useEffect(() => {
     if (!showList) return undefined;
     const input = inputRef.current;
-    const viewport = window.visualViewport;
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+    if (!coarse || !input) return undefined;
+    const shell = document.querySelector('.app-shell');
+    const previousPadding = shell?.style.paddingBottom ?? '';
+    const listNode = listRef.current;
 
-    function placeList() {
-      if (!input) return;
-      const coarse = window.matchMedia('(pointer: coarse)').matches;
-      if (!coarse) return;
+    function placeList(smooth) {
       const view = window.visualViewport;
-      const offset = view ? view.offsetTop : 0;
-      const height = view ? view.height : window.innerHeight;
+      const viewHeight = view?.height ?? window.innerHeight;
+      const keyboard = Math.max(
+        0,
+        window.innerHeight - ((view?.offsetTop ?? 0) + viewHeight),
+      );
+      if (shell) {
+        shell.style.paddingBottom = `${Math.max(keyboard + 24, 80)}px`;
+      }
+
       const rect = input.getBoundingClientRect();
-      const inputTop = rect.top - offset;
-      const inputBottom = rect.bottom - offset;
-      const space = height - inputBottom;
-      if (space < 180) {
-        const shift = Math.min(Math.max(0, inputTop - 8), 180 - space);
-        if (shift > 4) window.scrollBy(0, shift);
+      const room = 220;
+      const space = viewHeight - rect.bottom;
+      if (space < room) {
+        const shift = Math.min(Math.max(0, rect.top - 12), room - space);
+        if (shift > 4) {
+          window.scrollBy({ top: shift, behavior: smooth ? 'smooth' : 'auto' });
+        }
       }
 
       const list = listRef.current;
       if (!list) return;
-      const nextRect = input.getBoundingClientRect();
-      const nextBottom = nextRect.bottom - offset;
-      const nextSpace = height - nextBottom - 10;
-      list.style.maxHeight = `${Math.max(140, Math.min(nextSpace, 320))}px`;
+      const next = input.getBoundingClientRect();
+      const nextSpace = viewHeight - next.bottom - 12;
+      list.style.maxHeight = `${Math.max(120, Math.min(nextSpace, 320))}px`;
     }
 
-    placeList();
-    const later = window.setTimeout(placeList, 300);
-    viewport?.addEventListener('resize', placeList);
-    viewport?.addEventListener('scroll', placeList);
+    placeList(false);
+    const later = window.setTimeout(() => placeList(true), 320);
+    const view = window.visualViewport;
+    const onViewport = () => placeList(false);
+    view?.addEventListener('resize', onViewport);
+    view?.addEventListener('scroll', onViewport);
     return () => {
       window.clearTimeout(later);
-      viewport?.removeEventListener('resize', placeList);
-      viewport?.removeEventListener('scroll', placeList);
+      view?.removeEventListener('resize', onViewport);
+      view?.removeEventListener('scroll', onViewport);
+      if (shell) shell.style.paddingBottom = previousPadding;
+      if (listNode) listNode.style.maxHeight = '';
     };
   }, [showList, suggestions.length]);
 

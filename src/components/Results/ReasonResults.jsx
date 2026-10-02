@@ -493,11 +493,11 @@ export function ReasonResults({ section, viewingOwn = true }) {
                 onClick={resetVotes}
               >
                 Reset input
-                <span className="reason-reset-tip">
-                  Clears your 5 likes and 5 dislikes so you can vote on 10 answers
-                  again.
-                </span>
               </button>
+              <p className="reason-reset-tip">
+                Clears your 5 likes and 5 dislikes so you can vote on 10 answers
+                again.
+              </p>
             </div>
           </>
         ) : null}
