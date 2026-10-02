@@ -278,6 +278,7 @@ export function Question7({
             }}
             onPickSuggestion={addLanguage}
             onCommit={addLanguage}
+            closeOnPick={false}
             suggestions={
               languageItems.length === 1 &&
               languageItems[0]?.canonicalId === DISCLOSE_ID

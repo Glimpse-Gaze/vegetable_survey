@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
 
-const MAX_LENGTH = 1000;
+const MAX_LENGTH = 500;
 
 export function Question6({ onContinue, onBack, initialDescription }) {
   const [text, setText] = useState(initialDescription?.text ?? '');

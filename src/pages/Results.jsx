@@ -192,6 +192,8 @@ function RankRail({ section, pauseAutoplay }) {
   const railRef = useRef(null);
   const stageRef = useRef(null);
   const menuPauseRef = useRef(false);
+  const edgesRef = useRef({ atStart: true, atEnd: false });
+  const [edges, setEdges] = useState({ atStart: true, atEnd: false });
   const nudgePauseRef = useRef(false);
   const directionRef = useRef(1);
   const resumeTimer = useRef(0);
@@ -296,6 +298,29 @@ function RankRail({ section, pauseAutoplay }) {
     };
   }, []);
 
+  function readEdges() {
+    const rail = railRef.current;
+    if (!rail) return;
+    const max = Math.max(0, rail.scrollWidth - rail.clientWidth);
+    const next = {
+      atStart: rail.scrollLeft <= 2,
+      atEnd: max <= 2 || rail.scrollLeft >= max - 2,
+    };
+    const prev = edgesRef.current;
+    if (prev.atStart === next.atStart && prev.atEnd === next.atEnd) return;
+    edgesRef.current = next;
+    setEdges(next);
+  }
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return undefined;
+    readEdges();
+    const observer = new ResizeObserver(() => readEdges());
+    observer.observe(rail);
+    return () => observer.disconnect();
+  }, [section.items]);
+
   function nudge(direction) {
     const rail = railRef.current;
     if (!rail) return;
@@ -348,6 +373,7 @@ function RankRail({ section, pauseAutoplay }) {
   }
 
   function onRailScroll() {
+    readEdges();
     if (drivingRef.current || performance.now() - drivenAt.current < 40) return;
     holdNudge();
     releaseNudge();
@@ -357,9 +383,14 @@ function RankRail({ section, pauseAutoplay }) {
     <>
       <div className="blade-stage" ref={stageRef}>
         <button
-          className="blade-arrow is-prev"
+          className={
+            edges.atStart ? 'blade-arrow is-prev is-edge' : 'blade-arrow is-prev'
+          }
           type="button"
           aria-label="Previous vegetables"
+          aria-hidden={edges.atStart}
+          disabled={edges.atStart}
+          tabIndex={edges.atStart ? -1 : 0}
           onClick={() => nudge(-1)}
         >
           ‹
@@ -382,9 +413,14 @@ function RankRail({ section, pauseAutoplay }) {
           ))}
         </div>
         <button
-          className="blade-arrow is-next"
+          className={
+            edges.atEnd ? 'blade-arrow is-next is-edge' : 'blade-arrow is-next'
+          }
           type="button"
           aria-label="Next vegetables"
+          aria-hidden={edges.atEnd}
+          disabled={edges.atEnd}
+          tabIndex={edges.atEnd ? -1 : 0}
           onClick={() => nudge(1)}
         >
           ›

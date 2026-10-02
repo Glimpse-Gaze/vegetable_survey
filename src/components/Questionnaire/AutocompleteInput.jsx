@@ -10,6 +10,7 @@ export function AutocompleteInput({
   autoFocus = true,
   onCommit,
   disabled = false,
+  closeOnPick = true,
 }) {
   const [open, setOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
@@ -45,6 +46,7 @@ export function AutocompleteInput({
     const shell = document.querySelector('.app-shell');
     const previousPadding = shell?.style.paddingBottom ?? '';
     let held = false;
+    let sawKeyboard = false;
     let blurTimer = 0;
 
     function keyboardInset() {
@@ -57,10 +59,22 @@ export function AutocompleteInput({
     }
 
     function holdPadding() {
-      if (!window.matchMedia('(pointer: coarse)').matches || !shell) return;
-      const focused = document.activeElement === input;
+      if (!window.matchMedia('(pointer: coarse)').matches) return;
       const keyboard = keyboardInset();
-      if (!focused && keyboard <= 80) return;
+      const focused = document.activeElement === input;
+      if (keyboard >= 40) sawKeyboard = true;
+      if (!focused) {
+        releasePadding();
+        return;
+      }
+      if (keyboard < 40) {
+        if (!sawKeyboard) return;
+        sawKeyboard = false;
+        releasePadding();
+        input.blur();
+        return;
+      }
+      if (!shell) return;
       shell.style.paddingBottom = `${Math.max(keyboard + 24, 80)}px`;
       held = true;
     }
@@ -74,6 +88,7 @@ export function AutocompleteInput({
     }
 
     function onFocus() {
+      sawKeyboard = false;
       window.clearTimeout(blurTimer);
       holdPadding();
     }
@@ -204,14 +219,31 @@ export function AutocompleteInput({
     if (event.key === 'Enter' && onCommit) {
       event.preventDefault();
       onCommit(value);
+      if (closeOnPick) {
+        endEntry();
+        return;
+      }
       setOpen(false);
       setHighlightIndex(-1);
     }
   }
 
+  function endEntry() {
+    setFieldHeld(false);
+    setOpen(false);
+    setHighlightIndex(-1);
+    const shell = document.querySelector('.app-shell');
+    if (shell) shell.style.paddingBottom = '';
+    inputRef.current?.blur();
+  }
+
   function chooseSuggestion(item) {
     const shouldClose = onPickSuggestion(item);
     if (shouldClose === false) return;
+    if (closeOnPick) {
+      endEntry();
+      return;
+    }
     setOpen(false);
     setHighlightIndex(-1);
   }

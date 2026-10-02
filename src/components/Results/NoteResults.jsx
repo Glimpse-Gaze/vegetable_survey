@@ -218,6 +218,20 @@ export function NoteResults({ section, viewingOwn = true }) {
     });
   }
 
+  function releaseReset(event) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    if (
+      event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom
+    ) {
+      return;
+    }
+    resetVotes();
+  }
+
   function resetVotes() {
     if (!responseId) return;
     const votesNow = readMyVotes();
@@ -447,6 +461,8 @@ export function NoteResults({ section, viewingOwn = true }) {
               type="button"
               disabled={!Object.keys(myVotes).length && !resetDone}
               onClick={resetVotes}
+              onPointerUp={releaseReset}
+              onContextMenu={(event) => event.preventDefault()}
             >
               {resetDone ? 'Cleared' : 'Reset input'}
             </button>

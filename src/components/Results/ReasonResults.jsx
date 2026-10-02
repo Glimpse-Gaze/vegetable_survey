@@ -291,6 +291,20 @@ export function ReasonResults({ section, viewingOwn = true }) {
     });
   }
 
+  function releaseReset(event) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    if (
+      event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom
+    ) {
+      return;
+    }
+    resetVotes();
+  }
+
   function resetVotes() {
     const votesNow = readMyVotes();
     if (!Object.keys(votesNow).length) return;
@@ -496,6 +510,8 @@ export function ReasonResults({ section, viewingOwn = true }) {
                 type="button"
                 disabled={!Object.keys(myVotes).length && !resetDone}
                 onClick={resetVotes}
+                onPointerUp={releaseReset}
+                onContextMenu={(event) => event.preventDefault()}
               >
                 {resetDone ? 'Cleared' : 'Reset input'}
               </button>
