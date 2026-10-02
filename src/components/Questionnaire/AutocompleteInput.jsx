@@ -23,6 +23,7 @@ export function AutocompleteInput({
   const inputId = id ?? generatedId;
   const listId = `${inputId}-listbox`;
   const showList = open && !disabled && suggestions.length > 0;
+  if (disabled && fieldHeld) setFieldHeld(false);
   const activeDescendant =
     showList && highlightIndex >= 0
       ? `${listId}-option-${highlightIndex}`
@@ -42,7 +43,10 @@ export function AutocompleteInput({
 
   useEffect(() => {
     const input = inputRef.current;
-    if (!input || disabled) return undefined;
+    if (!input || disabled) {
+      if (disabled) input?.blur();
+      return undefined;
+    }
     const shell = document.querySelector('.app-shell');
     const previousPadding = shell?.style.paddingBottom ?? '';
     let held = false;
@@ -320,7 +324,7 @@ export function AutocompleteInput({
           })}
         </ul>
       ) : null}
-      {fieldHeld && !showList ? (
+      {fieldHeld && !disabled && !showList ? (
         <div className="autocomplete-hold" aria-hidden="true" />
       ) : null}
     </div>
