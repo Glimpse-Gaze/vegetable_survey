@@ -28,6 +28,7 @@ const WorldMap = lazy(() =>
 );
 
 const AUTO_PX_PER_MS = 0.048;
+const DRAG_THRESHOLD = 6;
 const IDLE_MS = 4000;
 const NUDGE_SETTLE_MS = 450;
 const WARMUP_MS = 1100;
@@ -194,6 +195,7 @@ function RankRail({ section, pauseAutoplay }) {
   const menuPauseRef = useRef(false);
   const edgesRef = useRef({ atStart: true, atEnd: false });
   const [edges, setEdges] = useState({ atStart: true, atEnd: false });
+  const dragRef = useRef(null);
   const nudgePauseRef = useRef(false);
   const directionRef = useRef(1);
   const resumeTimer = useRef(0);
@@ -239,7 +241,10 @@ function RankRail({ section, pauseAutoplay }) {
       const dt = Math.min(48, now - last);
       last = now;
       const busy =
-        hidden || menuPauseRef.current || nudgePauseRef.current;
+        hidden ||
+        menuPauseRef.current ||
+        nudgePauseRef.current ||
+        dragRef.current != null;
       if (busy) {
         idleMs = 0;
         warmupElapsed = 0;
@@ -359,16 +364,49 @@ function RankRail({ section, pauseAutoplay }) {
     nudgeAnim.current = window.requestAnimationFrame(step);
   }
 
-  function onUserHold(event) {
+  function onPointerDown(event) {
     if (event.target.closest('.blade-arrow')) return;
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
     window.cancelAnimationFrame(nudgeAnim.current);
     nudgeAnim.current = 0;
     drivingRef.current = false;
     holdNudge();
+    if (event.pointerType === 'touch') return;
+    const rail = railRef.current;
+    if (!rail) return;
+    dragRef.current = {
+      id: event.pointerId,
+      x: event.clientX,
+      scroll: rail.scrollLeft,
+      moved: false,
+    };
+    rail.setPointerCapture(event.pointerId);
   }
 
-  function onUserRelease(event) {
-    if (event.target.closest('.blade-arrow')) return;
+  function onPointerMove(event) {
+    const drag = dragRef.current;
+    const rail = railRef.current;
+    if (!drag || drag.id !== event.pointerId || !rail) return;
+    const dx = event.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) < DRAG_THRESHOLD) return;
+    drag.moved = true;
+    rail.scrollLeft = drag.scroll - dx;
+    stageRef.current?.classList.add('is-dragging');
+  }
+
+  function onPointerUp(event) {
+    const drag = dragRef.current;
+    if (!drag || drag.id !== event.pointerId) {
+      if (event.target.closest('.blade-arrow')) return;
+      releaseNudge();
+      return;
+    }
+    const moved = drag.moved;
+    dragRef.current = null;
+    stageRef.current?.classList.remove('is-dragging');
+    const rail = railRef.current;
+    if (rail?.hasPointerCapture(drag.id)) rail.releasePointerCapture(drag.id);
+    if (moved) holdNudge();
     releaseNudge();
   }
 
@@ -398,9 +436,10 @@ function RankRail({ section, pauseAutoplay }) {
         <div
           className="blade-rail"
           ref={railRef}
-          onPointerDown={onUserHold}
-          onPointerUp={onUserRelease}
-          onPointerCancel={onUserRelease}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
           onScroll={onRailScroll}
         >
           {section.items.map((item) => (

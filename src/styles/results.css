@@ -322,6 +322,10 @@
   display: none;
 }
 
+.blade-stage.is-dragging .blade-rail {
+  cursor: grabbing;
+}
+
 .blade-arrow {
   position: absolute;
   top: 50%;
