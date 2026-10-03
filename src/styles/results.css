@@ -2109,10 +2109,10 @@
     min-width: 0;
     max-width: none;
     min-height: 0;
-    padding: 6px 10px;
-    font-size: 0.76rem;
-    letter-spacing: 0.02em;
-    line-height: 1.15;
+    padding: 2px 8px;
+    font-size: 0.84rem;
+    letter-spacing: -0.012em;
+    line-height: 1.2;
     text-align: center;
     white-space: nowrap;
   }
@@ -2167,6 +2167,14 @@
 
   .results-menu-btn {
     flex: 0 0 48px;
+  }
+}
+
+@media (max-width: 380px) {
+  .results-now {
+    padding: 2px 6px;
+    font-size: 0.73rem;
+    letter-spacing: 0;
   }
 }
 
