@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { SPECTRUM_METHOD } from '../../data/spectrumVegetables.js';
 
 function formatMean(mean) {
   return mean.toFixed(1);
@@ -138,8 +137,6 @@ function SpectrumBlade({ item, bandId }) {
 export function SpectrumList({ section }) {
   return (
     <div className="spectrum-results">
-      <p className="spectrum-method">{SPECTRUM_METHOD}</p>
-
       {section.bands.map((band) => (
         <section key={band.id} className={`spectrum-band is-${band.id}`}>
           <h2 className="spectrum-band-title">{band.title}</h2>

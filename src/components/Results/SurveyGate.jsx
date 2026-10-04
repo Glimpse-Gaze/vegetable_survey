@@ -27,11 +27,13 @@ export function ResponseCodeCard({
   const [draft, setDraft] = useState('');
   const [filledFrom, setFilledFrom] = useState('');
   const [copied, setCopied] = useState(false);
-  const [expanded, setExpanded] = useState(!code);
+  const [openedFor, setOpenedFor] = useState('');
   const [formError, setFormError] = useState('');
   const [checking, setChecking] = useState(false);
   const sharePath = resultsSharePath(categoryId, code);
   const error = formError || (invalid ? 'Incorrect ID' : '');
+  const opened = openedFor === categoryId;
+  const showForm = opened || invalid || !code;
 
   if (invalid && filledFrom !== code) {
     setFilledFrom(code ?? '');
@@ -55,7 +57,7 @@ export function ResponseCodeCard({
     if (!next || checking) return;
     if (!isResponseId(next)) {
       setFormError('Incorrect ID');
-      setExpanded(true);
+      setOpenedFor(categoryId);
       return;
     }
     setChecking(true);
@@ -63,12 +65,12 @@ export function ResponseCodeCard({
       const result = await fetch(`/api/responses?id=${encodeURIComponent(next)}`);
       if (!result.ok) {
         setFormError('Incorrect ID');
-        setExpanded(true);
+        setOpenedFor(categoryId);
         return;
       }
     } catch {
       setFormError('Incorrect ID');
-      setExpanded(true);
+      setOpenedFor(categoryId);
       return;
     } finally {
       setChecking(false);
@@ -76,15 +78,15 @@ export function ResponseCodeCard({
     setFormError('');
     navigate(resultsSharePath(categoryId, next));
     setDraft('');
-    setExpanded(false);
+    setOpenedFor('');
   }
 
-  if (code && !expanded && !invalid) {
+  if (!showForm) {
     return (
       <button
         className="response-code-pill"
         type="button"
-        onClick={() => setExpanded(true)}
+        onClick={() => setOpenedFor(categoryId)}
       >
         Open a ranking code
       </button>

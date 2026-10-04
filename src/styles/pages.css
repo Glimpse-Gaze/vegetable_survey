@@ -220,10 +220,10 @@
   justify-content: center;
   min-height: 40px;
   padding: 0 16px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--cabbage);
   border-radius: 999px;
-  background: var(--card);
-  color: var(--ink);
+  background: var(--cabbage);
+  color: #fffaf2;
   font: inherit;
   font-size: 0.92rem;
   font-weight: 650;
@@ -231,7 +231,37 @@
 }
 
 .response-code-pill:hover {
-  background: var(--paper-deep);
+  background: var(--cabbage-deep);
+  border-color: var(--cabbage-deep);
+}
+
+.results-survey-foot .response-code-card {
+  border: 2px solid var(--cabbage);
+  /* background: rgba(145, 32, 98, 0.85); */
+  background: var(--cabbage);
+  color: #fffaf2;
+}
+
+.results-survey-foot .response-code-form label,
+.results-survey-foot .response-code-hint,
+.results-survey-foot .response-code-line {
+  color: #fffaf2;
+}
+
+.results-survey-foot .response-code {
+  color: var(--ink);
+}
+
+.results-survey-foot .response-code-copy {
+  border-color: #fffaf2;
+  background: transparent;
+  color: #fffaf2;
+}
+
+.results-survey-foot .response-code-copy.is-copied {
+  background: var(--green);
+  border-color: var(--green);
+  color: #f7fff6;
 }
 
 @media (max-width: 640px) {

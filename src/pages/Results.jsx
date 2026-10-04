@@ -968,7 +968,7 @@ export function Results() {
                 <p className="eyebrow">By place</p>
                 <h2 className="map-title">Where people answered from</h2>
                 <p className="map-copy">
-                By default, the results show global votes, including those who have chosen not to disclose their birthplace or native language. Place and language stay independent, but each list only includes combinations someone actually gave. Choosing China hides languages nobody from China marked. Choosing a language hides places where nobody marked it. Only regions with at least 20 responses are filterable. If your country is missing, please encourage more people to vote!
+                By default, the results show global votes, including those who have chosen not to disclose their birthplace. The results can be filtered using the map shown below. Only regions with at least 20 responses are filterable. If your country is missing, please encourage more people to vote!
                 </p>
               </div>
               <PlaceFilter

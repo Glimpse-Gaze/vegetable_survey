@@ -9,11 +9,12 @@ export function Home() {
   return (
     <div className="home-shell">
       <section className="home-panel">
-        <p className="eyebrow">A folk-concept study</p>
+        <p className="eyebrow">A folk concept study</p>
         <h1 className="home-title">The Great Vegetable Survey</h1>
         <p className="home-lede">
-          What do people count as a vegetable? Take the questionnaire, or skip
-          ahead to the standings.
+          What do people count as a vegetable? 
+          <br /><br />Take the survey or skip
+          ahead to the interactive results.
         </p>
         <div className="home-actions">
           <Link className="home-button home-button-primary" to="/survey">

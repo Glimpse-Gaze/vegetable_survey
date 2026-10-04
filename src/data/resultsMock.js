@@ -22,6 +22,7 @@ import { getSpectrumSection } from './spectrumResults.js';
 import { getReasonsSection } from './reasonResults.js';
 import { getNotesSection } from './noteResults.js';
 import { languages } from './languages.js';
+import { SPECTRUM_METHOD } from './spectrumVegetables.js';
 
 export const VEGETABLE_ART = {
   broccoli,
@@ -549,8 +550,7 @@ export const CATEGORIES = [
   {
     id: 'vegetabley-spectrum',
     eyebrow: 'Question 4',
-    designNote:
-      'These ten plants were selected as they represent different botanical families, or very different parts of the same family. Roots vs stems, leaves, flowers, fruits, and grains. This ranking is there to see whether the botanical status, plant anatomy, or geographic origin has any bearing on how vegetabley something feels.',
+    designNote: SPECTRUM_METHOD,
     title: 'Vegetableness spectrum',
     prompt:
       'From the least to the most vegetabley plants.',
@@ -563,7 +563,7 @@ export const CATEGORIES = [
     designNote:
       'This question was inspired by the podcast The Rest Is Science. Like the spectrum before it, it asks people to sort and rank their judgment of edible plants. It comes late in the survey, after people have stress-tested the idea of a vegetable, so it can be compared with those first instincts.',
     title: 'The most vegetable vegetable',
-    prompt: 'What feels most vegetabley?',
+    prompt: 'What feels the most vegetabley?',
     layout: 'blades',
     userVoteId: 'turnip',
   },

@@ -31,7 +31,7 @@ export function PrivacyConsent({ onContinue, onBack }) {
         <div className="privacy-block">
           <p className="privacy-copy">
             <strong>Privacy notice:</strong> Because of the nature of this project, your responses will be saved, and some will be made available to the public in the Results page.
-            <br /><br />
+            <br />
             Your responses will not be linked to you personally in any way. One optional question asks about your birthplace and native language. This is only used to add nuance to the results and can be skipped.
           </p>
           <label className="public-consent">
