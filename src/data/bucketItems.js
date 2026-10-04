@@ -6,7 +6,7 @@ export const BUCKET_IDS = [
 
 export const bucketLabels = {
   not_vegetable: 'Not a vegetable',
-  in_between: 'Somewhere in-between',
+  in_between: 'Something in-between',
   definitely_vegetable: 'Definitely a vegetable',
 };
 

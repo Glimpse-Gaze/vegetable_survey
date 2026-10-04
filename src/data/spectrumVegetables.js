@@ -19,7 +19,7 @@ export const SPECTRUM_BANDS = [
 ];
 
 export const SPECTRUM_METHOD =
-  'These ten were chosen because they sit in different botanical families, or because they are different parts of the same family — root versus stem, leaf, flower, fruit, grain. The ranking is there to see whether botanical status, plant anatomy, or origin has any bearing on how vegetabley something feels.';
+  'These ten plants were selected as they represent different botanical families, or very different parts of the same family. Roots vs stems, leaves, flowers, fruits, and grains. This ranking is there to see whether the botanical status, plant anatomy, or geographic origin has any bearing on how vegetabley something feels.';
 
 export const spectrumVegetables = [
   {
@@ -53,7 +53,7 @@ export const spectrumVegetables = [
     botany: 'a fruit — botanically a berry',
     kin: ['potato', 'bell pepper', 'aubergine', 'tobacco'],
     fact: 'Tomato originated in western South America. It is a fruit — botanically a berry — and belongs to the nightshade family (Solanaceae). Other familiar members include potato, bell pepper, aubergine, and tobacco.',
-    note: 'The problem child of the fruit vs. vegetable debate.',
+    note: 'The poster child of the fruit vs. vegetable debate.',
   },
   {
     id: 'turnip',
@@ -108,7 +108,7 @@ export const spectrumVegetables = [
     botany: 'a leaf',
     kin: ['sunflower', 'artichoke', 'chicory', 'endive'],
     fact: 'Lettuce originated in the eastern Mediterranean. It is a leaf, and belongs to the daisy family (Asteraceae). Other familiar members include sunflower, artichoke, chicory, and endive.',
-    note: 'In ancient Egypt, lettuce was a sacred sex symbol.',
+    note: 'In ancient Egypt, lettuce was a sacred sex\u00A0symbol.',
   },
   {
     id: 'cucumber',

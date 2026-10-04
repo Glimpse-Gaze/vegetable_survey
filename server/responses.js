@@ -41,8 +41,25 @@ export function validateResponsePayload(payload) {
   }
 }
 
+const MIN_PUBLIC_NOTE = 3;
+
+export function storedOpenDescription(openDescription) {
+  const text = String(openDescription?.text ?? '').trim();
+  const publish =
+    Boolean(openDescription?.publicDisplay) && text.length >= MIN_PUBLIC_NOTE;
+  if (openDescription?.publicDisplay && !publish) {
+    return { text: '', publicDisplay: false };
+  }
+  return {
+    ...(openDescription ?? {}),
+    text,
+    publicDisplay: publish,
+  };
+}
+
 export function comparisonFromPayload(payload) {
-  const publicWriteup = Boolean(payload?.openDescription?.publicDisplay);
+  const note = storedOpenDescription(payload?.openDescription);
+  const publicWriteup = note.publicDisplay;
   const publicCustom = Boolean(payload?.customCriterionPublic);
   return {
     initialAssociation: payload?.initialAssociation ?? null,
@@ -54,9 +71,7 @@ export function comparisonFromPayload(payload) {
     sortBuckets: payload?.sortBuckets ?? null,
     spectrum: Array.isArray(payload?.spectrum) ? payload.spectrum : [],
     mostVegetable: payload?.mostVegetable ?? null,
-    openDescription: publicWriteup
-      ? payload.openDescription
-      : { text: '', publicDisplay: false },
+    openDescription: publicWriteup ? note : { text: '', publicDisplay: false },
   };
 }
 
@@ -120,16 +135,18 @@ async function uniqueRankingCode(sql) {
 }
 
 export async function insertResponse(payload, databaseUrl) {
-  const serialized = JSON.stringify(payload);
+  const openDescription = storedOpenDescription(payload.openDescription);
+  const storedPayload = { ...payload, openDescription };
+  const serialized = JSON.stringify(storedPayload);
   if (serialized.length > MAX_BODY_BYTES) {
     throw new Error('Response is too large.');
   }
 
-  validateResponsePayload(payload);
+  validateResponsePayload(storedPayload);
   await ensureDeveloperMessageColumn(databaseUrl);
   await ensureRankingCodeColumn(databaseUrl);
   const sql = neon(databaseUrl);
-  const publicDisplay = Boolean(payload.openDescription?.publicDisplay);
+  const publicDisplay = openDescription.publicDisplay;
   const rankingCode = await uniqueRankingCode(sql);
   const rows = await sql`
     INSERT INTO responses (payload, public_display, ranking_code)
@@ -169,10 +186,9 @@ export function fillFromPayload(payload, publicId) {
     sortBuckets: payload?.sortBuckets ?? null,
     spectrum: Array.isArray(payload?.spectrum) ? payload.spectrum : [],
     mostVegetable: payload?.mostVegetable ?? null,
-    openDescription: payload?.openDescription ?? {
-      text: '',
-      publicDisplay: false,
-    },
+    openDescription: storedOpenDescription(
+      payload?.openDescription ?? { text: '', publicDisplay: false },
+    ),
     background: payload?.background ?? null,
   };
 }

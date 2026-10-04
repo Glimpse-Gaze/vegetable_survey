@@ -33,6 +33,9 @@ function Spread({ item }) {
               title={`#${slot}: ${Math.round(share * 100)}%`}
             >
               <span className="spectrum-spread-bar" />
+              {slot === item.userSlot ? (
+                <span className="spectrum-blade-badge">Your vote</span>
+              ) : null}
             </span>
           );
         })}
@@ -40,17 +43,11 @@ function Spread({ item }) {
       <div className="spectrum-spread-ends">
         {item.slotShares.map((_, index) => {
           const slot = index + 1;
-          const isYours = slot === item.userSlot;
-          const showLeast = slot === 1 && !isYours;
-          const showMost = slot === 10 && !isYours;
 
           return (
             <span key={slot} className="spectrum-spread-end">
-              {showLeast ? 'Least' : null}
-              {isYours ? (
-                <span className="spectrum-blade-badge">Your vote</span>
-              ) : null}
-              {showMost ? 'Most' : null}
+              {slot === 1 ? 'Least' : null}
+              {slot === 10 ? 'Most' : null}
             </span>
           );
         })}
@@ -74,7 +71,12 @@ function SpectrumBlade({ item, bandId }) {
         .join(' ')}
     >
       <div className="spectrum-blade-art">
-        <img src={item.art} alt="" />
+        <img
+          src={item.art}
+          alt=""
+          decoding="async"
+          loading={item.rank <= 2 ? 'eager' : 'lazy'}
+        />
       </div>
       <div className="spectrum-blade-copy">
         <div className="spectrum-blade-topline">

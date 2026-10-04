@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { getSpectrumVegetable } from '../../data/spectrumVegetables.js';
 import { SpectrumArrow } from './SpectrumArrow.jsx';
 
@@ -49,17 +49,18 @@ function ChevronDownIcon() {
   );
 }
 
-function PaletteTile({ vegetable, onPlace, onDragStart }) {
+function PaletteTile({ vegetable, armed, onPlace, onDragStart, onHoldStart }) {
   return (
     <button
       type="button"
-      className="spectrum-tile"
+      className={armed ? 'spectrum-tile is-armed' : 'spectrum-tile'}
       draggable="true"
       onClick={(event) => {
         event.stopPropagation();
         onPlace(vegetable.id);
       }}
       onDragStart={(event) => onDragStart(event, vegetable.id)}
+      onPointerDown={(event) => onHoldStart(event, vegetable)}
     >
       <span className="spectrum-tile-label">{vegetable.name}</span>
     </button>
@@ -74,6 +75,7 @@ export function SpectrumBoard({
   onPlace,
   onMove,
   onReturnToPalette,
+  armedId = null,
 }) {
   const [dragId, setDragId] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
@@ -127,6 +129,149 @@ export function SpectrumBoard({
     setOverPalette(false);
   }
 
+  const session = useRef(null);
+  const suppressClick = useRef(false);
+  const [ghost, setGhost] = useState(null);
+
+  function unlisten(current) {
+    if (!current?.onMove) return;
+    window.removeEventListener('pointermove', current.onMove);
+    window.removeEventListener('pointerup', current.onUp);
+    window.removeEventListener('pointercancel', current.onUp);
+    window.removeEventListener('touchmove', current.onTouchMove);
+    window.removeEventListener('touchend', current.onTouchEnd);
+    window.removeEventListener('touchcancel', current.onTouchEnd);
+  }
+
+  function findTouchDrop(x, y) {
+    for (const node of document.elementsFromPoint(x, y)) {
+      if (!(node instanceof Element)) continue;
+      if (node.closest('.touch-drag-ghost')) continue;
+      const slot = node.closest('.spectrum-slot');
+      if (slot?.dataset.index != null) return { index: Number(slot.dataset.index) };
+      if (node.closest('.spectrum-palette')) return { palette: true };
+    }
+    return null;
+  }
+
+  function onHoldStart(event, vegetable) {
+    if (event.pointerType === 'mouse') return;
+    if (event.button != null && event.button !== 0) return;
+    if (event.target instanceof Element && event.target.closest('.spectrum-rank-button')) {
+      return;
+    }
+    const previous = session.current;
+    if (previous) {
+      window.clearTimeout(previous.timer);
+      unlisten(previous);
+    }
+    const box = event.currentTarget.getBoundingClientRect();
+    const next = {
+      id: vegetable.id,
+      name: vegetable.name,
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      width: Math.max(box.width, 96),
+      height: Math.max(box.height, 44),
+      armed: false,
+      timer: 0,
+    };
+    next.timer = window.setTimeout(() => {
+      if (session.current !== next) return;
+      next.armed = true;
+      suppressClick.current = true;
+      setDragId(next.id);
+      setGhost({
+        x: next.lastX,
+        y: next.lastY,
+        name: next.name,
+        width: next.width,
+        height: next.height,
+      });
+    }, 300);
+    next.onMove = (moveEvent) => {
+      if (session.current !== next || next.pointerId !== moveEvent.pointerId) return;
+      next.lastX = moveEvent.clientX;
+      next.lastY = moveEvent.clientY;
+      const dx = moveEvent.clientX - next.x;
+      const dy = moveEvent.clientY - next.y;
+      if (!next.armed) {
+        if (dx * dx + dy * dy > 144) {
+          window.clearTimeout(next.timer);
+          unlisten(next);
+          session.current = null;
+        }
+        return;
+      }
+      setGhost({
+        x: moveEvent.clientX,
+        y: moveEvent.clientY,
+        name: next.name,
+        width: next.width,
+        height: next.height,
+      });
+      const hit = findTouchDrop(moveEvent.clientX, moveEvent.clientY);
+      setOverIndex(hit?.index ?? null);
+      setOverPalette(Boolean(hit?.palette));
+    };
+    next.onUp = (endEvent) => {
+      if (session.current !== next || next.pointerId !== endEvent.pointerId) return;
+      window.clearTimeout(next.timer);
+      unlisten(next);
+      const armed = next.armed;
+      session.current = null;
+      if (!armed || endEvent.type === 'pointercancel') {
+        setGhost(null);
+        setDragId(null);
+        setOverIndex(null);
+        setOverPalette(false);
+        return;
+      }
+      const hit = findTouchDrop(endEvent.clientX, endEvent.clientY);
+      if (hit?.index != null) onPlace(next.id, hit.index);
+      else if (hit?.palette) onReturnToPalette(next.id);
+      setGhost(null);
+      setDragId(null);
+      setOverIndex(null);
+      setOverPalette(false);
+      window.setTimeout(() => {
+        suppressClick.current = false;
+      }, 400);
+    };
+    next.onTouchMove = (touchEvent) => {
+      const touch = touchEvent.touches[0];
+      if (!touch) return;
+      next.onMove({
+        pointerId: next.pointerId,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      });
+      if (session.current?.armed) touchEvent.preventDefault();
+    };
+    next.onTouchEnd = (touchEvent) => {
+      const touch = touchEvent.changedTouches[0];
+      next.onUp({
+        type: touchEvent.type === 'touchcancel' ? 'pointercancel' : 'pointerup',
+        pointerId: next.pointerId,
+        clientX: touch?.clientX ?? next.lastX,
+        clientY: touch?.clientY ?? next.lastY,
+      });
+    };
+    if (event.pointerType === 'touch') {
+      window.addEventListener('touchmove', next.onTouchMove, { passive: false });
+      window.addEventListener('touchend', next.onTouchEnd);
+      window.addEventListener('touchcancel', next.onTouchEnd);
+    } else {
+      window.addEventListener('pointermove', next.onMove);
+      window.addEventListener('pointerup', next.onUp);
+      window.addEventListener('pointercancel', next.onUp);
+    }
+    session.current = next;
+  }
+
   return (
     <div className="spectrum">
       <div className="spectrum-scale">
@@ -159,7 +304,17 @@ export function SpectrumBoard({
                   key={index}
                   role="listitem"
                   className={className}
+                  data-index={index}
                   draggable={Boolean(vegetable)}
+                  onPointerDown={
+                    vegetable
+                      ? (event) => {
+                          if (event.target.closest('.spectrum-grip')) {
+                            onHoldStart(event, vegetable);
+                          }
+                        }
+                      : undefined
+                  }
                   onClick={() => onActivateSlot(index)}
                   onDragStart={
                     vegetable
@@ -203,6 +358,28 @@ export function SpectrumBoard({
                         >
                           <ChevronDownIcon />
                         </button>
+                        <button
+                          type="button"
+                          className="spectrum-rank-button is-remove"
+                          aria-label={`Return ${vegetable.name} to the list`}
+                          onPointerDown={(event) => event.stopPropagation()}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onReturnToPalette(vegetable.id);
+                          }}
+                        >
+                          <span aria-hidden="true">
+                            <svg viewBox="0 0 16 16">
+                              <path
+                                d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.8"
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                          </span>
+                        </button>
                       </div>
                     </>
                   ) : (
@@ -227,12 +404,33 @@ export function SpectrumBoard({
             <PaletteTile
               key={vegetable.id}
               vegetable={vegetable}
-              onPlace={() => onPlace(vegetable.id, activeSlot)}
+              armed={armedId === vegetable.id}
+              onPlace={(id) => {
+                if (suppressClick.current) {
+                  suppressClick.current = false;
+                  return;
+                }
+                onPlace(id, activeSlot);
+              }}
               onDragStart={handleDragStart}
+              onHoldStart={onHoldStart}
             />
           ))}
         </div>
       </div>
+      {ghost ? (
+        <div
+          className="touch-drag-ghost spectrum-tile"
+          style={{
+            left: ghost.x,
+            top: ghost.y,
+            width: ghost.width,
+            height: ghost.height,
+          }}
+        >
+          <span className="spectrum-tile-label">{ghost.name}</span>
+        </div>
+      ) : null}
     </div>
   );
 }

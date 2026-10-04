@@ -98,12 +98,18 @@ function pointFromEvent(event) {
   };
 }
 
-function DriftRow({ row, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
+function DriftRow({ row, leading = false, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
   const loop = [...row.items, ...row.items];
 
   return (
     <div
-      className={row.reverse ? 'reason-drift-row is-reverse' : 'reason-drift-row'}
+      className={[
+        'reason-drift-row',
+        row.reverse ? 'is-reverse' : '',
+        leading ? 'is-leading' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={{ '--drift-duration': row.duration }}
     >
       {loop.map((item, index) => {
@@ -129,7 +135,7 @@ function DriftRow({ row, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHo
               item.isMine ? 'Your answer. ' : ''
             }${
               mine === 1 ? 'Liked' : mine === -1 ? 'Sunk' : 'Not voted'
-            }. Click to like, double-click, right-click, or hold to sink.`}
+            }. Tap or click to like. Double-tap, hold, or right-click to sink.`}
             onPointerDown={(event) => {
               if (!canVote) return;
               onHoldStart(event, item.id);
@@ -160,14 +166,20 @@ function DriftRow({ row, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHo
             }}
           >
             {item.text}
-            {item.isMine ? (
-              <span className="reason-chip-flair">Your answer</span>
-            ) : null}
           </button>
         );
       })}
     </div>
   );
+}
+
+function rateGesture() {
+  const coarse =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(pointer: coarse)').matches;
+  return coarse
+    ? 'Tap once to like; double-tap or press and hold to dislike.'
+    : 'Click once to like; double-click or right-click to dislike.';
 }
 
 export function ReasonResults({ section, viewingOwn = true }) {
@@ -179,6 +191,8 @@ export function ReasonResults({ section, viewingOwn = true }) {
   );
   const pool = section.commentPool ?? [];
   const [myVotes, setMyVotes] = useState(readMyVotes);
+  const [resetDone, setResetDone] = useState(false);
+  const resetFlash = useRef(0);
   const [rows, setRows] = useState(() =>
     snapshotRows(pool, {}, myReason, viewingOwn),
   );
@@ -228,22 +242,23 @@ export function ReasonResults({ section, viewingOwn = true }) {
     [],
   );
 
-  function clampPoint(point) {
+  function clampPoint(point, tip = false) {
     const pad = 16;
+    const half = tip ? Math.min(128, (window.innerWidth - 32) / 2) : 0;
     return {
       x: Math.min(
-        window.innerWidth - pad,
-        Math.max(pad, point?.x ?? window.innerWidth / 2),
+        window.innerWidth - pad - half,
+        Math.max(pad + half, point?.x ?? window.innerWidth / 2),
       ),
       y: Math.min(
         window.innerHeight - pad,
-        Math.max(pad, point?.y ?? window.innerHeight / 2),
+        Math.max(pad + (tip ? 64 : 0), point?.y ?? window.innerHeight / 2),
       ),
     };
   }
 
   function showCapTip(kind, point) {
-    const { x, y } = clampPoint(point);
+    const { x, y } = clampPoint(point, true);
     setCapTip({ id: Date.now(), kind, x, y });
     if (capTipTimer.current) window.clearTimeout(capTipTimer.current);
     capTipTimer.current = window.setTimeout(() => setCapTip(null), 1800);
@@ -291,12 +306,29 @@ export function ReasonResults({ section, viewingOwn = true }) {
     });
   }
 
+  function releaseReset(event) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    if (
+      event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom
+    ) {
+      return;
+    }
+    resetVotes();
+  }
+
   function resetVotes() {
     const votesNow = readMyVotes();
     if (!Object.keys(votesNow).length) return;
 
     writeMyVotes({});
     setMyVotes({});
+    setResetDone(true);
+    window.clearTimeout(resetFlash.current);
+    resetFlash.current = window.setTimeout(() => setResetDone(false), 1400);
     layoutLocked.current = true;
 
     fetch('/api/reason-votes', {
@@ -465,10 +497,11 @@ export function ReasonResults({ section, viewingOwn = true }) {
         <h2 className="reason-drift-title">Custom user answers</h2>
         {canVote ? null : <SurveyNudge kind="vote" />}
         <div className="reason-drift" aria-label="Custom user answers">
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             <DriftRow
               key={row.id}
               row={row}
+              leading={index === 0}
               myVotes={myVotes}
               canVote={canVote}
               onVote={onVote}
@@ -481,25 +514,23 @@ export function ReasonResults({ section, viewingOwn = true }) {
         {canVote ? (
           <>
             <p className="reason-drift-hint">
-              Click or tap once to like, or to clear a marked pill. Double-click,
-              right-click, or press and hold a clear pill to sink it; double-click a
-              red pill to like it. You can like up to {MAX_LIKES} and sink up to{' '}
-              {MAX_DISLIKES}. The ribbons keep this snapshot until the page is
-              refreshed.
+            You can rate people's responses. {rateGesture()} You can rate up to five answers. The best answers are promoted to the top row.
             </p>
             <div className="reason-reset-row">
               <button
-                className="reason-reset"
+                className={resetDone ? 'reason-reset is-cleared' : 'reason-reset'}
                 type="button"
-                disabled={!Object.keys(myVotes).length}
+                disabled={!Object.keys(myVotes).length && !resetDone}
                 onClick={resetVotes}
+                onPointerUp={releaseReset}
+                onContextMenu={(event) => event.preventDefault()}
               >
-                Reset input
-                <span className="reason-reset-tip">
-                  Clears your 5 likes and 5 dislikes so you can vote on 10 answers
-                  again.
-                </span>
+                {resetDone ? 'Cleared' : 'Reset input'}
               </button>
+              <p className="reason-reset-tip">
+                Clears your 5 likes and 5 dislikes so you can vote on 10 answers
+                again.
+              </p>
             </div>
           </>
         ) : null}
@@ -522,8 +553,8 @@ export function ReasonResults({ section, viewingOwn = true }) {
           role="status"
         >
           {capTip.kind === 'like'
-            ? 'You can like only 5 answers!'
-            : 'You can dislike only 5 answers!'}
+            ? 'You can like only 5 answers'
+            : 'You can dislike only 5 answers'}
         </p>
       ) : null}
     </div>

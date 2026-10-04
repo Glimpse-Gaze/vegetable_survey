@@ -52,7 +52,7 @@ export function Question2({
   return (
     <QuestionContainer questionNumber={2}>
       <h1 className="question-title">
-        Why does “{rawAnswer}” feel vegetabley?
+        Why does “{rawAnswer}” feel vegetabley for you?
       </h1>
       <p className="microcopy">Please choose up to 5 criteria.</p>
 

@@ -93,13 +93,14 @@ export function BucketColumns({ section }) {
               {selected.userBucket ? (
                 <>
                   {' '}
-                  · You sorted it as {' '}
+                  · <span className="bucket-lookup-yours">You marked it as{' '}
                   <strong>
                     {
                       selected.rows.find((row) => row.id === selected.userBucket)
                         ?.title
                     }
                   </strong>
+                  </span>
                 </>
               ) : null}
             </p>
@@ -107,8 +108,7 @@ export function BucketColumns({ section }) {
               <thead>
                 <tr>
                   <th>Category</th>
-                  <th>Votes</th>
-                  <th>Share</th>
+                  <th className="is-votes">Votes</th>
                   <th className="is-bar"> </th>
                 </tr>
               </thead>
@@ -124,8 +124,7 @@ export function BucketColumns({ section }) {
                       .join(' ') || undefined}
                   >
                     <th scope="row">{row.title}</th>
-                    <td>{formatVotes(row.votes)}</td>
-                    <td>{formatShare(row.share)}</td>
+                    <td className="is-votes">{formatVotes(row.votes)}</td>
                     <td className="is-bar">
                       <span className="bucket-lookup-meter" aria-hidden="true">
                         <span style={{ width: `${row.share * 100}%` }} />

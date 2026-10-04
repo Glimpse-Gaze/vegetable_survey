@@ -61,7 +61,7 @@ export function ThankYou({ responseId }) {
       </section>
 
       {responseId ? (
-        <section className="thanks-block">
+        <section className="thanks-block thanks-code-block">
           <h2 className="thanks-block-title">Your ranking code</h2>
           <p className="microcopy">
             Keep this code if you want to reopen your rankings later, or send it
@@ -85,7 +85,7 @@ export function ThankYou({ responseId }) {
       ) : null}
 
       {responseId ? (
-        <section className="thanks-block">
+        <section className="thanks-block thanks-comments-block">
           <h2 className="thanks-block-title">Do you have any comments?</h2>
           <p className="microcopy">
             Optional note for the developer. Just for user feedback, it won’t be

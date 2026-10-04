@@ -2,7 +2,7 @@ import { startTransition, useEffect, useRef, useState } from 'react';
 import mapMarkup from '../../assets/map/World_Equal.svg?raw';
 import { LIVE_COUNTRIES, VOTE_THRESHOLD } from '../../data/resultsMock.js';
 
-const LIVE_BY_ISO3 = Object.fromEntries(
+const KNOWN_BY_ISO3 = Object.fromEntries(
   LIVE_COUNTRIES.map((country) => [country.iso3, country]),
 );
 
@@ -50,13 +50,20 @@ function groupFromPoint(clientX, clientY) {
   return node?.closest?.('.world-map-frame .country > g') ?? null;
 }
 
-export function WorldMap({ selectedId, onSelect }) {
+export function WorldMap({
+  selectedId,
+  onSelect,
+  liveCountries = LIVE_COUNTRIES,
+  languageFiltered = false,
+}) {
   const hostRef = useRef(null);
   const viewportRef = useRef(null);
   const svgRef = useRef(null);
   const groupsRef = useRef([]);
   const onSelectRef = useRef(onSelect);
   const selectedRef = useRef(selectedId);
+  const liveRef = useRef(liveCountries);
+  const languageFilteredRef = useRef(languageFiltered);
   const baseRef = useRef(null);
   const viewRef = useRef(null);
   const zoomRef = useRef(1);
@@ -70,7 +77,9 @@ export function WorldMap({ selectedId, onSelect }) {
   useEffect(() => {
     onSelectRef.current = onSelect;
     selectedRef.current = selectedId;
-  }, [onSelect, selectedId]);
+    liveRef.current = liveCountries;
+    languageFilteredRef.current = languageFiltered;
+  }, [onSelect, selectedId, liveCountries, languageFiltered]);
 
   useEffect(() => {
     zoomRef.current = zoom;
@@ -79,7 +88,9 @@ export function WorldMap({ selectedId, onSelect }) {
   function selectLiveGroup(group) {
     if (!group) return;
     const iso3 = countryIso3(group);
-    const live = iso3 ? LIVE_BY_ISO3[iso3] : null;
+    const live = iso3
+      ? liveRef.current.find((country) => country.iso3 === iso3)
+      : null;
     if (!live) return;
     const current = selectedRef.current;
     startTransition(() => {
@@ -113,16 +124,25 @@ export function WorldMap({ selectedId, onSelect }) {
     const groups = [...svg.querySelectorAll('.country > g')];
     groupsRef.current = groups;
 
+    const hoverTip = window.matchMedia(
+      '(hover: hover) and (pointer: fine)',
+    ).matches;
+
     function onEnter(event) {
+      if (!hoverTip) return;
       const group = event.currentTarget;
       const title = group.getAttribute('data-name');
       if (!title) return;
       const iso3 = countryIso3(group);
-      const live = iso3 ? LIVE_BY_ISO3[iso3] : null;
+      const known = iso3 ? KNOWN_BY_ISO3[iso3] : null;
+      const live = iso3
+        ? liveRef.current.find((country) => country.iso3 === iso3)
+        : null;
       setTip({
         name: title,
         live: Boolean(live),
-        votes: live?.votes ?? 0,
+        hiddenLanguage: Boolean(known && !live && languageFilteredRef.current),
+        votes: live?.votes ?? known?.votes ?? 0,
         x: event.clientX,
         y: event.clientY,
       });
@@ -151,7 +171,7 @@ export function WorldMap({ selectedId, onSelect }) {
       if (name) group.setAttribute('data-name', name);
       titleNode?.remove();
       const iso3 = countryIso3(group);
-      if (iso3 && LIVE_BY_ISO3[iso3]) group.classList.add('is-live');
+      if (iso3 && KNOWN_BY_ISO3[iso3]) group.classList.add('is-live');
       group.addEventListener('pointerenter', onEnter);
       group.addEventListener('pointermove', onMove);
       group.addEventListener('pointerleave', onLeave);
@@ -175,15 +195,19 @@ export function WorldMap({ selectedId, onSelect }) {
   }, []);
 
   useEffect(() => {
+    const liveByIso = Object.fromEntries(
+      liveCountries.map((country) => [country.iso3, country]),
+    );
     for (const group of groupsRef.current) {
       const iso3 = countryIso3(group);
-      const live = iso3 ? LIVE_BY_ISO3[iso3] : null;
+      const live = iso3 ? liveByIso[iso3] : null;
+      group.classList.toggle('is-live', Boolean(live));
       group.classList.toggle(
         'is-selected',
         Boolean(live && live.id === selectedId),
       );
     }
-  }, [selectedId]);
+  }, [selectedId, liveCountries]);
 
   function applyZoom(nextZoom) {
     const svg = svgRef.current;
@@ -308,6 +332,8 @@ export function WorldMap({ selectedId, onSelect }) {
           <strong>{tip.name}</strong>
           {tip.live ? (
             <span>{tip.votes} answers · click to filter</span>
+          ) : tip.hiddenLanguage ? (
+            <span>No answers for this language</span>
           ) : (
             <span>Fewer than {VOTE_THRESHOLD} answers</span>
           )}

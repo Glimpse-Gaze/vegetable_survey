@@ -1,25 +1,81 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   BUCKET_IDS,
   bucketLabels,
   getBucketItem,
 } from '../../data/bucketItems.js';
 
-function BucketTile({ item, onPlace, onDragStart, onDragEnd }) {
+const GHOST_MS = 300;
+const SLOP = 12;
+
+const nativeDrag =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+function BucketTile({
+  item,
+  pressed,
+  dragging,
+  armed,
+  detached,
+  locked = false,
+  onPlace,
+  onDragStart,
+  onDragEnd,
+  onRemove,
+  onTouchStart,
+}) {
   return (
-    <button
-      type="button"
-      className="spectrum-tile"
-      draggable="true"
-      onClick={(event) => {
-        event.stopPropagation();
-        onPlace(item.id);
-      }}
-      onDragStart={(event) => onDragStart(event, item.id)}
-      onDragEnd={onDragEnd}
-    >
-      <span className="spectrum-tile-label">{item.name}</span>
-    </button>
+    <div className="bucket-tile">
+      <button
+        type="button"
+        className={[
+          'spectrum-tile',
+          pressed ? 'is-pressed' : '',
+          armed ? 'is-armed' : '',
+          dragging ? 'is-dragging' : '',
+          detached ? 'is-detached' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        draggable={nativeDrag}
+        onClick={(event) => {
+          event.stopPropagation();
+          if (locked) return;
+          onPlace(item.id);
+        }}
+        onContextMenu={(event) => event.preventDefault()}
+        onDragStart={(event) => onDragStart(event, item.id)}
+        onDragEnd={onDragEnd}
+        onPointerDown={(event) => onTouchStart(event, item)}
+      >
+        <span className="spectrum-tile-label">{item.name}</span>
+      </button>
+      {onRemove ? (
+        <button
+          type="button"
+          className="tile-remove"
+          aria-label={`Return ${item.name} to the list`}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemove();
+          }}
+        >
+          <span aria-hidden="true">
+            <svg viewBox="0 0 16 16">
+              <path
+                d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </span>
+        </button>
+      ) : null}
+    </div>
   );
 }
 
@@ -27,6 +83,7 @@ export function BucketBoard({
   palette,
   buckets,
   activeBucket,
+  armedId,
   onActivateBucket,
   onPlace,
   onReturnToPalette,
@@ -34,6 +91,11 @@ export function BucketBoard({
   const [dragId, setDragId] = useState(null);
   const [overBucket, setOverBucket] = useState(null);
   const [overPalette, setOverPalette] = useState(false);
+  const [pressedId, setPressedId] = useState(null);
+  const [ghost, setGhost] = useState(null);
+  const session = useRef(null);
+  const suppressClick = useRef(false);
+  const boardRef = useRef(null);
 
   function handleDragStart(event, id) {
     event.dataTransfer.setData('text/plain', id);
@@ -79,8 +141,220 @@ export function BucketBoard({
     setOverPalette(false);
   }
 
+  function clearSession() {
+    const current = session.current;
+    if (current) {
+      window.clearTimeout(current.timer);
+      unlisten(current);
+    }
+    session.current = null;
+    setPressedId(null);
+    setGhost(null);
+    setDragId(null);
+    setOverBucket(null);
+    setOverPalette(false);
+  }
+
+  useEffect(() => {
+    function blockScroll(event) {
+      if (session.current?.armed) event.preventDefault();
+    }
+
+    function blockCallout(event) {
+      if (!session.current) return;
+      event.preventDefault();
+      window.getSelection()?.removeAllRanges();
+    }
+
+    document.addEventListener('touchmove', blockScroll, { passive: false });
+    document.addEventListener('selectstart', blockCallout);
+    document.addEventListener('contextmenu', blockCallout);
+    return () => {
+      document.removeEventListener('touchmove', blockScroll);
+      document.removeEventListener('selectstart', blockCallout);
+      document.removeEventListener('contextmenu', blockCallout);
+    };
+  }, []);
+
+  function findDrop(x, y) {
+    for (const node of document.elementsFromPoint(x, y)) {
+      if (!(node instanceof Element)) continue;
+      if (node.closest('.touch-drag-ghost')) continue;
+      const bucketId = node.closest('[data-bucket]')?.getAttribute('data-bucket');
+      if (bucketId) return { bucketId };
+      if (node.closest('.spectrum-palette')) return { palette: true };
+    }
+    return null;
+  }
+
+  function highlightUnder(x, y) {
+    const hit = findDrop(x, y);
+    setOverBucket(hit?.bucketId ?? null);
+    setOverPalette(Boolean(hit?.palette));
+  }
+
+  function ghostFrom(current, x, y) {
+    return {
+      x,
+      y,
+      name: current.name,
+      width: current.width,
+      height: current.height,
+    };
+  }
+
+  function detach(current) {
+    if (current.detached) return;
+    current.detached = true;
+    suppressClick.current = true;
+    window.getSelection()?.removeAllRanges();
+    setDragId(current.id);
+    setGhost(ghostFrom(current, current.lastX ?? current.x, current.lastY ?? current.y));
+  }
+
+  function unlisten(current) {
+    if (!current?.onMove) return;
+    window.removeEventListener('pointermove', current.onMove);
+    window.removeEventListener('pointerup', current.onUp);
+    window.removeEventListener('pointercancel', current.onUp);
+    window.removeEventListener('touchmove', current.onTouchMove);
+    window.removeEventListener('touchend', current.onTouchEnd);
+    window.removeEventListener('touchcancel', current.onTouchEnd);
+  }
+
+  function onTouchStart(event, item, bucketId, locked = false) {
+    if (event.pointerType === 'mouse') return;
+    if (event.button != null && event.button !== 0) return;
+    const previous = session.current;
+    if (previous) {
+      window.clearTimeout(previous.timer);
+      unlisten(previous);
+    }
+    const box = event.currentTarget.getBoundingClientRect();
+    const next = {
+      id: item.id,
+      name: item.name,
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      width: box.width,
+      height: box.height,
+      armed: false,
+      detached: false,
+      locked,
+      bucketId,
+      timer: 0,
+      onMove: null,
+      onUp: null,
+    };
+    next.timer = window.setTimeout(() => {
+      if (session.current !== next) return;
+      next.armed = true;
+      detach(next);
+    }, GHOST_MS);
+    next.onMove = (moveEvent) => onTouchMove(moveEvent);
+    next.onUp = (endEvent) => onTouchEnd(endEvent);
+    next.onTouchMove = (touchEvent) => {
+      const touch = touchEvent.touches[0];
+      if (!touch || session.current !== next) return;
+      onTouchMove({
+        pointerId: next.pointerId,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      });
+      if (session.current?.armed) touchEvent.preventDefault();
+    };
+    next.onTouchEnd = (touchEvent) => {
+      const touch = touchEvent.changedTouches[0];
+      onTouchEnd({
+        type: touchEvent.type === 'touchcancel' ? 'pointercancel' : 'pointerup',
+        pointerId: next.pointerId,
+        clientX: touch?.clientX ?? next.lastX,
+        clientY: touch?.clientY ?? next.lastY,
+      });
+    };
+    if (event.pointerType === 'touch') {
+      window.addEventListener('touchmove', next.onTouchMove, { passive: false });
+      window.addEventListener('touchend', next.onTouchEnd);
+      window.addEventListener('touchcancel', next.onTouchEnd);
+    } else {
+      window.addEventListener('pointermove', next.onMove);
+      window.addEventListener('pointerup', next.onUp);
+      window.addEventListener('pointercancel', next.onUp);
+    }
+    session.current = next;
+    setPressedId(item.id);
+  }
+
+  function onTouchMove(event) {
+    const current = session.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    current.lastX = event.clientX;
+    current.lastY = event.clientY;
+    const dx = event.clientX - current.x;
+    const dy = event.clientY - current.y;
+    if (!current.armed) {
+      if (dx * dx + dy * dy > SLOP * SLOP) {
+        window.clearTimeout(current.timer);
+        unlisten(current);
+        session.current = null;
+        setPressedId(null);
+      }
+      return;
+    }
+    if (!current.detached) return;
+    setGhost(ghostFrom(current, event.clientX, event.clientY));
+    highlightUnder(event.clientX, event.clientY);
+  }
+
+  function onTouchEnd(event) {
+    const current = session.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    window.clearTimeout(current.timer);
+    unlisten(current);
+    const detached = current.detached;
+    const id = current.id;
+    session.current = null;
+    if (!detached) {
+      setPressedId(null);
+      if (event.type === 'pointercancel' || current.locked) return;
+      suppressClick.current = true;
+      window.setTimeout(() => {
+        suppressClick.current = false;
+      }, 450);
+      finishTap(id, current.bucketId);
+      return;
+    }
+    window.setTimeout(() => {
+      suppressClick.current = false;
+    }, 400);
+    const hit = findDrop(event.clientX, event.clientY);
+    if (hit?.bucketId) onPlace(id, hit.bucketId);
+    else if (hit?.palette) onReturnToPalette(id);
+    clearSession();
+  }
+
+  function finishTap(id, bucketId) {
+    setPressedId(id);
+    window.setTimeout(() => {
+      setPressedId((current) => (current === id ? null : current));
+      onPlace(id, bucketId);
+    }, 120);
+  }
+
+  function placeFromTap(id, bucketId) {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      setPressedId(null);
+      return;
+    }
+    finishTap(id, bucketId);
+  }
+
   return (
-    <div className="buckets">
+    <div className="buckets" ref={boardRef}>
       <div className="bucket-row">
         {BUCKET_IDS.map((bucketId) => {
           const className = [
@@ -96,6 +370,7 @@ export function BucketBoard({
             <div
               key={bucketId}
               className={className}
+              data-bucket={bucketId}
               onClick={() => onActivateBucket(bucketId)}
               onDragOver={(event) => handleBucketDragOver(event, bucketId)}
               onDrop={(event) => handleBucketDrop(event, bucketId)}
@@ -109,9 +384,18 @@ export function BucketBoard({
                     <BucketTile
                       key={id}
                       item={item}
-                      onPlace={() => onPlace(id, activeBucket ?? bucketId)}
+                      pressed={pressedId === id}
+                      armed={armedId === id}
+                      dragging={dragId === id}
+                      detached={Boolean(ghost) && dragId === id}
+                      onPlace={() => placeFromTap(id, activeBucket ?? bucketId)}
                       onDragStart={handleDragStart}
                       onDragEnd={handleDragEnd}
+                      onRemove={() => onReturnToPalette(id)}
+                      locked
+                      onTouchStart={(event) =>
+                        onTouchStart(event, item, bucketId, true)
+                      }
                     />
                   );
                 })}
@@ -134,13 +418,31 @@ export function BucketBoard({
             <BucketTile
               key={item.id}
               item={item}
-              onPlace={() => onPlace(item.id, activeBucket)}
+              pressed={pressedId === item.id}
+              armed={armedId === item.id}
+              dragging={dragId === item.id}
+              detached={Boolean(ghost) && dragId === item.id}
+              onPlace={() => placeFromTap(item.id, activeBucket)}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              onTouchStart={(event) => onTouchStart(event, item, activeBucket)}
             />
           ))}
         </div>
       </div>
+      {ghost ? (
+        <div
+          className="touch-drag-ghost spectrum-tile"
+          style={{
+            left: ghost.x,
+            top: ghost.y,
+            width: ghost.width,
+            height: ghost.height,
+          }}
+        >
+          <span className="spectrum-tile-label">{ghost.name}</span>
+        </div>
+      ) : null}
     </div>
   );
 }

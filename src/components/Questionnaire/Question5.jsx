@@ -52,8 +52,7 @@ export function Question5({ onContinue, onBack, initialMostVegetable }) {
     <QuestionContainer questionNumber={5}>
       <h1 className="question-title">What is the most vegetable vegetable?</h1>
       <p className="microcopy">
-        After sorting and ranking these, which one feels like the ideal example
-        of vegetableness? Go with what feels right. There are no wrong answers.
+        Which consumable plant feels like the ideal example of a vegetable? You can choose freely.
       </p>
 
       <form className="question-form" onSubmit={handleSubmit}>

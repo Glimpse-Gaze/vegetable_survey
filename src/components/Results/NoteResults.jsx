@@ -118,6 +118,15 @@ function pointFromEvent(event) {
   };
 }
 
+function rateGesture() {
+  const coarse =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(pointer: coarse)').matches;
+  return coarse
+    ? 'Tap once to like; double-tap or press and hold to dislike.'
+    : 'Click once to like; double-click or right-click to dislike.';
+}
+
 export function NoteResults({ section, viewingOwn = true }) {
   const responseId = useMemo(() => readMyResponseId(), []);
   const canVote = Boolean(responseId);
@@ -128,6 +137,8 @@ export function NoteResults({ section, viewingOwn = true }) {
   const canPin = Boolean(viewingOwn && storedNote.text && storedNote.isPublic);
   const pool = section.notePool ?? [];
   const [myVotes, setMyVotes] = useState(readMyVotes);
+  const [resetDone, setResetDone] = useState(false);
+  const resetFlash = useRef(0);
   const [board, setBoard] = useState(() =>
     snapshotPage(pool, readMyVotes(), 0, myNote, canPin),
   );
@@ -153,22 +164,23 @@ export function NoteResults({ section, viewingOwn = true }) {
     [],
   );
 
-  function clampPoint(point) {
+  function clampPoint(point, tip = false) {
     const pad = 16;
+    const half = tip ? Math.min(128, (window.innerWidth - 32) / 2) : 0;
     return {
       x: Math.min(
-        window.innerWidth - pad,
-        Math.max(pad, point?.x ?? window.innerWidth / 2),
+        window.innerWidth - pad - half,
+        Math.max(pad + half, point?.x ?? window.innerWidth / 2),
       ),
       y: Math.min(
         window.innerHeight - pad,
-        Math.max(pad, point?.y ?? window.innerHeight / 2),
+        Math.max(pad + (tip ? 64 : 0), point?.y ?? window.innerHeight / 2),
       ),
     };
   }
 
   function showCapTip(kind, point) {
-    const { x, y } = clampPoint(point);
+    const { x, y } = clampPoint(point, true);
     setCapTip({ id: Date.now(), kind, x, y });
     if (capTipTimer.current) window.clearTimeout(capTipTimer.current);
     capTipTimer.current = window.setTimeout(() => setCapTip(null), 1800);
@@ -215,12 +227,29 @@ export function NoteResults({ section, viewingOwn = true }) {
     });
   }
 
+  function releaseReset(event) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    if (
+      event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom
+    ) {
+      return;
+    }
+    resetVotes();
+  }
+
   function resetVotes() {
     if (!responseId) return;
     const votesNow = readMyVotes();
     if (!Object.keys(votesNow).length) return;
     writeMyVotes({});
     setMyVotes({});
+    setResetDone(true);
+    window.clearTimeout(resetFlash.current);
+    resetFlash.current = window.setTimeout(() => setResetDone(false), 1400);
     fetch('/api/reason-votes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -357,7 +386,7 @@ export function NoteResults({ section, viewingOwn = true }) {
           Set {board.page + 1} of {board.pages} · {NOTE_PAGE_SIZE} notes
         </p>
         <button className="note-reshuffle" type="button" onClick={reshuffle}>
-          Reshuffle
+          Next set
         </button>
         {canVote ? null : <SurveyNudge kind="vote" />}
       </div>
@@ -387,7 +416,7 @@ export function NoteResults({ section, viewingOwn = true }) {
                 item.isMine ? 'Your answer. ' : ''
               }${
                 mine === 1 ? 'Liked' : mine === -1 ? 'Sunk' : 'Not voted'
-              }. Click to like, double-click, right-click, or hold to sink.`}
+              }. Tap or click to like. Double-tap, hold, or right-click to sink.`}
               onPointerDown={(event) => {
                 if (!canVote) return;
                 onHoldStart(event, item.id);
@@ -429,25 +458,23 @@ export function NoteResults({ section, viewingOwn = true }) {
       {canVote ? (
         <>
           <p className="reason-drift-hint">
-            Click or tap once to like, or to clear a marked note. Double-click,
-            right-click, or press and hold a clear note to sink it; double-click a
-            red note to like it. You can like up to {MAX_LIKES} and sink up to{' '}
-            {MAX_DISLIKES}. Reshuffle shows the next {NOTE_PAGE_SIZE}; liked notes
-            can move onto the first set.
+          You can rate people's responses. {rateGesture()} You can rate up to five answers. Next set shows the next {NOTE_PAGE_SIZE} notes. Best notes will be seen first.
           </p>
           <div className="reason-reset-row">
             <button
-              className="reason-reset"
+              className={resetDone ? 'reason-reset is-cleared' : 'reason-reset'}
               type="button"
-              disabled={!Object.keys(myVotes).length}
+              disabled={!Object.keys(myVotes).length && !resetDone}
               onClick={resetVotes}
+              onPointerUp={releaseReset}
+              onContextMenu={(event) => event.preventDefault()}
             >
-              Reset input
-              <span className="reason-reset-tip">
-                Clears your 5 likes and 5 dislikes so you can vote on 10 answers
-                again.
-              </span>
+              {resetDone ? 'Cleared' : 'Reset input'}
             </button>
+            <p className="reason-reset-tip">
+              Clears your 5 likes and 5 dislikes so you can vote on 10 answers
+              again.
+            </p>
           </div>
         </>
       ) : null}
@@ -470,8 +497,8 @@ export function NoteResults({ section, viewingOwn = true }) {
           role="status"
         >
           {capTip.kind === 'like'
-            ? 'You can like only 5 answers!'
-            : 'You can dislike only 5 answers!'}
+            ? 'You can like only 5 answers'
+            : 'You can dislike only 5 answers'}
         </p>
       ) : null}
     </div>

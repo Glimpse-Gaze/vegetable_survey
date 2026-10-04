@@ -8,7 +8,24 @@ import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
 import { SpectrumBoard } from './SpectrumBoard.jsx';
 
-export function Question4({ onContinue, onBack, initialSpectrum }) {
+function nextOpenSlot(slots, fromIndex) {
+  for (let index = fromIndex + 1; index < slots.length; index += 1) {
+    if (slots[index] == null) return index;
+  }
+  let closest = null;
+  let best = Infinity;
+  for (let index = 0; index < fromIndex; index += 1) {
+    if (slots[index] != null) continue;
+    const distance = fromIndex - index;
+    if (distance < best) {
+      best = distance;
+      closest = index;
+    }
+  }
+  return closest;
+}
+
+export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
   const [paletteOrder] = useState(() =>
     shuffleSpectrumVegetables(spectrumVegetables),
   );
@@ -16,44 +33,98 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
     () => initialSpectrum ?? emptySpectrumSlots(),
   );
   const [activeSlot, setActiveSlot] = useState(0);
+  const [armedId, setArmedId] = useState(null);
   const remaining = slots.filter((id) => id == null).length;
   const canContinue = remaining === 0;
   const palette = paletteOrder.filter((vegetable) => !slots.includes(vegetable.id));
 
   useEffect(() => {
-    function handlePointerDown(event) {
-      if (event.target.closest('.spectrum-slot, .spectrum-tile')) return;
-      setActiveSlot(null);
+    onDraft?.(slots);
+  }, [slots, onDraft]);
+
+  useEffect(() => {
+    let origin = null;
+    let dragged = false;
+
+    function rememberMove(event) {
+      if (!origin || origin.pointerId !== event.pointerId) return;
+      const dx = event.clientX - origin.x;
+      const dy = event.clientY - origin.y;
+      if (dx * dx + dy * dy > 16) dragged = true;
     }
 
-    document.addEventListener('pointerdown', handlePointerDown);
-    return () => document.removeEventListener('pointerdown', handlePointerDown);
+    function onPointerDown(event) {
+      origin = {
+        x: event.clientX,
+        y: event.clientY,
+        pointerId: event.pointerId,
+        scrollY: window.scrollY,
+      };
+      dragged = false;
+    }
+
+    function onScroll() {
+      if (!origin) return;
+      if (Math.abs(window.scrollY - origin.scrollY) > 2) dragged = true;
+    }
+
+    function onPointerUp(event) {
+      if (!origin || origin.pointerId !== event.pointerId) return;
+      const dx = event.clientX - origin.x;
+      const dy = event.clientY - origin.y;
+      const scrolled = Math.abs(window.scrollY - origin.scrollY) > 2;
+      const wasDrag = dragged || scrolled || dx * dx + dy * dy > 16;
+      origin = null;
+      dragged = false;
+      if (wasDrag) return;
+      if (
+        event.target instanceof Element &&
+        event.target.closest(
+          '.spectrum-scale, .spectrum-pool, .spectrum-tile, .spectrum-rank-button',
+        )
+      ) {
+        return;
+      }
+      setActiveSlot(null);
+      setArmedId(null);
+    }
+
+    function onPointerCancel() {
+      origin = null;
+      dragged = false;
+    }
+
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointermove', rememberMove);
+    document.addEventListener('touchmove', rememberMove, { passive: true });
+    window.addEventListener('scroll', onScroll, true);
+    document.addEventListener('pointerup', onPointerUp);
+    document.addEventListener('pointercancel', onPointerCancel);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('pointermove', rememberMove);
+      document.removeEventListener('touchmove', rememberMove);
+      window.removeEventListener('scroll', onScroll, true);
+      document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('pointercancel', onPointerCancel);
+    };
   }, []);
 
   function handlePlace(id, slotIndex = activeSlot) {
-    if (slotIndex == null || slotIndex < 0) return;
+    if (slotIndex == null || slotIndex < 0) {
+      setArmedId((current) => (current === id ? null : id));
+      return;
+    }
+    if (slots[slotIndex] === id) return;
 
-    setSlots((current) => {
-      const next = [...current];
-      const fromIndex = next.indexOf(id);
-      if (fromIndex === slotIndex) return current;
-
-      const displaced = next[slotIndex];
-      if (fromIndex !== -1) {
-        next[fromIndex] = displaced;
-        next[slotIndex] = id;
-      } else {
-        next[slotIndex] = id;
-      }
-      return next;
+    const placed = slots.map((item, index) => {
+      if (index === slotIndex) return id;
+      if (item === id) return slots[slotIndex] ?? null;
+      return item;
     });
-
-    setActiveSlot((currentActive) => {
-      if (slotIndex !== currentActive && slotIndex != null) {
-        return slotIndex;
-      }
-      return currentActive;
-    });
+    setSlots(placed);
+    setArmedId(null);
+    setActiveSlot(nextOpenSlot(placed, slotIndex));
   }
 
   function handleMove(index, delta) {
@@ -76,6 +147,10 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
   }
 
   function handleActivateSlot(index) {
+    if (armedId) {
+      handlePlace(armedId, index);
+      return;
+    }
     setActiveSlot(index);
   }
 
@@ -92,8 +167,15 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
       </h1>
       <p className="microcopy">
         Degree matters now. Place each item from least vegetabley at the top to
-        most at the bottom. Drag and drop, or click a slot and then an item.
-        Use arrows to nudge a placed item up or down.
+        most at the bottom.{' '}
+        <span className="copy-fine">
+          Drag and drop, or click a slot and then an item. Use arrows to nudge a
+          placed item up or down.
+        </span>
+        <span className="copy-coarse">
+          Tap a rank, then an item — or tap an item, then a rank. Hold an item
+          to drag it. Use the arrows to move it, or × to put it back.
+        </span>
       </p>
 
       <form className="question-form" onSubmit={handleSubmit}>
@@ -105,6 +187,7 @@ export function Question4({ onContinue, onBack, initialSpectrum }) {
           onPlace={handlePlace}
           onMove={handleMove}
           onReturnToPalette={handleReturnToPalette}
+          armedId={armedId}
         />
 
         <QuestionNav
