@@ -21,12 +21,22 @@ export function ResponseCodeCard({
   code,
   categoryId,
   viewingOther = false,
+  invalid = false,
 }) {
   const navigate = useNavigate();
   const [draft, setDraft] = useState('');
+  const [filledFrom, setFilledFrom] = useState('');
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(!code);
+  const [formError, setFormError] = useState('');
+  const [checking, setChecking] = useState(false);
   const sharePath = resultsSharePath(categoryId, code);
+  const error = formError || (invalid ? 'Incorrect ID' : '');
+
+  if (invalid && filledFrom !== code) {
+    setFilledFrom(code ?? '');
+    setDraft(code ?? '');
+  }
 
   async function copyCode() {
     if (!code) return;
@@ -39,16 +49,37 @@ export function ResponseCodeCard({
     }
   }
 
-  function handleLoad(event) {
+  async function handleLoad(event) {
     event.preventDefault();
     const next = draft.trim();
-    if (!isResponseId(next)) return;
+    if (!next || checking) return;
+    if (!isResponseId(next)) {
+      setFormError('Incorrect ID');
+      setExpanded(true);
+      return;
+    }
+    setChecking(true);
+    try {
+      const result = await fetch(`/api/responses?id=${encodeURIComponent(next)}`);
+      if (!result.ok) {
+        setFormError('Incorrect ID');
+        setExpanded(true);
+        return;
+      }
+    } catch {
+      setFormError('Incorrect ID');
+      setExpanded(true);
+      return;
+    } finally {
+      setChecking(false);
+    }
+    setFormError('');
     navigate(resultsSharePath(categoryId, next));
     setDraft('');
     setExpanded(false);
   }
 
-  if (code && !expanded) {
+  if (code && !expanded && !invalid) {
     return (
       <button
         className="response-code-pill"
@@ -77,7 +108,7 @@ export function ResponseCodeCard({
           </button>
         </p>
       ) : null}
-      {viewingOther && code ? (
+      {viewingOther && code && !invalid ? (
         <p className="response-code-line">
           Viewing ranking{' '}
           <code className="response-code">{code}</code>
@@ -95,15 +126,22 @@ export function ResponseCodeCard({
           <input
             id="ranking-code"
             value={draft}
-            onChange={(event) => setDraft(event.target.value)}
+            onChange={(event) => {
+              setDraft(event.target.value);
+              setFormError('');
+            }}
             placeholder="Paste a code…"
             autoComplete="off"
             spellCheck="false"
+            aria-invalid={error ? true : undefined}
           />
-          <button type="submit" disabled={!isResponseId(draft.trim())}>
+          <button type="submit" disabled={!draft.trim() || checking}>
             Open
           </button>
         </div>
+        {error ? (
+          <p className="response-code-error" role="alert">{error}</p>
+        ) : null}
       </form>
     </div>
   );

@@ -144,8 +144,6 @@ export function Questionnaire() {
   }, []);
 
   useEffect(() => {
-    if (!import.meta.env.DEV) return undefined;
-
     function applyPrefill() {
       consumeSurveyPrefillFlag();
       setResponse({

@@ -654,6 +654,7 @@ export function Results() {
   const [regionId, setRegionId] = useState('global');
   const [languageId, setLanguageId] = useState(ALL_LANGUAGES_ID);
   const [sharedAnswers, setSharedAnswers] = useState(null);
+  const [codeInvalid, setCodeInvalid] = useState(false);
   const codeParam = searchParams.get('code');
   const myResponseId = useMemo(() => readMyResponseId(), []);
   const myAnswers = useMemo(() => readMyAnswers(), []);
@@ -693,21 +694,39 @@ export function Results() {
   useEffect(() => {
     if (!isResponseId(codeParam) || codeParam === myResponseId) {
       setSharedAnswers(null);
+      setCodeInvalid(false);
       return undefined;
     }
     let cancelled = false;
     fetch(`/api/responses?id=${encodeURIComponent(codeParam)}`)
-      .then((result) => (result.ok ? result.json() : null))
-      .then((body) => {
-        if (!cancelled) setSharedAnswers(body);
+      .then(async (result) => {
+        if (cancelled) return;
+        if (!result.ok) {
+          setSharedAnswers(null);
+          setCodeInvalid(result.status === 404);
+          return;
+        }
+        const body = await result.json();
+        if (cancelled) return;
+        setCodeInvalid(false);
+        setSharedAnswers(body);
+        if (body?.id && body.id !== codeParam && isResponseId(body.id)) {
+          navigate(
+            `/results/${category.id}?code=${encodeURIComponent(body.id)}`,
+            { replace: true },
+          );
+        }
       })
       .catch(() => {
-        if (!cancelled) setSharedAnswers(null);
+        if (!cancelled) {
+          setSharedAnswers(null);
+          setCodeInvalid(false);
+        }
       });
     return () => {
       cancelled = true;
     };
-  }, [codeParam, myResponseId]);
+  }, [category.id, codeParam, myResponseId, navigate]);
 
   useEffect(() => {
     if (categoryId && categoryId !== category.id) {
@@ -1029,6 +1048,7 @@ export function Results() {
               code={viewingOther ? codeParam : myResponseId}
               categoryId={category.id}
               viewingOther={viewingOther}
+              invalid={codeInvalid}
             />
           </div>
         </section>

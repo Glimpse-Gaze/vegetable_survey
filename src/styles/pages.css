@@ -207,6 +207,13 @@
   cursor: not-allowed;
 }
 
+.response-code-error {
+  margin: 8px 0 0;
+  color: var(--tomato);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
 .response-code-pill {
   display: inline-flex;
   align-items: center;

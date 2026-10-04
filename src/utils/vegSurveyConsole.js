@@ -36,7 +36,6 @@ export function subscribeRankingCodePanel(onOpen) {
 }
 
 export function requestSurveyPrefill() {
-  if (!import.meta.env.DEV) return;
   try {
     sessionStorage.setItem(PREFILL_FLAG, '1');
   } catch {
@@ -69,6 +68,5 @@ export function subscribeSurveyPrefill(onPrefill) {
 }
 
 export function installVegSurveyConsole() {
-  if (!import.meta.env.DEV) return;
   window.vegSurvey = requestSurveyPrefill;
 }

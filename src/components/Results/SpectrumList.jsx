@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { SPECTRUM_METHOD } from '../../data/spectrumVegetables.js';
 
 function formatMean(mean) {
@@ -56,6 +57,49 @@ function Spread({ item }) {
   );
 }
 
+function FactNote({ name, fact }) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function onPointer(event) {
+      if (!rootRef.current?.contains(event.target)) setOpen(false);
+    }
+
+    function onKey(event) {
+      if (event.key === 'Escape') setOpen(false);
+    }
+
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className="question-note is-beside" ref={rootRef}>
+      <button
+        className="question-note-button"
+        type="button"
+        aria-expanded={open}
+        aria-label={`About ${name}`}
+        onClick={() => setOpen((value) => !value)}
+      >
+        i
+      </button>
+      {open ? (
+        <p className="question-note-pop" role="dialog" aria-label={`About ${name}`}>
+          {fact}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function SpectrumBlade({ item, bandId }) {
   const isLeastScore = item.rank === 1;
 
@@ -82,9 +126,9 @@ function SpectrumBlade({ item, bandId }) {
         <div className="spectrum-blade-topline">
           <span className="spectrum-blade-rank">#{item.rank}</span>
           <h3 className="spectrum-blade-name">{item.name}</h3>
+          {item.fact ? <FactNote name={item.name} fact={item.fact} /> : null}
         </div>
         <Spread item={item} />
-        <p className="spectrum-blade-fact">{item.fact}</p>
         {item.note ? <p className="spectrum-blade-note">{item.note}</p> : null}
       </div>
     </article>

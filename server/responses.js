@@ -136,18 +136,17 @@ async function uniqueRankingCode(sql) {
 
 export async function insertResponse(payload, databaseUrl) {
   const openDescription = storedOpenDescription(payload.openDescription);
-  const storedPayload = { ...payload, openDescription };
-  const serialized = JSON.stringify(storedPayload);
-  if (serialized.length > MAX_BODY_BYTES) {
-    throw new Error('Response is too large.');
-  }
-
-  validateResponsePayload(storedPayload);
+  validateResponsePayload({ ...payload, openDescription });
   await ensureDeveloperMessageColumn(databaseUrl);
   await ensureRankingCodeColumn(databaseUrl);
   const sql = neon(databaseUrl);
   const publicDisplay = openDescription.publicDisplay;
   const rankingCode = await uniqueRankingCode(sql);
+  const storedPayload = { ...payload, openDescription, rankingCode };
+  const serialized = JSON.stringify(storedPayload);
+  if (serialized.length > MAX_BODY_BYTES) {
+    throw new Error('Response is too large.');
+  }
   const rows = await sql`
     INSERT INTO responses (payload, public_display, ranking_code)
     VALUES (${serialized}::jsonb, ${publicDisplay}, ${rankingCode})
