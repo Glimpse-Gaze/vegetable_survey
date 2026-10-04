@@ -141,9 +141,9 @@ function emptyCounts() {
   );
 }
 
-function buildBoard(regionId, responseCount) {
+function buildBoard(regionId, responseCount, languageId = 'all') {
   const order = REGION_ORDER[regionId] ?? GLOBAL_ORDER;
-  const random = mulberry32(hashSeed(`spectrum:${regionId}:${responseCount}`));
+  const random = mulberry32(hashSeed(`spectrum:${regionId}:${languageId}:${responseCount}`));
   const temperature = 1.18;
   const counts = emptyCounts();
 
@@ -175,21 +175,22 @@ function meanRank(slotCounts, total) {
   );
 }
 
-export function getSpectrumSection(category, region, artFor) {
-  const counts = buildBoard(region.id, region.votes);
+export function getSpectrumSection(category, region, artFor, view = null) {
+  const total = Math.max(1, view?.language ? view.votes : region.votes);
+  const counts = buildBoard(region.id, total, view?.language?.id ?? 'all');
   const userSpectrum = category.userSpectrum ?? [];
   const items = spectrumVegetables
     .map((vegetable) => {
       const slotCounts = counts[vegetable.id];
-      const mean = meanRank(slotCounts, region.votes);
+      const mean = meanRank(slotCounts, total);
       const userSlot = userSpectrum.indexOf(vegetable.id) + 1;
       return {
         ...vegetable,
         art: artFor(vegetable.id),
         slotCounts,
-        slotShares: slotCounts.map((count) => count / region.votes),
+        slotShares: slotCounts.map((count) => count / total),
         meanRank: mean,
-        medianSlot: medianSlot(slotCounts, region.votes),
+        medianSlot: medianSlot(slotCounts, total),
         userSlot: userSlot || null,
       };
     })
@@ -216,6 +217,6 @@ export function getSpectrumSection(category, region, artFor) {
     region,
     items,
     bands,
-    responseCount: region.votes,
+    responseCount: total,
   };
 }

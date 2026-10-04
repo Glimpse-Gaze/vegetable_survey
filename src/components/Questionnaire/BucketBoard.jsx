@@ -18,6 +18,7 @@ function BucketTile({
   dragging,
   armed,
   detached,
+  locked = false,
   onPlace,
   onDragStart,
   onDragEnd,
@@ -40,6 +41,7 @@ function BucketTile({
         draggable={nativeDrag}
         onClick={(event) => {
           event.stopPropagation();
+          if (locked) return;
           onPlace(item.id);
         }}
         onContextMenu={(event) => event.preventDefault()}
@@ -60,7 +62,17 @@ function BucketTile({
             onRemove();
           }}
         >
-          <span aria-hidden="true">×</span>
+          <span aria-hidden="true">
+            <svg viewBox="0 0 16 16">
+              <path
+                d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </span>
         </button>
       ) : null}
     </div>
@@ -144,8 +156,6 @@ export function BucketBoard({
   }
 
   useEffect(() => {
-    const root = boardRef.current;
-
     function blockScroll(event) {
       if (session.current?.armed) event.preventDefault();
     }
@@ -156,23 +166,13 @@ export function BucketBoard({
       window.getSelection()?.removeAllRanges();
     }
 
-    function blockTileTouch(event) {
-      if (nativeDrag) return;
-      if (!(event.target instanceof Element)) return;
-      if (!event.target.closest('.spectrum-tile')) return;
-      if (event.target.closest('.tile-remove')) return;
-      event.preventDefault();
-    }
-
     document.addEventListener('touchmove', blockScroll, { passive: false });
     document.addEventListener('selectstart', blockCallout);
     document.addEventListener('contextmenu', blockCallout);
-    root?.addEventListener('touchstart', blockTileTouch, { passive: false });
     return () => {
       document.removeEventListener('touchmove', blockScroll);
       document.removeEventListener('selectstart', blockCallout);
       document.removeEventListener('contextmenu', blockCallout);
-      root?.removeEventListener('touchstart', blockTileTouch);
     };
   }, []);
 
@@ -217,9 +217,12 @@ export function BucketBoard({
     window.removeEventListener('pointermove', current.onMove);
     window.removeEventListener('pointerup', current.onUp);
     window.removeEventListener('pointercancel', current.onUp);
+    window.removeEventListener('touchmove', current.onTouchMove);
+    window.removeEventListener('touchend', current.onTouchEnd);
+    window.removeEventListener('touchcancel', current.onTouchEnd);
   }
 
-  function onTouchStart(event, item, bucketId) {
+  function onTouchStart(event, item, bucketId, locked = false) {
     if (event.pointerType === 'mouse') return;
     if (event.button != null && event.button !== 0) return;
     const previous = session.current;
@@ -240,6 +243,7 @@ export function BucketBoard({
       height: box.height,
       armed: false,
       detached: false,
+      locked,
       bucketId,
       timer: 0,
       onMove: null,
@@ -252,9 +256,34 @@ export function BucketBoard({
     }, GHOST_MS);
     next.onMove = (moveEvent) => onTouchMove(moveEvent);
     next.onUp = (endEvent) => onTouchEnd(endEvent);
-    window.addEventListener('pointermove', next.onMove);
-    window.addEventListener('pointerup', next.onUp);
-    window.addEventListener('pointercancel', next.onUp);
+    next.onTouchMove = (touchEvent) => {
+      const touch = touchEvent.touches[0];
+      if (!touch || session.current !== next) return;
+      onTouchMove({
+        pointerId: next.pointerId,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      });
+      if (session.current?.armed) touchEvent.preventDefault();
+    };
+    next.onTouchEnd = (touchEvent) => {
+      const touch = touchEvent.changedTouches[0];
+      onTouchEnd({
+        type: touchEvent.type === 'touchcancel' ? 'pointercancel' : 'pointerup',
+        pointerId: next.pointerId,
+        clientX: touch?.clientX ?? next.lastX,
+        clientY: touch?.clientY ?? next.lastY,
+      });
+    };
+    if (event.pointerType === 'touch') {
+      window.addEventListener('touchmove', next.onTouchMove, { passive: false });
+      window.addEventListener('touchend', next.onTouchEnd);
+      window.addEventListener('touchcancel', next.onTouchEnd);
+    } else {
+      window.addEventListener('pointermove', next.onMove);
+      window.addEventListener('pointerup', next.onUp);
+      window.addEventListener('pointercancel', next.onUp);
+    }
     session.current = next;
     setPressedId(item.id);
   }
@@ -289,11 +318,12 @@ export function BucketBoard({
     const id = current.id;
     session.current = null;
     if (!detached) {
+      setPressedId(null);
+      if (event.type === 'pointercancel' || current.locked) return;
       suppressClick.current = true;
       window.setTimeout(() => {
         suppressClick.current = false;
       }, 450);
-      setPressedId(null);
       finishTap(id, current.bucketId);
       return;
     }
@@ -362,8 +392,9 @@ export function BucketBoard({
                       onDragStart={handleDragStart}
                       onDragEnd={handleDragEnd}
                       onRemove={() => onReturnToPalette(id)}
+                      locked
                       onTouchStart={(event) =>
-                        onTouchStart(event, item, activeBucket ?? bucketId)
+                        onTouchStart(event, item, bucketId, true)
                       }
                     />
                   );

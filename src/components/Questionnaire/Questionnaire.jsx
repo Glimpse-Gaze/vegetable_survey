@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ConfirmDialog } from '../ConfirmDialog.jsx';
 import { PrivacyConsent } from './PrivacyConsent.jsx';
 import { Question1 } from './Question1.jsx';
 import { Question2 } from './Question2.jsx';
@@ -17,13 +18,15 @@ import { writeMyOpenNote } from '../../utils/myOpenNote.js';
 import { writeMyResponse } from '../../utils/myResponse.js';
 import {
   consumeRankingCodePanelFlag,
+  consumeSurveyPrefillFlag,
   subscribeRankingCodePanel,
+  subscribeSurveyPrefill,
 } from '../../utils/vegSurveyConsole.js';
+import { DEV_SPEEDRUN } from '../../data/devSpeedrun.js';
 
 const LOCK_TOAST = 'First instinct locked. No wrong answers.';
 const BACK_LOCKED_TOAST =
   'Your initial intuition is locked. There are no bad answers!';
-const ANTARCTICA_TOAST = "I don't believe you.";
 const FILL_TOAST = 'Answers loaded from that ranking code.';
 
 const STEPS = {
@@ -80,10 +83,42 @@ export function Questionnaire() {
   const [resetKey, setResetKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [codePanel, setCodePanel] = useState(false);
+  const [leaveAsk, setLeaveAsk] = useState(false);
+  const leavingRef = useRef(false);
+
+  const stepRef = useRef(step);
+  const guardReady = useRef(false);
 
   useEffect(() => {
-    window.history.replaceState({ step }, '');
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [step]);
+
+  useEffect(() => {
+    stepRef.current = step;
+    if (!guardReady.current) {
+      window.history.pushState({ vegGuard: true }, '');
+      guardReady.current = true;
+    }
+    if (step === STEPS.THANKS) return undefined;
+
+    function onBeforeUnload(event) {
+      if (leavingRef.current) return;
+      event.preventDefault();
+      event.returnValue = '';
+    }
+
+    function onPop() {
+      if (leavingRef.current || stepRef.current === STEPS.THANKS) return;
+      setLeaveAsk(true);
+      window.history.pushState({ vegGuard: true }, '');
+    }
+
+    window.addEventListener('beforeunload', onBeforeUnload);
+    window.addEventListener('popstate', onPop);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+      window.removeEventListener('popstate', onPop);
+    };
   }, [step]);
 
   useEffect(() => {
@@ -106,6 +141,26 @@ export function Questionnaire() {
   useEffect(() => {
     if (consumeRankingCodePanelFlag()) setCodePanel(true);
     return subscribeRankingCodePanel(() => setCodePanel(true));
+  }, []);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return undefined;
+
+    function applyPrefill() {
+      consumeSurveyPrefillFlag();
+      setResponse({
+        ...emptyResponse(),
+        processingConsent: {
+          agreed: true,
+          agreedAt: new Date().toISOString(),
+        },
+        ...DEV_SPEEDRUN,
+      });
+      setStep(STEPS.QUESTION_7);
+    }
+
+    if (consumeSurveyPrefillFlag()) applyPrefill();
+    return subscribeSurveyPrefill(applyPrefill);
   }, []);
 
   useEffect(() => {
@@ -222,6 +277,13 @@ export function Questionnaire() {
     ));
   }
 
+  function handleBackgroundDraft(background) {
+    setResponse((current) => {
+      const same = JSON.stringify(current.background) === JSON.stringify(background);
+      return same ? current : { ...current, background };
+    });
+  }
+
   function handleQuestion4({ spectrum }) {
     persist(STEPS.QUESTION_5, {
       ...response,
@@ -280,8 +342,10 @@ export function Questionnaire() {
     showToast(BACK_LOCKED_TOAST);
   }
 
-  function handleBlockedAntarctica() {
-    showToast(ANTARCTICA_TOAST);
+  function confirmLeave() {
+    leavingRef.current = true;
+    setLeaveAsk(false);
+    navigate('/');
   }
 
   return (
@@ -339,9 +403,9 @@ export function Questionnaire() {
         {step === STEPS.QUESTION_7 ? (
           <Question7
             initialBackground={response.background}
+            onDraft={handleBackgroundDraft}
             onContinue={handleQuestion7}
             onBack={handleBack}
-            onBlockedAntarctica={handleBlockedAntarctica}
             continueDisabled={isSubmitting}
             continueHint={isSubmitting ? 'Saving your answers…' : undefined}
           />
@@ -352,6 +416,14 @@ export function Questionnaire() {
       </div>
 
       <Toast message={toastMessage} visible={toastVisible} />
+      {leaveAsk ? (
+        <ConfirmDialog
+          title="Leave the survey?"
+          message="Are you sure you want to return? Your answers won't be saved."
+          onConfirm={confirmLeave}
+          onCancel={() => setLeaveAsk(false)}
+        />
+      ) : null}
     </main>
   );
 }

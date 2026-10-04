@@ -128,10 +128,17 @@ export const languages = [
   item('yiddish', 'Yiddish', []),
   item('latin', 'Latin', []),
   item('esperanto', 'Esperanto', []),
-  item('american_sign_language', 'American Sign Language', ['asl']),
-  item('british_sign_language', 'British Sign Language', ['bsl']),
-  item('french_sign_language', 'French Sign Language', ['lsf']),
-  item('chinese_sign_language', 'Chinese Sign Language', ['csl']),
+  item('sign_language', 'Sign language (any variant)', [
+    'sign language',
+    'asl',
+    'american sign language',
+    'bsl',
+    'british sign language',
+    'lsf',
+    'french sign language',
+    'csl',
+    'chinese sign language',
+  ]),
 ];
 
 export const featuredLanguageIds = [

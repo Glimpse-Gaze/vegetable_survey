@@ -6,17 +6,30 @@
 }
 
 .results-topbar {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  gap: 2px;
+  padding: 8px 18px 6px;
+  background: transparent;
+}
+
+.results-topbar.is-filtered {
+  background: var(--paper);
+  box-shadow: inset 0 -1px 0 var(--border);
 }
 
 .results-chrome {
-  position: fixed;
-  top: 18px;
-  right: 18px;
-  z-index: 40;
+  position: static;
+  z-index: 1;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+  width: 100%;
 }
 
 .results-now {
@@ -69,17 +82,14 @@
 }
 
 .results-region-status {
-  position: fixed;
-  top: 22px;
-  left: 22px;
-  z-index: 24;
-  max-width: min(28rem, calc(100vw - 10.5rem));
+  position: static;
+  z-index: 1;
+  max-width: none;
   margin: 0;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: 500;
   line-height: 1.35;
-  opacity: 0.7;
 }
 
 .results-region-status .map-clear {
@@ -129,6 +139,7 @@
   transition: transform 220ms ease;
   pointer-events: none;
   visibility: hidden;
+  overflow-y: auto;
 }
 
 .results-drawer.is-open {
@@ -192,10 +203,28 @@
 }
 
 .results-home-link {
-  margin-top: auto;
+  margin-top: 4px;
   color: var(--green-deep);
   font-size: 0.92rem;
   font-weight: 650;
+}
+
+.results-menu-filters {
+  display: grid;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.results-menu-filters .map-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.results-menu-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.4;
 }
 
 .results-main {
@@ -223,6 +252,69 @@
   text-align: center;
 }
 
+.results-section-head .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.question-note {
+  position: relative;
+  display: inline-flex;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.question-note-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--green-deep);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.question-note-button:hover,
+.question-note-button[aria-expanded='true'] {
+  background: var(--card);
+}
+
+.question-note-pop {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  z-index: 6;
+  width: min(22rem, calc(100vw - 48px));
+  margin: 0;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0;
+  line-height: 1.45;
+  text-align: left;
+  text-transform: none;
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+}
+
 .results-section-title {
   margin: 0 0 0.55rem;
   font-family: var(--font-display);
@@ -246,12 +338,12 @@
 
 .alignment-card {
   display: grid;
-  gap: 2px;
+  gap: 3px;
   max-width: 100%;
   margin: 0;
-  padding: 8px 16px 9px;
+  padding: 9px 18px 10px;
   border: 1.5px solid var(--border);
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--card);
   text-align: left;
 }
@@ -259,7 +351,7 @@
 .alignment-kicker {
   margin: 0;
   color: var(--cabbage);
-  font-size: 0.72rem;
+  font-size: 0.83rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -276,7 +368,7 @@
 .alignment-body {
   margin: 0;
   color: var(--ink);
-  font-size: 0.9rem;
+  font-size: 1.04rem;
   line-height: 1.35;
 }
 
@@ -632,6 +724,11 @@
   margin-bottom: 16px;
 }
 
+.map-panel-head > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .map-title {
   margin: 0 0 8px;
   font-family: var(--font-display);
@@ -642,7 +739,8 @@
 
 .map-copy {
   margin: 0;
-  max-width: 36rem;
+  flex: 1 1 auto;
+  max-width: none;
   color: var(--muted);
   font-size: 0.95rem;
 }
@@ -777,6 +875,11 @@
 
 .world-map-tip strong {
   font-size: 0.9rem;
+}
+
+.map-language {
+  width: min(22rem, 100%);
+  margin-top: 16px;
 }
 
 .map-status {
@@ -1120,6 +1223,9 @@
 }
 
 .reason-reset:disabled {
+  background: #e4ddd0;
+  border-color: #d5cec2;
+  color: #a39c92;
   cursor: default;
 }
 
@@ -1145,8 +1251,17 @@
   animation: reason-drift var(--drift-duration, 45s) linear infinite;
 }
 
-.reason-drift-row.is-reverse {
-  animation-direction: reverse;
+.reason-drift-row.is-leading .reason-chip:not(.is-liked):not(.is-disliked) {
+  background: #fff8e8;
+  border-color: #e4c56b;
+  box-shadow:
+    0 0 0 1px rgba(212, 168, 58, 0.16),
+    0 4px 14px rgba(184, 140, 32, 0.14);
+}
+
+.reason-drift-row.is-leading .reason-chip:not(.is-liked):not(.is-disliked):hover {
+  background: #fff1cc;
+  border-color: #d7b24e;
 }
 
 .reason-drift:has(:active) .reason-drift-row {
@@ -1802,6 +1917,16 @@
   font-weight: 750;
 }
 
+.bucket-lookup-yours,
+.bucket-lookup-yours strong {
+  color: var(--cabbage);
+}
+
+.bucket-lookup-table tr.is-yours th,
+.bucket-lookup-table tr.is-yours td.is-votes {
+  color: var(--cabbage);
+}
+
 .bucket-lookup-table {
   width: 100%;
   border-collapse: collapse;
@@ -1841,11 +1966,6 @@
 .bucket-lookup-table .is-bar {
   width: 42%;
   padding-right: 0;
-}
-
-.bucket-lookup-table tr.is-yours th,
-.bucket-lookup-table tr.is-yours td {
-  color: var(--cabbage);
 }
 
 .bucket-lookup-meter {
@@ -1906,7 +2026,7 @@
 
 .results-survey-foot {
   width: min(28rem, calc(100% - 48px));
-  margin: 8px auto 36px;
+  margin: 48px auto 36px;
   text-align: center;
 }
 
@@ -2031,6 +2151,10 @@
     align-items: stretch;
   }
 
+  .map-copy {
+    max-width: 36rem;
+  }
+
   .bucket-results {
     grid-template-columns: minmax(0, 22rem);
     justify-content: center;
@@ -2096,8 +2220,8 @@
       max(12px, env(safe-area-inset-right))
       2px
       max(12px, env(safe-area-inset-left));
-    background: rgba(243, 238, 227, 0.7);
-    backdrop-filter: blur(8px);
+    background: transparent;
+    backdrop-filter: none;
   }
 
   .results-chrome {

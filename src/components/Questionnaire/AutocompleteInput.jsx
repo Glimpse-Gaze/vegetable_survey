@@ -14,16 +14,13 @@ export function AutocompleteInput({
 }) {
   const [open, setOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
-  const [fieldHeld, setFieldHeld] = useState(false);
   const containerRef = useRef(null);
   const inputRef = useRef(null);
   const listRef = useRef(null);
-  const parkedScroll = useRef(0);
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const listId = `${inputId}-listbox`;
   const showList = open && !disabled && suggestions.length > 0;
-  if (disabled && fieldHeld) setFieldHeld(false);
   const activeDescendant =
     showList && highlightIndex >= 0
       ? `${listId}-option-${highlightIndex}`
@@ -50,7 +47,6 @@ export function AutocompleteInput({
     const shell = document.querySelector('.app-shell');
     const previousPadding = shell?.style.paddingBottom ?? '';
     let held = false;
-    let sawKeyboard = false;
     let blurTimer = 0;
 
     function keyboardInset() {
@@ -66,25 +62,17 @@ export function AutocompleteInput({
       if (!window.matchMedia('(pointer: coarse)').matches) return;
       const keyboard = keyboardInset();
       const focused = document.activeElement === input;
-      if (keyboard >= 40) sawKeyboard = true;
       if (!focused) {
         releasePadding();
         return;
       }
-      if (keyboard < 40) {
-        if (!sawKeyboard) return;
-        sawKeyboard = false;
-        releasePadding();
-        input.blur();
-        return;
-      }
+      if (keyboard < 40) return;
       if (!shell) return;
       shell.style.paddingBottom = `${Math.max(keyboard + 24, 80)}px`;
       held = true;
     }
 
     function releasePadding() {
-      setFieldHeld(false);
       if (held && shell) {
         shell.style.paddingBottom = previousPadding;
         held = false;
@@ -92,7 +80,6 @@ export function AutocompleteInput({
     }
 
     function onFocus() {
-      sawKeyboard = false;
       window.clearTimeout(blurTimer);
       holdPadding();
     }
@@ -102,7 +89,9 @@ export function AutocompleteInput({
       blurTimer = window.setTimeout(() => {
         if (document.activeElement === input) return;
         releasePadding();
-      }, 160);
+        setOpen(false);
+        setHighlightIndex(-1);
+      }, 180);
     }
 
     input.addEventListener('focus', onFocus);
@@ -124,55 +113,25 @@ export function AutocompleteInput({
   useEffect(() => {
     if (!showList) return undefined;
     const input = inputRef.current;
-    const coarse = window.matchMedia('(pointer: coarse)').matches;
-    if (!coarse || !input) return undefined;
-    const listNode = listRef.current;
+    const list = listRef.current;
+    if (!input || !list) return undefined;
 
-    function placeList(smooth) {
+    function placeList() {
       const view = window.visualViewport;
       const viewHeight = view?.height ?? window.innerHeight;
       const rect = input.getBoundingClientRect();
-      const room = 220;
-      const space = viewHeight - rect.bottom;
-      if (space < room) {
-        const shift = Math.min(Math.max(0, rect.top - 12), room - space);
-        if (shift > 4) {
-          window.scrollBy({ top: shift, behavior: smooth ? 'smooth' : 'auto' });
-        }
-      }
-
-      const list = listRef.current;
-      if (!list) return;
-      const next = input.getBoundingClientRect();
-      const nextSpace = viewHeight - next.bottom - 12;
-      list.style.maxHeight = `${Math.max(120, Math.min(nextSpace, 320))}px`;
+      const space = viewHeight - rect.bottom - 12;
+      list.style.maxHeight = `${Math.max(96, Math.min(space, 280))}px`;
     }
 
-    function rememberScroll() {
-      parkedScroll.current = window.scrollY;
-    }
-
-    placeList(false);
-    rememberScroll();
-    const later = window.setTimeout(() => placeList(true), 320);
+    placeList();
     const view = window.visualViewport;
-    const onViewport = () => placeList(false);
-    view?.addEventListener('resize', onViewport);
-    view?.addEventListener('scroll', onViewport);
-    window.addEventListener('scroll', rememberScroll, { passive: true });
+    view?.addEventListener('resize', placeList);
+    view?.addEventListener('scroll', placeList);
     return () => {
-      window.clearTimeout(later);
-      view?.removeEventListener('resize', onViewport);
-      view?.removeEventListener('scroll', onViewport);
-      window.removeEventListener('scroll', rememberScroll);
-      if (listNode) listNode.style.maxHeight = '';
-      const parked = parkedScroll.current;
-      if (!input.isConnected || document.activeElement !== input || parked < 8) return;
-      window.requestAnimationFrame(() => {
-        if (document.activeElement === input && window.scrollY + 8 < parked) {
-          window.scrollTo({ top: parked, behavior: 'auto' });
-        }
-      });
+      view?.removeEventListener('resize', placeList);
+      view?.removeEventListener('scroll', placeList);
+      list.style.maxHeight = '';
     };
   }, [showList]);
 
@@ -233,7 +192,6 @@ export function AutocompleteInput({
   }
 
   function endEntry() {
-    setFieldHeld(false);
     setOpen(false);
     setHighlightIndex(-1);
     const shell = document.querySelector('.app-shell');
@@ -280,11 +238,9 @@ export function AutocompleteInput({
           if (disabled) return;
           onChange(event.target.value);
           setOpen(true);
-          if (window.matchMedia('(pointer: coarse)').matches) setFieldHeld(true);
         }}
         onFocus={() => {
           if (disabled) return;
-          if (window.matchMedia('(pointer: coarse)').matches) setFieldHeld(true);
           if (suggestions.length > 0) setOpen(true);
         }}
         onClick={() => {
@@ -315,7 +271,7 @@ export function AutocompleteInput({
                 }
                 onMouseEnter={() => setHighlightIndex(index)}
                 onMouseLeave={() => setHighlightIndex(-1)}
-                onMouseDown={(event) => event.preventDefault()}
+                onPointerDown={(event) => event.preventDefault()}
                 onClick={() => handlePick(vegetable)}
               >
                 {vegetable.name}
@@ -323,9 +279,6 @@ export function AutocompleteInput({
             );
           })}
         </ul>
-      ) : null}
-      {fieldHeld && !disabled && !showList ? (
-        <div className="autocomplete-hold" aria-hidden="true" />
       ) : null}
     </div>
   );

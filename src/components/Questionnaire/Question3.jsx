@@ -130,7 +130,7 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
       <h1 className="question-title">Which of these count as vegetables?</h1>
       <p className="microcopy">
         Sort each item into a bucket. Degree doesn’t matter yet — just no, yes,
-        or somewhere in-between.{' '}
+        or something in-between.{' '}
         <span className="copy-fine">
           Drag them, or click a bucket and then an item.
         </span>

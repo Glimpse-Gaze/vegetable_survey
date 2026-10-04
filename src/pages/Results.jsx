@@ -17,7 +17,13 @@ import {
   nextCategoryId,
   REGION_GROUPS,
   REGIONS,
+  BLADE_BOARD_SIZE,
   VEGETABLE_LABELS,
+  ALL_LANGUAGES_ID,
+  LIVE_COUNTRIES,
+  languagesForRegion,
+  regionsForLanguage,
+  nativeCount,
 } from '../data/resultsMock.js';
 import '../styles/results.css';
 
@@ -86,8 +92,14 @@ function ordinal(n) {
 
 function placeLabel(region) {
   if (region.id === 'global') return 'worldwide';
-  if (region.kind === 'continent') return `in ${region.name}`;
   return `in ${region.name}`;
+}
+
+function audienceLabel(section) {
+  const language = section.language?.name;
+  const place = section.region.id === 'global' ? '' : ` in ${section.region.name}`;
+  if (language) return `among ${language} speakers${place}`;
+  return placeLabel(section.region);
 }
 
 function alignmentTone(rank) {
@@ -104,19 +116,24 @@ function alignmentCopy(section) {
     section.userVoteName;
   if (!name) return null;
 
-  const place = placeLabel(section.region);
+  const place = audienceLabel(section);
   if (!picked) {
     const share = section.userRanked?.share ?? 0;
+    const people = section.language
+      ? `${section.language.name} speakers`
+      : 'people';
     return {
-      kicker: `${share > 0 ? 'Only ' : ''}${formatShare(share)} of people voted with you`,
+      kicker: `${share > 0 ? 'Only ' : ''}${formatShare(share)} of ${people} voted with you`,
       name,
       tone: 'lose',
       connector: 'It',
-      outcome: `hasn't made this list ${place}`,
+      outcome: `placed below top ${BLADE_BOARD_SIZE} ${place}`,
     };
   }
 
-  const votedWithYou = `${formatShare(picked.share)} of people voted with you`;
+  const votedWithYou = section.language
+    ? `${formatShare(picked.share)} of ${section.language.name} speakers voted with you`
+    : `${formatShare(picked.share)} of people voted with you`;
 
   return {
     kicker: votedWithYou,
@@ -196,6 +213,7 @@ function RankRail({ section, pauseAutoplay }) {
   const edgesRef = useRef({ atStart: true, atEnd: false });
   const [edges, setEdges] = useState({ atStart: true, atEnd: false });
   const dragRef = useRef(null);
+  const coastRef = useRef(0);
   const nudgePauseRef = useRef(false);
   const directionRef = useRef(1);
   const resumeTimer = useRef(0);
@@ -244,7 +262,8 @@ function RankRail({ section, pauseAutoplay }) {
         hidden ||
         menuPauseRef.current ||
         nudgePauseRef.current ||
-        dragRef.current != null;
+        dragRef.current != null ||
+        coastRef.current !== 0;
       if (busy) {
         idleMs = 0;
         warmupElapsed = 0;
@@ -300,6 +319,7 @@ function RankRail({ section, pauseAutoplay }) {
     return () => {
       window.clearTimeout(resumeTimer.current);
       window.cancelAnimationFrame(nudgeAnim.current);
+      window.cancelAnimationFrame(coastRef.current);
     };
   }, []);
 
@@ -330,6 +350,8 @@ function RankRail({ section, pauseAutoplay }) {
     const rail = railRef.current;
     if (!rail) return;
     window.cancelAnimationFrame(nudgeAnim.current);
+    window.cancelAnimationFrame(coastRef.current);
+    coastRef.current = 0;
     holdNudge();
     const blade = rail.querySelector('.blade');
     const gap = parseFloat(getComputedStyle(rail).columnGap) || 19;
@@ -374,11 +396,14 @@ function RankRail({ section, pauseAutoplay }) {
     if (event.pointerType === 'touch') return;
     const rail = railRef.current;
     if (!rail) return;
+    window.cancelAnimationFrame(coastRef.current);
+    coastRef.current = 0;
     dragRef.current = {
       id: event.pointerId,
       x: event.clientX,
       scroll: rail.scrollLeft,
       moved: false,
+      samples: [{ t: performance.now(), scroll: rail.scrollLeft }],
     };
     rail.setPointerCapture(event.pointerId);
   }
@@ -391,7 +416,52 @@ function RankRail({ section, pauseAutoplay }) {
     if (!drag.moved && Math.abs(dx) < DRAG_THRESHOLD) return;
     drag.moved = true;
     rail.scrollLeft = drag.scroll - dx;
+    const now = performance.now();
+    drag.samples.push({ t: now, scroll: rail.scrollLeft });
+    const recent = now - 90;
+    while (drag.samples.length > 2 && drag.samples[0].t < recent) {
+      drag.samples.shift();
+    }
     stageRef.current?.classList.add('is-dragging');
+  }
+
+  function coastFrom(velocity) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced || Math.abs(velocity) < 0.18) {
+      releaseNudge();
+      return;
+    }
+    const rail = railRef.current;
+    if (!rail) {
+      releaseNudge();
+      return;
+    }
+    let speed = velocity;
+    let last = performance.now();
+    let previous = rail.scrollLeft;
+
+    function frame(now) {
+      const current = railRef.current;
+      if (!current || dragRef.current) {
+        coastRef.current = 0;
+        releaseNudge();
+        return;
+      }
+      const dt = Math.min(32, now - last);
+      last = now;
+      speed *= Math.exp(-0.006 * dt);
+      current.scrollLeft += speed * dt;
+      const stuck = Math.abs(current.scrollLeft - previous) < 0.4;
+      previous = current.scrollLeft;
+      if (stuck || Math.abs(speed) < 0.05) {
+        coastRef.current = 0;
+        releaseNudge();
+        return;
+      }
+      coastRef.current = window.requestAnimationFrame(frame);
+    }
+
+    coastRef.current = window.requestAnimationFrame(frame);
   }
 
   function onPointerUp(event) {
@@ -402,17 +472,30 @@ function RankRail({ section, pauseAutoplay }) {
       return;
     }
     const moved = drag.moved;
+    const samples = drag.samples ?? [];
     dragRef.current = null;
     stageRef.current?.classList.remove('is-dragging');
     const rail = railRef.current;
     if (rail?.hasPointerCapture(drag.id)) rail.releasePointerCapture(drag.id);
-    if (moved) holdNudge();
-    releaseNudge();
+    if (!moved) {
+      releaseNudge();
+      return;
+    }
+    holdNudge();
+    const first = samples[0];
+    const lastSample = samples[samples.length - 1];
+    const dt = lastSample && first ? lastSample.t - first.t : 0;
+    const velocity = dt > 16 ? (lastSample.scroll - first.scroll) / dt : 0;
+    coastFrom(velocity);
   }
 
   function onRailScroll() {
     readEdges();
     if (drivingRef.current || performance.now() - drivenAt.current < 40) return;
+    if (coastRef.current) {
+      holdNudge();
+      return;
+    }
     holdNudge();
     releaseNudge();
   }
@@ -469,12 +552,107 @@ function RankRail({ section, pauseAutoplay }) {
   );
 }
 
+function QuestionNote({ note }) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function onPointer(event) {
+      if (!rootRef.current?.contains(event.target)) setOpen(false);
+    }
+
+    function onKey(event) {
+      if (event.key === 'Escape') setOpen(false);
+    }
+
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  if (!note) return null;
+
+  return (
+    <div className="question-note" ref={rootRef}>
+      <button
+        className="question-note-button"
+        type="button"
+        aria-expanded={open}
+        aria-label="Why this question"
+        onClick={() => setOpen((value) => !value)}
+      >
+        i
+      </button>
+      {open ? (
+        <p className="question-note-pop" role="dialog" aria-label="Why this question">
+          {note}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function filterSummary(section) {
+  const place = section.region.id === 'global' ? 'the world' : section.region.name;
+  const language = section.language ? ` · ${section.language.name}` : '';
+  const count = section.language ? section.responseCount : section.region.votes;
+  return `Showing ${place}${language} · ${count} answers`;
+}
+
+function PlaceFilter({ regionId, placeIds, onRegion }) {
+  return (
+    <label className="map-select">
+      <span>Filter by place</span>
+      <select value={regionId} onChange={(event) => onRegion(event.target.value)}>
+        {REGION_GROUPS.map((group) => {
+          const ids = group.ids.filter((id) => placeIds.has(id));
+          if (!ids.length) return null;
+          return (
+            <optgroup key={group.label} label={group.label}>
+              {ids.map((id) => {
+                const region = REGIONS.find((item) => item.id === id);
+                return (
+                  <option key={id} value={id}>
+                    {region.name}
+                  </option>
+                );
+              })}
+            </optgroup>
+          );
+        })}
+      </select>
+    </label>
+  );
+}
+
+function LanguageFilter({ languageId, languageOptions, onLanguage, className = 'map-select' }) {
+  return (
+    <label className={className}>
+      <span>Filter by language</span>
+      <select value={languageId} onChange={(event) => onLanguage(event.target.value)}>
+        <option value={ALL_LANGUAGES_ID}>All languages</option>
+        {languageOptions.map((language) => (
+          <option key={language.id} value={language.id}>
+            {language.name}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export function Results() {
   const navigate = useNavigate();
   const { categoryId } = useParams();
   const [searchParams] = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
   const [regionId, setRegionId] = useState('global');
+  const [languageId, setLanguageId] = useState(ALL_LANGUAGES_ID);
   const [sharedAnswers, setSharedAnswers] = useState(null);
   const codeParam = searchParams.get('code');
   const myResponseId = useMemo(() => readMyResponseId(), []);
@@ -483,8 +661,27 @@ export function Results() {
   const userAnswers = viewingOther ? sharedAnswers : myAnswers;
   const category = getCategory(categoryId);
   const section = useMemo(
-    () => getSection(category.id, regionId, userAnswers),
-    [category.id, regionId, userAnswers],
+    () => getSection(category.id, regionId, userAnswers, languageId),
+    [category.id, regionId, userAnswers, languageId],
+  );
+  const languageOptions = useMemo(
+    () => languagesForRegion(regionId),
+    [regionId],
+  );
+  const placeIds = useMemo(
+    () => new Set(regionsForLanguage(languageId)),
+    [languageId],
+  );
+  const liveCountries = useMemo(
+    () => LIVE_COUNTRIES
+      .filter((country) => placeIds.has(country.id))
+      .map((country) => ({
+        ...country,
+        votes: languageId === ALL_LANGUAGES_ID
+          ? country.votes
+          : nativeCount(country.id, languageId),
+      })),
+    [placeIds, languageId],
   );
   const nextId = nextCategoryId(category.id);
   const alignment =
@@ -557,13 +754,30 @@ export function Results() {
   function selectRegion(id) {
     startTransition(() => {
       setRegionId(id);
+      setLanguageId((current) => (
+        current !== ALL_LANGUAGES_ID
+        && id !== 'global'
+        && nativeCount(id, current) === 0
+          ? ALL_LANGUAGES_ID
+          : current
+      ));
     });
     revealBlades();
   }
 
+  function selectLanguage(id) {
+    startTransition(() => {
+      setLanguageId(id);
+    });
+  }
+
   return (
     <div className={menuOpen ? 'results-page is-menu-open' : 'results-page'}>
-      <header className="results-topbar">
+      <header className={
+        regionId !== 'global' || languageId !== ALL_LANGUAGES_ID
+          ? 'results-topbar is-filtered'
+          : 'results-topbar'
+      }>
         <div className="results-chrome">
           <button
             className="results-now"
@@ -587,17 +801,33 @@ export function Results() {
             </span>
           </button>
         </div>
-        {regionId !== 'global' ? (
+        {regionId !== 'global' || languageId !== ALL_LANGUAGES_ID ? (
           <p className="results-region-status">
-            Showing {section.region.name} · {section.region.votes} answers
-            {' · '}
-            <button
-              className="map-clear"
-              type="button"
-              onClick={() => selectRegion('global')}
-            >
-              Show the world
-            </button>
+            {filterSummary(section)}
+            {regionId !== 'global' ? (
+              <>
+                {' · '}
+                <button
+                  className="map-clear"
+                  type="button"
+                  onClick={() => selectRegion('global')}
+                >
+                  Show the world
+                </button>
+              </>
+            ) : null}
+            {languageId !== ALL_LANGUAGES_ID ? (
+              <>
+                {' · '}
+                <button
+                  className="map-clear"
+                  type="button"
+                  onClick={() => selectLanguage(ALL_LANGUAGES_ID)}
+                >
+                  All languages
+                </button>
+              </>
+            ) : null}
           </p>
         ) : null}
       </header>
@@ -635,6 +865,21 @@ export function Results() {
             </button>
           ))}
         </nav>
+        <div className="results-menu-filters">
+          {regionId !== 'global' || languageId !== ALL_LANGUAGES_ID ? (
+            <p className="results-menu-status">{filterSummary(section)}</p>
+          ) : null}
+          <PlaceFilter
+            regionId={regionId}
+            placeIds={placeIds}
+            onRegion={selectRegion}
+          />
+          <LanguageFilter
+            languageId={languageId}
+            languageOptions={languageOptions}
+            onLanguage={selectLanguage}
+          />
+        </div>
         <Link className="results-home-link" to="/" onClick={() => setMenuOpen(false)}>
           Back to the main page
         </Link>
@@ -643,7 +888,10 @@ export function Results() {
       <main className="results-main">
         <section className="results-section">
           <header className="results-section-head">
-            <p className="eyebrow">{section.eyebrow}</p>
+            <div className="eyebrow">
+              {section.eyebrow}
+              <QuestionNote key={category.id} note={section.designNote} />
+            </div>
             <h1 className="results-section-title">{section.title}</h1>
             <p className="results-section-prompt">{section.prompt}</p>
           </header>
@@ -655,7 +903,7 @@ export function Results() {
           ) : category.layout === 'spectrum' ? (
             <div className="blade-anchor" ref={bladesRef}>
               <SpectrumList
-                key={`${category.id}-${regionId}`}
+                key={`${category.id}-${regionId}-${languageId}`}
                 section={section}
               />
             </div>
@@ -664,7 +912,7 @@ export function Results() {
           ) : (
             <div className="blade-anchor" ref={bladesRef}>
               <RankRail
-                key={`${category.id}-${regionId}`}
+                key={`${category.id}-${regionId}-${languageId}`}
                 section={section}
                 pauseAutoplay={menuOpen}
               />
@@ -701,38 +949,34 @@ export function Results() {
                 <p className="eyebrow">By place</p>
                 <h2 className="map-title">Where people answered from</h2>
                 <p className="map-copy">
-                  Default is the whole set, including people who preferred not
-                  to disclose a place. Highlighted countries have at least 20
-                  answers. Continent views include every country there, plus
-                  people who named the continent itself.
+                By default, the results show global votes, including those who have chosen not to disclose their birthplace or native language. Place and language stay independent, but each list only includes combinations someone actually gave. Choosing China hides languages nobody from China marked. Choosing a language hides places where nobody marked it. Only regions with at least 20 responses are filterable. If your country is missing, please encourage more people to vote!
                 </p>
               </div>
-              <label className="map-select">
-                <span>Filter by place</span>
-                <select
-                  value={regionId}
-                  onChange={(event) => selectRegion(event.target.value)}
-                >
-                  {REGION_GROUPS.map((group) => (
-                    <optgroup key={group.label} label={group.label}>
-                      {group.ids.map((id) => {
-                        const region = REGIONS.find((item) => item.id === id);
-                        return (
-                          <option key={id} value={id}>
-                            {region.name}
-                          </option>
-                        );
-                      })}
-                    </optgroup>
-                  ))}
-                </select>
-              </label>
+              <PlaceFilter
+                regionId={regionId}
+                placeIds={placeIds}
+                onRegion={selectRegion}
+              />
             </div>
             <Suspense fallback={null}>
-              <WorldMap selectedId={regionId} onSelect={selectRegion} />
+              <WorldMap
+                selectedId={regionId}
+                onSelect={selectRegion}
+                liveCountries={liveCountries}
+                languageFiltered={languageId !== ALL_LANGUAGES_ID}
+              />
             </Suspense>
+            <LanguageFilter
+              className="map-select map-language"
+              languageId={languageId}
+              languageOptions={languageOptions}
+              onLanguage={selectLanguage}
+            />
             <p className="map-status">
-              Showing {section.region.name} · {section.responseCount} answers
+              Showing {section.region.name}
+              {section.language ? ` · ${section.language.name}` : ''}
+              {' · '}
+              {section.responseCount} answers
               {regionId !== 'global' ? (
                 <>
                   {' · '}
@@ -742,6 +986,18 @@ export function Results() {
                     onClick={() => selectRegion('global')}
                   >
                     Show the world
+                  </button>
+                </>
+              ) : null}
+              {languageId !== ALL_LANGUAGES_ID ? (
+                <>
+                  {' · '}
+                  <button
+                    className="map-clear"
+                    type="button"
+                    onClick={() => selectLanguage(ALL_LANGUAGES_ID)}
+                  >
+                    All languages
                   </button>
                 </>
               ) : null}
@@ -768,7 +1024,7 @@ export function Results() {
           )}
 
           <div className="results-survey-foot">
-            {myResponseId ? null : <SurveyNudge />}
+            {myResponseId ? null : <SurveyNudge onThisMachine={viewingOther} />}
             <ResponseCodeCard
               code={viewingOther ? codeParam : myResponseId}
               categoryId={category.id}

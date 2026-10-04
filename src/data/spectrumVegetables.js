@@ -19,7 +19,7 @@ export const SPECTRUM_BANDS = [
 ];
 
 export const SPECTRUM_METHOD =
-  'These ten were chosen because they sit in different botanical families, or because they are different parts of the same family — root versus stem, leaf, flower, fruit, grain. The ranking is there to see whether botanical status, plant anatomy, or origin has any bearing on how vegetabley something feels.';
+  'These ten plants were selected as they represent different botanical families, or very different parts of the same family. Roots vs stems, leaves, flowers, fruits, and grains. This ranking is there to see whether the botanical status, plant anatomy, or geographic origin has any bearing on how vegetabley something feels.';
 
 export const spectrumVegetables = [
   {

@@ -2,10 +2,14 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { isResponseId, resultsSharePath } from '../../utils/myResponse.js';
 
-export function SurveyNudge({ kind = 'compare' }) {
+export function SurveyNudge({ kind = 'compare', onThisMachine = false }) {
   return (
     <p className="survey-nudge">
-      <Link to="/survey">Complete the survey</Link>
+      <Link to="/survey">
+        {onThisMachine
+          ? 'Complete the survey on this machine'
+          : 'Complete the survey'}
+      </Link>
       {kind === 'vote'
         ? ' to rate answers.'
         : ' to compare your votes with others.'}
@@ -21,6 +25,7 @@ export function ResponseCodeCard({
   const navigate = useNavigate();
   const [draft, setDraft] = useState('');
   const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(!code);
   const sharePath = resultsSharePath(categoryId, code);
 
   async function copyCode() {
@@ -40,6 +45,19 @@ export function ResponseCodeCard({
     if (!isResponseId(next)) return;
     navigate(resultsSharePath(categoryId, next));
     setDraft('');
+    setExpanded(false);
+  }
+
+  if (code && !expanded) {
+    return (
+      <button
+        className="response-code-pill"
+        type="button"
+        onClick={() => setExpanded(true)}
+      >
+        Open a ranking code
+      </button>
+    );
   }
 
   return (

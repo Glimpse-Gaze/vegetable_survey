@@ -93,13 +93,14 @@ export function BucketColumns({ section }) {
               {selected.userBucket ? (
                 <>
                   {' '}
-                  · You sorted it as {' '}
+                  · <span className="bucket-lookup-yours">You marked it as{' '}
                   <strong>
                     {
                       selected.rows.find((row) => row.id === selected.userBucket)
                         ?.title
                     }
                   </strong>
+                  </span>
                 </>
               ) : null}
             </p>

@@ -118,6 +118,15 @@ function pointFromEvent(event) {
   };
 }
 
+function rateGesture() {
+  const coarse =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(pointer: coarse)').matches;
+  return coarse
+    ? 'Tap once to like; double-tap or press and hold to dislike.'
+    : 'Click once to like; double-click or right-click to dislike.';
+}
+
 export function NoteResults({ section, viewingOwn = true }) {
   const responseId = useMemo(() => readMyResponseId(), []);
   const canVote = Boolean(responseId);
@@ -377,7 +386,7 @@ export function NoteResults({ section, viewingOwn = true }) {
           Set {board.page + 1} of {board.pages} · {NOTE_PAGE_SIZE} notes
         </p>
         <button className="note-reshuffle" type="button" onClick={reshuffle}>
-          Reshuffle
+          Next set
         </button>
         {canVote ? null : <SurveyNudge kind="vote" />}
       </div>
@@ -449,11 +458,7 @@ export function NoteResults({ section, viewingOwn = true }) {
       {canVote ? (
         <>
           <p className="reason-drift-hint">
-            Click or tap once to like, or to clear a marked note. Double-click,
-            right-click, or press and hold a clear note to sink it; double-click a
-            red note to like it. You can like up to {MAX_LIKES} and sink up to{' '}
-            {MAX_DISLIKES}. Reshuffle shows the next {NOTE_PAGE_SIZE}; liked notes
-            can move onto the first set.
+          You can rate people's responses. {rateGesture()} You can rate up to five answers. Next set shows the next {NOTE_PAGE_SIZE} notes. Best notes will be seen first.
           </p>
           <div className="reason-reset-row">
             <button
@@ -492,8 +497,8 @@ export function NoteResults({ section, viewingOwn = true }) {
           role="status"
         >
           {capTip.kind === 'like'
-            ? 'You can like only 5 answers!'
-            : 'You can dislike only 5 answers!'}
+            ? 'You can like only 5 answers'
+            : 'You can dislike only 5 answers'}
         </p>
       ) : null}
     </div>

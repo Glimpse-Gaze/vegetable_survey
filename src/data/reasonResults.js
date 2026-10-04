@@ -112,12 +112,18 @@ export function layoutCommentRows(ranked, limit = COMMENT_DISPLAY_COUNT) {
   }).filter((row) => row.items.length > 0);
 }
 
-export function getReasonsSection(category, region) {
+export function getReasonsSection(category, region, view = null) {
   const labels = Object.fromEntries(criteria.map((item) => [item.id, item.label]));
   const userCriteria = new Set(category.userCriteria ?? []);
-  const respondents = Math.max(1, region.votes);
+  const respondents = Math.max(1, view?.language ? view.votes : region.votes);
   const scale = respondents / REASON_RESPONDENTS;
-  const items = Object.entries(REASON_VOTES)
+  let entries = Object.entries(REASON_VOTES);
+  if (view?.shift) {
+    const offset = view.shift % entries.length;
+    const rotated = entries.slice(offset).concat(entries.slice(0, offset));
+    entries = entries.map((entry, index) => [rotated[index][0], entry[1]]);
+  }
+  const items = entries
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, 5)
     .map(([id, votes], index) => {
@@ -138,6 +144,6 @@ export function getReasonsSection(category, region) {
     items,
     leader: items[0],
     commentPool: REASON_COMMENTS,
-    responseCount: region.votes,
+    responseCount: respondents,
   };
 }

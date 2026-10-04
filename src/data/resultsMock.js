@@ -21,6 +21,7 @@ import { normalizeText } from '../utils/normalization.js';
 import { getSpectrumSection } from './spectrumResults.js';
 import { getReasonsSection } from './reasonResults.js';
 import { getNotesSection } from './noteResults.js';
+import { languages } from './languages.js';
 
 export const VEGETABLE_ART = {
   broccoli,
@@ -333,7 +334,7 @@ const BUCKET_COLUMNS = [
   },
   {
     id: 'in_between',
-    title: 'In-between',
+    title: 'Something in-between',
   },
   {
     id: 'definitely_vegetable',
@@ -425,15 +426,20 @@ function votesForColumn(columnId) {
   );
 }
 
-function lookupRows(itemId) {
+function lookupRows(itemId, view) {
   const split = BUCKET_ITEM_VOTES[itemId];
   if (!split) return [];
-  return BUCKET_COLUMNS.map((column) => ({
-    id: column.id,
-    title: column.title,
-    votes: split[column.id],
-    share: split[column.id] / BUCKET_RESPONDENTS,
-  }));
+  const total = view?.language ? view.votes : BUCKET_RESPONDENTS;
+  const factor = view?.language ? view.votes / BUCKET_RESPONDENTS : 1;
+  return BUCKET_COLUMNS.map((column) => {
+    const votes = Math.round(split[column.id] * factor);
+    return {
+      id: column.id,
+      title: column.title,
+      votes,
+      share: total ? votes / total : 0,
+    };
+  });
 }
 
 function rankBucketColumn(votesById, total, columnId, userBuckets) {
@@ -450,12 +456,21 @@ function rankBucketColumn(votesById, total, columnId, userBuckets) {
     }));
 }
 
-function getBucketSection(category, region) {
+function getBucketSection(category, region, view) {
   const userBuckets = category.userBuckets ?? {};
+  const total = view?.language ? view.votes : BUCKET_RESPONDENTS;
   const columns = BUCKET_COLUMNS.map((column) => {
+    const votes = reweightMap(votesForColumn(column.id), view?.shift ?? 0);
     const items = rankBucketColumn(
-      votesForColumn(column.id),
-      BUCKET_RESPONDENTS,
+      view?.language
+        ? Object.fromEntries(
+          Object.entries(votes).map(([id, count]) => [
+            id,
+            Math.round(count * (view.votes / BUCKET_RESPONDENTS)),
+          ]),
+        )
+        : votes,
+      total,
       column.id,
       userBuckets,
     );
@@ -479,10 +494,10 @@ function getBucketSection(category, region) {
         id: item.id,
         name: item.name,
         userBucket: userBuckets[item.id] ?? null,
-        rows: lookupRows(item.id),
+        rows: lookupRows(item.id, view),
       })),
     items: [],
-    responseCount: BUCKET_RESPONDENTS,
+    responseCount: total,
   };
 }
 
@@ -505,14 +520,18 @@ export const CATEGORIES = [
   {
     id: 'first-instincts',
     eyebrow: 'Question 1',
+    designNote:
+      'This question checks people’s first instincts. It looks for the common associations of the word “vegetable”: plants that are popular, easy to find in a shop, or simply eaten most often.',
     title: 'First instincts',
-    prompt: 'Which vegetable comes to mind first?',
+    prompt: 'Which vegetable comes to people\'s mind first?',
     layout: 'blades',
     userVoteId: 'broccoli',
   },
   {
     id: 'why-vegetabley',
     eyebrow: 'Question 2',
+    designNote:
+      'This question asks people to justify that first instinct. It nudges them to look again at their own criteria for what makes something a vegetable.',
     title: 'Why does it feel vegetabley?',
     prompt: 'The reasons people marked for their first instinct.',
     layout: 'reasons',
@@ -521,6 +540,8 @@ export const CATEGORIES = [
   {
     id: 'sort-buckets',
     eyebrow: 'Question 3',
+    designNote:
+      'This question looks at the cultural idea of a vegetable, mixing familiar plants with less obvious ones. It tests the criteria people are using: savouriness, colour, how a plant is cooked, or its botanical status.',
     title: 'Which of these count as vegetables?',
     prompt: 'Not a vegetable, in-between, or definitely a vegetable?',
     layout: 'buckets',
@@ -528,15 +549,19 @@ export const CATEGORIES = [
   {
     id: 'vegetabley-spectrum',
     eyebrow: 'Question 4',
-    title: 'How vegetabley?',
+    designNote:
+      'These ten plants were selected as they represent different botanical families, or very different parts of the same family. Roots vs stems, leaves, flowers, fruits, and grains. This ranking is there to see whether the botanical status, plant anatomy, or geographic origin has any bearing on how vegetabley something feels.',
+    title: 'Vegetableness spectrum',
     prompt:
-      'Least vegetabley at the top, most at the bottom. Everyone ranked the same ten items.',
+      'From the least to the most vegetabley plants.',
     layout: 'spectrum',
     userSpectrum: DEV_SPEEDRUN.spectrum,
   },
   {
     id: 'most-vegetable',
     eyebrow: 'Question 5',
+    designNote:
+      'This question was inspired by the podcast The Rest Is Science. Like the spectrum before it, it asks people to sort and rank their judgment of edible plants. It comes late in the survey, after people have stress-tested the idea of a vegetable, so it can be compared with those first instincts.',
     title: 'The most vegetable vegetable',
     prompt: 'What feels most vegetabley?',
     layout: 'blades',
@@ -545,9 +570,11 @@ export const CATEGORIES = [
   {
     id: 'vegetabley-words',
     eyebrow: 'Question 6',
-    title: 'What makes something feel vegetabley?',
+    designNote:
+      '“Vegetable” is a social idea. It depends on context, place, language, and more. This question gives people room to explain their earlier choices and describe the criteria they were using.',
+    title: 'What makes something feel like a vegetable?',
     prompt:
-      'People wrote freely and agreed to show it. Twenty notes at a time; the first set is the one the room is keeping.',
+      'People described their criteria for vegetableness.',
     layout: 'notes',
     userNoteText: DEV_SPEEDRUN.openDescription.text,
   },
@@ -635,26 +662,201 @@ export function getRegion(regionId) {
   return REGIONS.find((item) => item.id === regionId) ?? REGIONS[0];
 }
 
+export const ALL_LANGUAGES_ID = 'all';
+
+// Native languages people marked, by place. A missing pair means nobody gave it.
+const NATIVE_COUNTS = {
+  africa: {
+    english: 6,
+    french: 5,
+    arabic: 7,
+    swahili: 4,
+    hausa: 3,
+    yoruba: 2,
+    amharic: 2,
+    portuguese: 2,
+    afrikaans: 1,
+  },
+  asia: {
+    mandarin: 16,
+    cantonese: 6,
+    hakka: 3,
+    wu_chinese: 2,
+    min_nan: 2,
+    english: 4,
+    hindi: 5,
+    malay: 3,
+    japanese: 2,
+    korean: 2,
+    vietnamese: 2,
+    thai: 1,
+    indonesian: 2,
+    bengali: 2,
+    tamil: 1,
+    arabic: 2,
+  },
+  europe: {
+    polish: 70,
+    english: 22,
+    german: 14,
+    french: 12,
+    spanish: 8,
+    italian: 6,
+    ukrainian: 5,
+    russian: 4,
+    dutch: 3,
+    swedish: 2,
+    romanian: 2,
+    portuguese: 2,
+    mandarin: 3,
+    cantonese: 1,
+  },
+  north_america: {
+    english: 20,
+    spanish: 8,
+    french: 3,
+    mandarin: 2,
+  },
+  oceania: {
+    english: 14,
+    mandarin: 3,
+    maori: 2,
+    samoan: 1,
+  },
+  south_america: {
+    spanish: 12,
+    portuguese: 4,
+    brazilian_portuguese: 3,
+    quechua: 1,
+  },
+  china: {
+    mandarin: 18,
+    cantonese: 7,
+    hakka: 4,
+    wu_chinese: 3,
+    min_nan: 2,
+    english: 5,
+    malay: 2,
+    hindi: 1,
+  },
+  poland: {
+    polish: 74,
+    english: 11,
+    ukrainian: 4,
+    german: 2,
+    russian: 3,
+  },
+};
+
+const CONTINENT_IDS = [
+  'africa',
+  'asia',
+  'europe',
+  'north_america',
+  'oceania',
+  'south_america',
+];
+
+function languageName(languageId) {
+  return languages.find((item) => item.id === languageId)?.name ?? languageId;
+}
+
+export function nativeCount(regionId, languageId) {
+  if (!languageId || languageId === ALL_LANGUAGES_ID) return 0;
+  if (regionId === 'global') {
+    return CONTINENT_IDS.reduce(
+      (sum, id) => sum + (NATIVE_COUNTS[id]?.[languageId] ?? 0),
+      0,
+    );
+  }
+  return NATIVE_COUNTS[regionId]?.[languageId] ?? 0;
+}
+
+export function languagesForRegion(regionId) {
+  const counts = regionId === 'global'
+    ? CONTINENT_IDS.reduce((merged, id) => {
+      for (const [languageId, count] of Object.entries(NATIVE_COUNTS[id] ?? {})) {
+        merged[languageId] = (merged[languageId] ?? 0) + count;
+      }
+      return merged;
+    }, {})
+    : (NATIVE_COUNTS[regionId] ?? {});
+  return Object.entries(counts)
+    .filter(([, count]) => count > 0)
+    .map(([id, count]) => ({ id, name: languageName(id), count }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'en'));
+}
+
+export function regionsForLanguage(languageId) {
+  if (!languageId || languageId === ALL_LANGUAGES_ID) {
+    return REGIONS.map((region) => region.id);
+  }
+  return REGIONS
+    .filter((region) => region.id === 'global' || nativeCount(region.id, languageId) > 0)
+    .map((region) => region.id);
+}
+
+function hashFilter(text) {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function reweightMap(votes, shift) {
+  if (!shift) return votes;
+  const ids = Object.keys(votes);
+  if (ids.length < 2) return votes;
+  const offset = shift % ids.length;
+  const rotated = ids.slice(offset).concat(ids.slice(0, offset));
+  return Object.fromEntries(ids.map((id, index) => [rotated[index], votes[id]]));
+}
+
+export function resultView(region, languageId) {
+  const count = nativeCount(region.id, languageId);
+  if (!languageId || languageId === ALL_LANGUAGES_ID || count <= 0) {
+    return { region, language: null, votes: region.votes, shift: 0 };
+  }
+  const hash = hashFilter(`${region.id}:${languageId}`);
+  return {
+    region,
+    language: { id: languageId, name: languageName(languageId) },
+    votes: count,
+    shift: (hash % 6) + 1,
+  };
+}
+
 function artFor(id) {
   return VEGETABLE_ART[id] ?? placeholder;
 }
 
-export function getSection(categoryId, regionId, userAnswers = null) {
+export function getSection(categoryId, regionId, userAnswers = null, languageId = ALL_LANGUAGES_ID) {
   const category = overlayCategory(getCategory(categoryId), userAnswers);
   const region = getRegion(regionId);
+  const view = resultView(region, languageId);
   if (category.layout === 'buckets') {
-    return getBucketSection(category, region);
+    return { ...getBucketSection(category, region, view), language: view.language };
   }
   if (category.layout === 'reasons') {
-    return getReasonsSection(category, region);
+    return { ...getReasonsSection(category, region, view), language: view.language };
   }
   if (category.layout === 'spectrum') {
-    return getSpectrumSection(category, region, artFor);
+    return { ...getSpectrumSection(category, region, artFor, view), language: view.language };
   }
   if (category.layout === 'notes') {
-    return getNotesSection(category, region);
+    return { ...getNotesSection(category, region, view), language: view.language };
   }
-  const votes = BOARDS[region.id]?.[category.id] ?? BOARDS.global[category.id];
+  const source = BOARDS[region.id]?.[category.id] ?? BOARDS.global[category.id];
+  const votes = view.language
+    ? Object.fromEntries(
+      Object.entries(reweightMap(source, view.shift)).map(([id, count]) => {
+        const sum = Object.values(source).reduce((total, value) => total + value, 0) || 1;
+        return [id, Math.max(0, Math.round(count * (view.votes / sum)))];
+      }),
+    )
+    : source;
   const ranked = rankBoard(votes);
   const items = ranked.slice(0, BLADE_BOARD_SIZE);
   const userRanked = findRankedPick(
@@ -668,7 +870,8 @@ export function getSection(categoryId, regionId, userAnswers = null) {
     items,
     userRanked,
     userOnBoard: Boolean(userRanked && userRanked.rank <= items.length),
-    responseCount: region.votes,
+    responseCount: view.votes,
+    language: view.language,
   };
 }
 

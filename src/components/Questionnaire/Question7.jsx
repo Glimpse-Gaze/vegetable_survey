@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { countries, featuredCountryIds } from '../../data/countries.js';
 import { featuredLanguageIds, languages } from '../../data/languages.js';
 import {
@@ -35,63 +35,62 @@ function resolveSingle(raw, picked, items) {
 export function Question7({
   onContinue,
   onBack,
+  onDraft,
   initialBackground,
-  onBlockedAntarctica,
   continueDisabled = false,
   continueHint,
 }) {
   const grewUp = initialBackground?.grewUp;
   const languagesState = initialBackground?.languages;
+  const placeWithheldInitial = Boolean(grewUp?.withheld);
+  const languageWithheldInitial = Boolean(languagesState?.withheld);
+  const rememberedPlace = grewUp?.remembered;
+  const rememberedLanguages = languagesState?.remembered;
 
-  const placeWithheld = Boolean(
-    grewUp && (grewUp.skipped || grewUp.canonicalId === DISCLOSE_ID),
-  );
+  const [placeWithheld, setPlaceWithheld] = useState(placeWithheldInitial);
   const [placeValue, setPlaceValue] = useState(
-    placeWithheld ? '' : (grewUp?.rawAnswer ?? ''),
+    placeWithheldInitial
+      ? (rememberedPlace?.rawAnswer ?? '')
+      : (grewUp?.canonicalId === DISCLOSE_ID ? '' : (grewUp?.rawAnswer ?? '')),
   );
-  const [placePicked, setPlacePicked] = useState(
-    placeWithheld
-      ? { id: DISCLOSE_ID, name: 'I prefer not to disclose' }
-      : grewUp?.canonicalId
-        ? { id: grewUp.canonicalId, name: grewUp.rawAnswer }
-        : null,
-  );
-  const [languageValue, setLanguageValue] = useState('');
-  const [languageItems, setLanguageItems] = useState(() => {
-    if (languagesState?.skipped) {
-      return [
-        {
-          rawAnswer: 'I prefer not to disclose',
-          canonicalId: DISCLOSE_ID,
-        },
-      ];
+  const [placePicked, setPlacePicked] = useState(() => {
+    if (placeWithheldInitial) {
+      return rememberedPlace?.canonicalId
+        ? { id: rememberedPlace.canonicalId, name: rememberedPlace.rawAnswer }
+        : null;
     }
-    return languagesState?.items ?? [];
+    if (!grewUp?.canonicalId || grewUp.canonicalId === DISCLOSE_ID) return null;
+    return { id: grewUp.canonicalId, name: grewUp.rawAnswer };
   });
+  const [languageWithheld, setLanguageWithheld] = useState(languageWithheldInitial);
+  const [languageValue, setLanguageValue] = useState(languagesState?.pending ?? '');
+  const [languageItems, setLanguageItems] = useState(() => {
+    const source = languageWithheldInitial
+      ? rememberedLanguages
+      : languagesState?.items;
+    return (source ?? []).filter((entry) => entry.canonicalId !== DISCLOSE_ID);
+  });
+  const [doubt, setDoubt] = useState(false);
 
   const placeSuggestions = getLookupSuggestions(placeValue, countries, {
     featuredIds: featuredCountryIds,
     browseAll: true,
-  });
+  }).filter((item) => item.id !== DISCLOSE_ID);
   const languageSuggestions = getLookupSuggestions(languageValue, languages, {
     featuredIds: featuredLanguageIds,
     limit: 10,
   }).filter(
     (item) =>
-      item.id === DISCLOSE_ID ||
+      item.id !== DISCLOSE_ID &&
       !languageItems.some((entry) => entry.canonicalId === item.id),
   );
 
   function handlePlacePick(item) {
     if (item.id === ANTARCTICA_ID) {
-      onBlockedAntarctica?.();
+      setDoubt(true);
       return false;
     }
-    if (item.id === DISCLOSE_ID) {
-      setPlaceValue('');
-      setPlacePicked(item);
-      return;
-    }
+    setDoubt(false);
     setPlaceValue(item.name);
     setPlacePicked(item);
   }
@@ -99,69 +98,98 @@ export function Question7({
   function addLanguage(itemOrText) {
     const picked = typeof itemOrText === 'string' ? null : itemOrText;
     const rawAnswer = (picked?.name ?? itemOrText).trim();
-    if (!rawAnswer) return;
+    if (!rawAnswer || languageWithheld) return;
 
     const canonicalId = picked?.id ?? findCanonicalMatch(rawAnswer, languages);
-
-    if (canonicalId === DISCLOSE_ID) {
-      setLanguageItems([
-        {
-          rawAnswer: 'I prefer not to disclose',
-          canonicalId: DISCLOSE_ID,
-        },
-      ]);
-      setLanguageValue('');
-      return;
+    if (!canonicalId || canonicalId === DISCLOSE_ID) {
+      if (canonicalId === DISCLOSE_ID) return;
     }
 
     setLanguageItems((current) => {
-      const withoutDisclose = current.filter(
-        (entry) => entry.canonicalId !== DISCLOSE_ID,
-      );
-      const duplicate = withoutDisclose.some((entry) => {
+      const duplicate = current.some((entry) => {
         if (canonicalId && entry.canonicalId === canonicalId) return true;
         return entry.rawAnswer.toLowerCase() === rawAnswer.toLowerCase();
       });
-      if (duplicate) return withoutDisclose;
-      return [...withoutDisclose, { rawAnswer, canonicalId }];
+      if (duplicate) return current;
+      return [...current, { rawAnswer, canonicalId }];
     });
     setLanguageValue('');
   }
 
   function removeLanguage(index) {
+    if (languageWithheld) return;
     setLanguageItems((current) => current.filter((_, i) => i !== index));
   }
+
+  useEffect(() => {
+    const grewUpAnswer = placeWithheld
+      ? {
+          rawAnswer: 'I prefer not to disclose',
+          canonicalId: DISCLOSE_ID,
+          skipped: true,
+          withheld: true,
+          remembered: placeValue
+            ? { rawAnswer: placeValue, canonicalId: placePicked?.id ?? null }
+            : null,
+        }
+      : {
+          ...resolveSingle(placeValue, placePicked, countries),
+          withheld: false,
+        };
+
+    onDraft?.({
+      grewUp: grewUpAnswer,
+      languages: {
+        items: languageWithheld ? [] : languageItems,
+        skipped: languageWithheld || languageItems.length === 0,
+        withheld: languageWithheld,
+        remembered: languageWithheld ? languageItems : undefined,
+        pending: languageValue,
+      },
+    });
+  }, [
+    languageItems,
+    languageValue,
+    languageWithheld,
+    onDraft,
+    placePicked,
+    placeValue,
+    placeWithheld,
+  ]);
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    const grewUp = resolveSingle(placeValue, placePicked, countries);
-    if (grewUp.canonicalId === ANTARCTICA_ID) {
-      onBlockedAntarctica?.();
+    const resolvedPlace = resolveSingle(placeValue, placePicked, countries);
+    if (!placeWithheld && resolvedPlace.canonicalId === ANTARCTICA_ID) {
+      setDoubt(true);
       return;
     }
+
+    const grewUp = placeWithheld
+      ? {
+          rawAnswer: 'I prefer not to disclose',
+          canonicalId: DISCLOSE_ID,
+          skipped: true,
+        }
+      : resolvedPlace;
 
     let items = languageItems.filter(
       (entry) => entry.canonicalId !== DISCLOSE_ID,
     );
     const pending = languageValue.trim();
-    if (pending) {
-      const canonicalId =
-        findCanonicalMatch(pending, languages) ?? null;
-      if (canonicalId === DISCLOSE_ID) {
-        items = [];
-      } else {
-        const duplicate = items.some((entry) => {
-          if (canonicalId && entry.canonicalId === canonicalId) return true;
-          return entry.rawAnswer.toLowerCase() === pending.toLowerCase();
-        });
-        if (!duplicate) {
-          items = [...items, { rawAnswer: pending, canonicalId }];
-        }
+    if (!languageWithheld && pending) {
+      const canonicalId = findCanonicalMatch(pending, languages) ?? null;
+      const duplicate = items.some((entry) => {
+        if (canonicalId && entry.canonicalId === canonicalId) return true;
+        return entry.rawAnswer.toLowerCase() === pending.toLowerCase();
+      });
+      if (!duplicate && canonicalId !== DISCLOSE_ID) {
+        items = [...items, { rawAnswer: pending, canonicalId }];
       }
     }
 
-    const skippedLanguages = items.length === 0;
+    const skippedLanguages = languageWithheld || items.length === 0;
     const languagesAnswer = skippedLanguages
       ? [
           {
@@ -193,41 +221,35 @@ export function Question7({
       <form className="question-form" onSubmit={handleSubmit}>
         <div
           className={
-            placePicked?.id === DISCLOSE_ID
-              ? 'background-field is-withheld'
-              : 'background-field'
+            placeWithheld ? 'background-field is-withheld' : 'background-field'
           }
         >
           <label htmlFor="grew-up">In which country or region did you grow up?</label>
+          {doubt ? (
+            <p className="field-note" role="status">
+              I don't believe you.
+            </p>
+          ) : null}
           <AutocompleteInput
             id="grew-up"
             value={placeValue}
-            disabled={placePicked?.id === DISCLOSE_ID}
+            disabled={placeWithheld}
             onChange={(next) => {
-              if (placePicked?.id === DISCLOSE_ID) return;
+              if (placeWithheld) return;
+              setDoubt(false);
               setPlaceValue(next);
               setPlacePicked(null);
             }}
             onPickSuggestion={handlePlacePick}
-            suggestions={placePicked?.id === DISCLOSE_ID ? [] : placeSuggestions}
+            suggestions={placeWithheld ? [] : placeSuggestions}
             placeholder="Country, region, or continent..."
             autoFocus={false}
           />
           <label className="disclose-check">
             <input
               type="checkbox"
-              checked={placePicked?.id === DISCLOSE_ID}
-              onChange={(event) => {
-                if (event.target.checked) {
-                  handlePlacePick({
-                    id: DISCLOSE_ID,
-                    name: 'I prefer not to disclose',
-                  });
-                  return;
-                }
-                setPlaceValue('');
-                setPlacePicked(null);
-              }}
+              checked={placeWithheld}
+              onChange={(event) => setPlaceWithheld(event.target.checked)}
             />
             <span>I prefer not to disclose</span>
           </label>
@@ -235,76 +257,47 @@ export function Question7({
 
         <div
           className={
-            languageItems.length === 1 &&
-            languageItems[0]?.canonicalId === DISCLOSE_ID
-              ? 'background-field is-withheld'
-              : 'background-field'
+            languageWithheld ? 'background-field is-withheld' : 'background-field'
           }
         >
-          <label htmlFor="languages-spoken">What language(s) do you speak?</label>
-          {languageItems.some((entry) => entry.canonicalId !== DISCLOSE_ID) ? (
+          <label htmlFor="languages-spoken">What is your native language?</label>
+          {languageItems.length > 0 ? (
             <ul className="chip-list">
-              {languageItems.map((entry, index) =>
-                entry.canonicalId === DISCLOSE_ID ? null : (
-                  <li key={`${entry.canonicalId ?? entry.rawAnswer}-${index}`}>
-                    <button
-                      type="button"
-                      className="chip"
-                      onClick={() => removeLanguage(index)}
-                    >
-                      {entry.rawAnswer}
-                      <span aria-hidden="true"> ×</span>
-                    </button>
-                  </li>
-                ),
-              )}
+              {languageItems.map((entry, index) => (
+                <li key={`${entry.canonicalId ?? entry.rawAnswer}-${index}`}>
+                  <button
+                    type="button"
+                    className={languageWithheld ? 'chip is-held' : 'chip'}
+                    disabled={languageWithheld}
+                    onClick={() => removeLanguage(index)}
+                  >
+                    {entry.rawAnswer}
+                    {languageWithheld ? null : <span aria-hidden="true"> ×</span>}
+                  </button>
+                </li>
+              ))}
             </ul>
           ) : null}
           <AutocompleteInput
             id="languages-spoken"
             value={languageValue}
-            disabled={
-              languageItems.length === 1 &&
-              languageItems[0]?.canonicalId === DISCLOSE_ID
-            }
+            disabled={languageWithheld}
             onChange={(next) => {
-              if (
-                languageItems.length === 1 &&
-                languageItems[0]?.canonicalId === DISCLOSE_ID
-              ) {
-                return;
-              }
+              if (languageWithheld) return;
               setLanguageValue(next);
             }}
             onPickSuggestion={addLanguage}
             onCommit={addLanguage}
             closeOnPick={false}
-            suggestions={
-              languageItems.length === 1 &&
-              languageItems[0]?.canonicalId === DISCLOSE_ID
-                ? []
-                : languageSuggestions
-            }
-            placeholder="Type a language..."
+            suggestions={languageWithheld ? [] : languageSuggestions}
+            placeholder="Type a native language..."
             autoFocus={false}
           />
           <label className="disclose-check">
             <input
               type="checkbox"
-              checked={
-                languageItems.length === 1 &&
-                languageItems[0]?.canonicalId === DISCLOSE_ID
-              }
-              onChange={(event) => {
-                if (event.target.checked) {
-                  addLanguage({
-                    id: DISCLOSE_ID,
-                    name: 'I prefer not to disclose',
-                  });
-                  return;
-                }
-                setLanguageItems([]);
-              }}
+              checked={languageWithheld}
+              onChange={(event) => setLanguageWithheld(event.target.checked)}
             />
             <span>I prefer not to disclose</span>
           </label>

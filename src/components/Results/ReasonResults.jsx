@@ -98,12 +98,18 @@ function pointFromEvent(event) {
   };
 }
 
-function DriftRow({ row, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
+function DriftRow({ row, leading = false, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
   const loop = [...row.items, ...row.items];
 
   return (
     <div
-      className={row.reverse ? 'reason-drift-row is-reverse' : 'reason-drift-row'}
+      className={[
+        'reason-drift-row',
+        row.reverse ? 'is-reverse' : '',
+        leading ? 'is-leading' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={{ '--drift-duration': row.duration }}
     >
       {loop.map((item, index) => {
@@ -165,6 +171,15 @@ function DriftRow({ row, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHo
       })}
     </div>
   );
+}
+
+function rateGesture() {
+  const coarse =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(pointer: coarse)').matches;
+  return coarse
+    ? 'Tap once to like; double-tap or press and hold to dislike.'
+    : 'Click once to like; double-click or right-click to dislike.';
 }
 
 export function ReasonResults({ section, viewingOwn = true }) {
@@ -482,10 +497,11 @@ export function ReasonResults({ section, viewingOwn = true }) {
         <h2 className="reason-drift-title">Custom user answers</h2>
         {canVote ? null : <SurveyNudge kind="vote" />}
         <div className="reason-drift" aria-label="Custom user answers">
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             <DriftRow
               key={row.id}
               row={row}
+              leading={index === 0}
               myVotes={myVotes}
               canVote={canVote}
               onVote={onVote}
@@ -498,11 +514,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
         {canVote ? (
           <>
             <p className="reason-drift-hint">
-              Click or tap once to like, or to clear a marked pill. Double-click,
-              right-click, or press and hold a clear pill to sink it; double-click a
-              red pill to like it. You can like up to {MAX_LIKES} and sink up to{' '}
-              {MAX_DISLIKES}. The ribbons keep this snapshot until the page is
-              refreshed.
+            You can rate people's responses. {rateGesture()} You can rate up to five answers. The best answers are promoted to the top row.
             </p>
             <div className="reason-reset-row">
               <button
@@ -541,8 +553,8 @@ export function ReasonResults({ section, viewingOwn = true }) {
           role="status"
         >
           {capTip.kind === 'like'
-            ? 'You can like only 5 answers!'
-            : 'You can dislike only 5 answers!'}
+            ? 'You can like only 5 answers'
+            : 'You can dislike only 5 answers'}
         </p>
       ) : null}
     </div>

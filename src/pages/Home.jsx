@@ -1,6 +1,11 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 
 export function Home() {
+  const navigate = useNavigate();
+  const [askResults, setAskResults] = useState(false);
+
   return (
     <div className="home-shell">
       <section className="home-panel">
@@ -14,11 +19,23 @@ export function Home() {
           <Link className="home-button home-button-primary" to="/survey">
             Take the survey
           </Link>
-          <Link className="home-button home-button-secondary" to="/results">
+          <button
+            className="home-button home-button-secondary"
+            type="button"
+            onClick={() => setAskResults(true)}
+          >
             See the results
-          </Link>
+          </button>
         </div>
       </section>
+      {askResults ? (
+        <ConfirmDialog
+          title="Before you skip ahead"
+          message="Please note: it's recommended to complete the survey before displaying the results."
+          onConfirm={() => navigate('/results')}
+          onCancel={() => setAskResults(false)}
+        />
+      ) : null}
     </div>
   );
 }

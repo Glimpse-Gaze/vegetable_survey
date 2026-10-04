@@ -173,8 +173,8 @@ export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
           placed item up or down.
         </span>
         <span className="copy-coarse">
-          Tap a rank, then an item — or tap an item, then a rank. Use the arrows
-          to move it, or × to put it back.
+          Tap a rank, then an item — or tap an item, then a rank. Hold an item
+          to drag it. Use the arrows to move it, or × to put it back.
         </span>
       </p>
 

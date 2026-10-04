@@ -1,33 +1,43 @@
 import { useState } from 'react';
+import { ConfirmDialog } from '../ConfirmDialog.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
 
 const MAX_LENGTH = 500;
+const MIN_PUBLIC_NOTE = 3;
 
 export function Question6({ onContinue, onBack, initialDescription }) {
   const [text, setText] = useState(initialDescription?.text ?? '');
   const [publicDisplay, setPublicDisplay] = useState(
     initialDescription?.publicDisplay ?? false,
   );
-  const canContinue = text.trim().length > 0;
+  const [askSkip, setAskSkip] = useState(false);
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    if (!canContinue) return;
-
+  function commit(nextText) {
+    const trimmed = nextText.trim();
+    const publish = publicDisplay && trimmed.length >= MIN_PUBLIC_NOTE;
     onContinue({
       openDescription: {
-        text: text.trim(),
-        publicDisplay,
+        text: publish || !publicDisplay ? trimmed : '',
+        publicDisplay: publish,
       },
     });
   }
 
+  function handleSubmit(event) {
+    event.preventDefault();
+    if (!text.trim()) {
+      setAskSkip(true);
+      return;
+    }
+    commit(text);
+  }
+
   return (
     <QuestionContainer questionNumber={6}>
-      <h1 className="question-title">What makes something feel vegetabley?</h1>
+      <h1 className="question-title">What makes something feel like a vegetable?</h1>
       <p className="microcopy">
-        Which criteria did you use to pick the most vegetable vegetable? Write
+        Which criteria did you use to rank the plants and pick the most vegetable of them all? Write
         freely. There are no wrong answers.
       </p>
 
@@ -58,13 +68,16 @@ export function Question6({ onContinue, onBack, initialDescription }) {
           <span>I agree to display this answer publicly.</span>
         </label>
 
-        <QuestionNav
-          onBack={onBack}
-          continueDisabled={!canContinue}
-          continueHint={!canContinue ? 'Write a little something' : undefined}
-          continueHintId="description-hint"
-        />
+        <QuestionNav onBack={onBack} />
       </form>
+      {askSkip ? (
+        <ConfirmDialog
+          title="Skip this one?"
+          message="Are you sure you don't want to share your thought process?"
+          onConfirm={() => commit('')}
+          onCancel={() => setAskSkip(false)}
+        />
+      ) : null}
     </QuestionContainer>
   );
 }

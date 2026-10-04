@@ -329,12 +329,20 @@ export function pageNotes(ranked, pageIndex, pageSize = NOTE_PAGE_SIZE) {
   };
 }
 
-export function getNotesSection(category, region) {
+export function getNotesSection(category, region, view = null) {
+  const shift = view?.shift ?? 0;
+  const boosts = OPEN_NOTES.map((note) => note.boosts);
+  const notePool = shift
+    ? OPEN_NOTES.map((note, index) => ({
+      ...note,
+      boosts: boosts[(index + shift) % boosts.length],
+    }))
+    : OPEN_NOTES;
   return {
     ...category,
     region,
-    notePool: OPEN_NOTES,
+    notePool,
     userNoteText: category.userNoteText ?? '',
-    responseCount: region.votes,
+    responseCount: view?.language ? view.votes : region.votes,
   };
 }
