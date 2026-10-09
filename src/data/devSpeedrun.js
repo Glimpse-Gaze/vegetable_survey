@@ -20,7 +20,7 @@ export const DEV_SPEEDRUN = {
       'garlic',
       'turmeric',
       'tobacco',
-      'mushroom',
+      'mushrooms',
       'horseradish',
     ],
     in_between: ['pumpkin', 'cucumber', 'avocado', 'olive', 'tomato'],

@@ -1,7 +1,18 @@
+import { localeFromPath, preferredLocale, withLocale } from '../i18n/paths.js';
+
 const FLAG = 'veg-survey-open-code';
 const EVENT = 'veg-survey-open-code';
 const PREFILL_FLAG = 'veg-survey-prefill';
 const PREFILL_EVENT = 'veg-survey-prefill';
+
+function onSurveyPage() {
+  return /^\/(en|pl)\/survey\/?$/.test(window.location.pathname);
+}
+
+function openSurvey() {
+  const locale = localeFromPath(window.location.pathname) ?? preferredLocale();
+  window.location.assign(withLocale(locale, '/survey'));
+}
 
 export function requestRankingCodePanel() {
   try {
@@ -10,9 +21,7 @@ export function requestRankingCodePanel() {
     // private mode
   }
   window.dispatchEvent(new Event(EVENT));
-  if (!window.location.pathname.startsWith('/survey')) {
-    window.location.assign('/survey');
-  }
+  if (!onSurveyPage()) openSurvey();
 }
 
 export function consumeRankingCodePanelFlag() {
@@ -42,9 +51,7 @@ export function requestSurveyPrefill() {
     // private mode
   }
   window.dispatchEvent(new Event(PREFILL_EVENT));
-  if (!window.location.pathname.startsWith('/survey')) {
-    window.location.assign('/survey');
-  }
+  if (!onSurveyPage()) openSurvey();
 }
 
 export function consumeSurveyPrefillFlag() {

@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { vegetables } from '../../data/vegetables.js';
+import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import { findCanonicalMatch, getSuggestions } from '../../utils/autocomplete.js';
 import { AutocompleteInput } from './AutocompleteInput.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
 
 export function Question5({ onContinue, onBack, initialMostVegetable }) {
+  const { t, locale } = useI18n();
+  const { vegetables } = useSurveyCatalog();
   const [value, setValue] = useState(initialMostVegetable?.rawAnswer ?? '');
   const [picked, setPicked] = useState(() => {
     if (
@@ -19,7 +22,7 @@ export function Question5({ onContinue, onBack, initialMostVegetable }) {
     }
     return null;
   });
-  const suggestions = getSuggestions(value, vegetables);
+  const suggestions = getSuggestions(value, vegetables, 6, locale);
   const canContinue = value.trim().length > 0;
 
   function handleChange(nextValue) {
@@ -50,14 +53,12 @@ export function Question5({ onContinue, onBack, initialMostVegetable }) {
 
   return (
     <QuestionContainer questionNumber={5}>
-      <h1 className="question-title">What is the most vegetable vegetable?</h1>
-      <p className="microcopy">
-        Which consumable plant feels like the ideal example of a vegetable? You can choose freely.
-      </p>
+      <h1 className="question-title">{t('q5.title')}</h1>
+      <p className="microcopy">{t('q5.micro')}</p>
 
       <form className="question-form" onSubmit={handleSubmit}>
         <label className="sr-only" htmlFor="most-vegetable-answer">
-          Type the most vegetable vegetable
+          {t('q5.label')}
         </label>
         <AutocompleteInput
           id="most-vegetable-answer"
@@ -65,7 +66,7 @@ export function Question5({ onContinue, onBack, initialMostVegetable }) {
           onChange={handleChange}
           onPickSuggestion={handlePick}
           suggestions={suggestions}
-          placeholder="Type the most vegetable vegetable..."
+          placeholder={t('q5.placeholder')}
         />
         <QuestionNav
           onBack={onBack}

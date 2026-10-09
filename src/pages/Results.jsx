@@ -1,5 +1,7 @@
 import { lazy, Suspense, startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useI18n } from '../i18n/useI18n.js';
+import { withLocale } from '../i18n/paths.js';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
@@ -648,6 +650,7 @@ function LanguageFilter({ languageId, languageOptions, onLanguage, className = '
 
 export function Results() {
   const navigate = useNavigate();
+  const { locale } = useI18n();
   const { categoryId } = useParams();
   const [searchParams] = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -712,7 +715,10 @@ export function Results() {
         setSharedAnswers(body);
         if (body?.id && body.id !== codeParam && isResponseId(body.id)) {
           navigate(
-            `/results/${category.id}?code=${encodeURIComponent(body.id)}`,
+            withLocale(
+              locale,
+              `/results/${category.id}?code=${encodeURIComponent(body.id)}`,
+            ),
             { replace: true },
           );
         }
@@ -726,18 +732,21 @@ export function Results() {
     return () => {
       cancelled = true;
     };
-  }, [category.id, codeParam, myResponseId, navigate]);
+  }, [category.id, codeParam, locale, myResponseId, navigate]);
 
   useEffect(() => {
     if (categoryId && categoryId !== category.id) {
       navigate(
-        codeParam
-          ? `/results/first-instincts?code=${encodeURIComponent(codeParam)}`
-          : '/results/first-instincts',
+        withLocale(
+          locale,
+          codeParam
+            ? `/results/first-instincts?code=${encodeURIComponent(codeParam)}`
+            : '/results/first-instincts',
+        ),
         { replace: true },
       );
     }
-  }, [category, categoryId, navigate]);
+  }, [category, categoryId, codeParam, locale, navigate]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -760,9 +769,12 @@ export function Results() {
     }
     const code = searchParams.get('code');
     navigate(
-      code
-        ? `/results/${id}?code=${encodeURIComponent(code)}`
-        : `/results/${id}`,
+      withLocale(
+        locale,
+        code
+          ? `/results/${id}?code=${encodeURIComponent(code)}`
+          : `/results/${id}`,
+      ),
     );
   }
 
@@ -899,7 +911,7 @@ export function Results() {
             onLanguage={selectLanguage}
           />
         </div>
-        <Link className="results-home-link" to="/" onClick={() => setMenuOpen(false)}>
+        <Link className="results-home-link" to={withLocale(locale, '/')} onClick={() => setMenuOpen(false)}>
           Back to the main page
         </Link>
       </aside>
@@ -1036,7 +1048,7 @@ export function Results() {
             </div>
           ) : (
             <div className="results-next-wrap">
-              <Link className="results-next is-quiet" to="/">
+              <Link className="results-next is-quiet" to={withLocale(locale, '/')}>
                 Back to the main page
               </Link>
             </div>

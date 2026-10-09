@@ -84,6 +84,12 @@ body {
   color: var(--green-deep);
 }
 
+h1.eyebrow {
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
 .question-title {
   margin: 0 0 12px;
   font-family: var(--font-display);
@@ -96,6 +102,66 @@ body {
 .microcopy {
   margin: 0 0 28px;
   color: var(--muted);
+}
+
+.welcome-note {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 28px;
+  color: var(--ink);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.welcome-note p {
+  margin: 0;
+}
+
+.locale-prompt {
+  margin: 0;
+}
+
+.locale-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.locale-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.locale-pill input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.locale-pill.is-selected {
+  border-color: var(--green);
+  background: #eef5ea;
+  color: var(--green-deep);
+  box-shadow: inset 0 0 0 1px var(--green);
+}
+
+.locale-pill:hover {
+  border-color: var(--green);
+}
+
+.locale-pill:focus-within {
+  outline: 3px solid rgba(44, 106, 56, 0.45);
+  outline-offset: 3px;
 }
 
 .question-form {

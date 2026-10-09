@@ -345,7 +345,7 @@ const BUCKET_COLUMNS = [
 
 // Each item is placed by every respondent into exactly one bucket.
 const BUCKET_ITEM_VOTES = {
-  mushroom: { not_vegetable: 462, in_between: 168, definitely_vegetable: 70 },
+  mushrooms: { not_vegetable: 462, in_between: 168, definitely_vegetable: 70 },
   cinnamon: { not_vegetable: 245, in_between: 315, definitely_vegetable: 140 },
   tobacco: { not_vegetable: 196, in_between: 280, definitely_vegetable: 224 },
   turmeric: { not_vegetable: 154, in_between: 336, definitely_vegetable: 210 },

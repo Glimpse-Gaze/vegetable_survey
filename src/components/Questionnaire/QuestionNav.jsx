@@ -1,3 +1,5 @@
+import { useI18n } from '../../i18n/useI18n.js';
+
 export function QuestionNav({
   onBack,
   backMode = 'enabled',
@@ -8,6 +10,7 @@ export function QuestionNav({
   continueHint,
   continueHintId,
 }) {
+  const { t } = useI18n();
   const locked = backMode !== 'enabled';
 
   function handleBack() {
@@ -30,7 +33,7 @@ export function QuestionNav({
           aria-describedby={backHint ? backHintId : undefined}
           onClick={handleBack}
         >
-          Back
+          {t('nav.back')}
         </button>
         {backHint ? (
           <span className="back-hint" role="tooltip" id={backHintId}>
@@ -47,7 +50,7 @@ export function QuestionNav({
             continueDisabled && continueHint ? continueHintId : undefined
           }
         >
-          Continue
+          {t('nav.continue')}
         </button>
         {continueDisabled && continueHint ? (
           <span className="continue-hint" role="tooltip" id={continueHintId}>

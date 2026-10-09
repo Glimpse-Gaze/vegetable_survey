@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { getSpectrumVegetable } from '../../data/spectrumVegetables.js';
+import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import { SpectrumArrow } from './SpectrumArrow.jsx';
 
 // Kept in code; hide until the scale arrow earns its place again.
@@ -77,6 +78,8 @@ export function SpectrumBoard({
   onReturnToPalette,
   armedId = null,
 }) {
+  const { t } = useI18n();
+  const { spectrumById } = useSurveyCatalog();
   const [dragId, setDragId] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
   const [overPalette, setOverPalette] = useState(false);
@@ -275,7 +278,7 @@ export function SpectrumBoard({
   return (
     <div className="spectrum">
       <div className="spectrum-scale">
-        <p className="spectrum-end-label">Least vegetabley</p>
+        <p className="spectrum-end-label">{t('q4.least')}</p>
         <div className="spectrum-track-row">
           {SHOW_SPECTRUM_ARROW ? <SpectrumArrow /> : null}
           <ol className="spectrum-index-col" aria-hidden="true">
@@ -287,7 +290,7 @@ export function SpectrumBoard({
           </ol>
           <div className="spectrum-track" role="list">
             {slots.map((id, index) => {
-              const vegetable = id ? getSpectrumVegetable(id) : null;
+              const vegetable = id ? spectrumById.get(id) ?? null : null;
               const active = index === activeSlot;
               const className = [
                 'spectrum-slot',
@@ -336,7 +339,7 @@ export function SpectrumBoard({
                           type="button"
                           className="spectrum-rank-button"
                           disabled={index === 0}
-                          aria-label={`Move ${vegetable.name} up`}
+                          aria-label={t('q4.moveUp', { name: vegetable.name })}
                           onPointerDown={(event) => event.stopPropagation()}
                           onClick={(event) => {
                             event.stopPropagation();
@@ -349,7 +352,7 @@ export function SpectrumBoard({
                           type="button"
                           className="spectrum-rank-button"
                           disabled={index === slots.length - 1}
-                          aria-label={`Move ${vegetable.name} down`}
+                          aria-label={t('q4.moveDown', { name: vegetable.name })}
                           onPointerDown={(event) => event.stopPropagation()}
                           onClick={(event) => {
                             event.stopPropagation();
@@ -361,7 +364,7 @@ export function SpectrumBoard({
                         <button
                           type="button"
                           className="spectrum-rank-button is-remove"
-                          aria-label={`Return ${vegetable.name} to the list`}
+                          aria-label={t('q4.returnItem', { name: vegetable.name })}
                           onPointerDown={(event) => event.stopPropagation()}
                           onClick={(event) => {
                             event.stopPropagation();
@@ -390,11 +393,11 @@ export function SpectrumBoard({
             })}
           </div>
         </div>
-        <p className="spectrum-end-label">Most vegetabley</p>
+        <p className="spectrum-end-label">{t('q4.most')}</p>
       </div>
 
       <div className="spectrum-pool">
-        <p className="spectrum-palette-label">Items to place</p>
+        <p className="spectrum-palette-label">{t('q4.toPlace')}</p>
         <div
           className={overPalette ? 'spectrum-palette is-over' : 'spectrum-palette'}
           onDragOver={handlePaletteDragOver}

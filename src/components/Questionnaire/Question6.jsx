@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useI18n } from '../../i18n/useI18n.js';
 import { ConfirmDialog } from '../ConfirmDialog.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
@@ -7,6 +8,8 @@ const MAX_LENGTH = 500;
 const MIN_PUBLIC_NOTE = 3;
 
 export function Question6({ onContinue, onBack, initialDescription }) {
+  const { t, locale } = useI18n();
+  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en';
   const [text, setText] = useState(initialDescription?.text ?? '');
   const [publicDisplay, setPublicDisplay] = useState(
     initialDescription?.publicDisplay ?? false,
@@ -35,15 +38,12 @@ export function Question6({ onContinue, onBack, initialDescription }) {
 
   return (
     <QuestionContainer questionNumber={6}>
-      <h1 className="question-title">What makes something feel like a vegetable?</h1>
-      <p className="microcopy">
-        Which criteria did you use to rank the plants and pick the most vegetable of them all? Write
-        freely. There are no wrong answers.
-      </p>
+      <h1 className="question-title">{t('q6.title')}</h1>
+      <p className="microcopy">{t('q6.micro')}</p>
 
       <form className="question-form" onSubmit={handleSubmit}>
         <label className="sr-only" htmlFor="open-description">
-          Your description
+          {t('q6.label')}
         </label>
         <textarea
           id="open-description"
@@ -52,10 +52,10 @@ export function Question6({ onContinue, onBack, initialDescription }) {
           maxLength={MAX_LENGTH}
           rows={8}
           onChange={(event) => setText(event.target.value.slice(0, MAX_LENGTH))}
-          placeholder="Type whatever comes to mind..."
+          placeholder={t('q6.placeholder')}
         />
         <p className="character-count">
-          {text.length.toLocaleString()} / {MAX_LENGTH.toLocaleString()}
+          {text.length.toLocaleString(numberLocale)} / {MAX_LENGTH.toLocaleString(numberLocale)}
         </p>
 
         <label className="public-consent">
@@ -65,15 +65,17 @@ export function Question6({ onContinue, onBack, initialDescription }) {
             checked={publicDisplay}
             onChange={(event) => setPublicDisplay(event.target.checked)}
           />
-          <span>I agree to display this answer publicly.</span>
+          <span>{t('q6.publicConsent')}</span>
         </label>
 
         <QuestionNav onBack={onBack} />
       </form>
       {askSkip ? (
         <ConfirmDialog
-          title="Skip this one?"
-          message="Are you sure you don't want to share your thought process?"
+          title={t('q6.skipTitle')}
+          message={t('q6.skipMessage')}
+          confirmLabel={t('dialog.proceed')}
+          cancelLabel={t('dialog.cancel')}
           onConfirm={() => commit('')}
           onCancel={() => setAskSkip(false)}
         />

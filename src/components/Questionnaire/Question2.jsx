@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { criteria, MAX_CUSTOM_CRITERION, shuffleCriteria } from '../../data/criteria.js';
+import { useI18n } from '../../i18n/useI18n.js';
 import { CriteriaSelector } from './CriteriaSelector.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
@@ -14,7 +15,12 @@ export function Question2({
   initialCustomCriterion = '',
   initialCustomPublic = false,
 }) {
+  const { t } = useI18n();
   const [orderedCriteria] = useState(() => shuffleCriteria(criteria));
+  const labeledCriteria = orderedCriteria.map((item) => ({
+    ...item,
+    label: t(`criteria.${item.id}`),
+  }));
   const [selectedIds, setSelectedIds] = useState(initialCriteria);
   const [customCriterion, setCustomCriterion] = useState(initialCustomCriterion);
   const [customPublic, setCustomPublic] = useState(initialCustomPublic);
@@ -51,14 +57,12 @@ export function Question2({
 
   return (
     <QuestionContainer questionNumber={2}>
-      <h1 className="question-title">
-        Why does “{rawAnswer}” feel vegetabley for you?
-      </h1>
-      <p className="microcopy">Please choose up to 5 criteria.</p>
+      <h1 className="question-title">{t('q2.title', { answer: rawAnswer })}</h1>
+      <p className="microcopy">{t('q2.micro')}</p>
 
       <form className="question-form" onSubmit={handleSubmit}>
         <CriteriaSelector
-          criteria={orderedCriteria}
+          criteria={labeledCriteria}
           selectedIds={selectedIds}
           atLimit={atLimit}
           onToggle={handleToggle}
@@ -66,14 +70,14 @@ export function Question2({
 
         {otherSelected ? (
           <div className="other-field">
-            <label htmlFor="custom-criterion">What else?</label>
+            <label htmlFor="custom-criterion">{t('q2.whatElse')}</label>
             <textarea
               id="custom-criterion"
               value={customCriterion}
               onChange={(event) => handleCustomChange(event.target.value)}
               rows={3}
               maxLength={MAX_CUSTOM_CRITERION}
-              placeholder="Type your own reason..."
+              placeholder={t('q2.placeholder')}
               required
             />
             <p className="character-count">
@@ -86,7 +90,7 @@ export function Question2({
                 checked={customPublic}
                 onChange={(event) => setCustomPublic(event.target.checked)}
               />
-              <span>I agree to display this answer publicly.</span>
+              <span>{t('q2.publicConsent')}</span>
             </label>
           </div>
         ) : null}
@@ -95,7 +99,7 @@ export function Question2({
           backMode="locked"
           onLockedBack={onLockedBack}
           continueDisabled={!canContinue}
-          continueHint={selectedIds.length === 0 ? 'Select at least one' : undefined}
+          continueHint={selectedIds.length === 0 ? t('q2.continueHint') : undefined}
           continueHintId="continue-hint"
         />
       </form>

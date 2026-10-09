@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useI18n } from '../../i18n/useI18n.js';
+import { withLocale } from '../../i18n/paths.js';
 import { isResponseId, resultsSharePath } from '../../utils/myResponse.js';
 
 export function SurveyNudge({ kind = 'compare', onThisMachine = false }) {
+  const { locale } = useI18n();
   return (
     <p className="survey-nudge">
-      <Link to="/survey">
+      <Link to={withLocale(locale, '/survey')}>
         {onThisMachine
           ? 'Complete the survey on this machine'
           : 'Complete the survey'}
@@ -24,13 +27,14 @@ export function ResponseCodeCard({
   invalid = false,
 }) {
   const navigate = useNavigate();
+  const { locale } = useI18n();
   const [draft, setDraft] = useState('');
   const [filledFrom, setFilledFrom] = useState('');
   const [copied, setCopied] = useState(false);
   const [openedFor, setOpenedFor] = useState('');
   const [formError, setFormError] = useState('');
   const [checking, setChecking] = useState(false);
-  const sharePath = resultsSharePath(categoryId, code);
+  const sharePath = withLocale(locale, resultsSharePath(categoryId, code));
   const error = formError || (invalid ? 'Incorrect ID' : '');
   const opened = openedFor === categoryId;
   const showForm = opened || invalid || !code;
@@ -76,7 +80,7 @@ export function ResponseCodeCard({
       setChecking(false);
     }
     setFormError('');
-    navigate(resultsSharePath(categoryId, next));
+    navigate(withLocale(locale, resultsSharePath(categoryId, next)));
     setDraft('');
     setOpenedFor('');
   }
