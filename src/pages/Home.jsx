@@ -6,24 +6,11 @@ import { withLocale } from '../i18n/paths.js';
 
 export function Home() {
   const navigate = useNavigate();
-  const { t, locale, setLocale, locales } = useI18n();
+  const { t, locale } = useI18n();
   const [askResults, setAskResults] = useState(false);
 
   return (
     <div className="home-shell">
-      <label className="home-locale">
-        <span className="sr-only">{t('home.language')}</span>
-        <select
-          value={locale}
-          onChange={(event) => setLocale(event.target.value)}
-        >
-          {locales.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.nativeName}
-            </option>
-          ))}
-        </select>
-      </label>
       <section className="home-panel">
         <p className="eyebrow">{t('home.eyebrow')}</p>
         <h1 className="home-title">{t('home.title')}</h1>

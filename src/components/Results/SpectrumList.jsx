@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { useI18n } from '../../i18n/useI18n.js';
 
 function formatMean(mean) {
   return mean.toFixed(1);
 }
 
 function Spread({ item }) {
+  const { t } = useI18n();
   const maxShare = Math.max(...item.slotShares, 0.0001);
   const label = item.slotShares
     .map((share, index) => `${index + 1}: ${Math.round(share * 100)}%`)
@@ -15,7 +17,10 @@ function Spread({ item }) {
       <div
         className="spectrum-spread-chart"
         role="img"
-        aria-label={`Share of rankings by slot. ${label}. Average place ${formatMean(item.meanRank)}.`}
+        aria-label={t('results.spectrum.shareBySlot', {
+          label,
+          mean: formatMean(item.meanRank),
+        })}
       >
         {item.slotShares.map((share, index) => {
           const slot = index + 1;
@@ -34,7 +39,7 @@ function Spread({ item }) {
             >
               <span className="spectrum-spread-bar" />
               {slot === item.userSlot ? (
-                <span className="spectrum-blade-badge">Your vote</span>
+                <span className="spectrum-blade-badge">{t('results.yourVote')}</span>
               ) : null}
             </span>
           );
@@ -46,8 +51,8 @@ function Spread({ item }) {
 
           return (
             <span key={slot} className="spectrum-spread-end">
-              {slot === 1 ? 'Least' : null}
-              {slot === 10 ? 'Most' : null}
+              {slot === 1 ? t('results.spectrum.least') : null}
+              {slot === 10 ? t('results.spectrum.most') : null}
             </span>
           );
         })}
@@ -57,6 +62,7 @@ function Spread({ item }) {
 }
 
 function FactNote({ name, fact }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -85,13 +91,17 @@ function FactNote({ name, fact }) {
         className="question-note-button"
         type="button"
         aria-expanded={open}
-        aria-label={`About ${name}`}
+        aria-label={t('results.spectrum.about', { name })}
         onClick={() => setOpen((value) => !value)}
       >
         i
       </button>
       {open ? (
-        <p className="question-note-pop" role="dialog" aria-label={`About ${name}`}>
+        <p
+          className="question-note-pop"
+          role="dialog"
+          aria-label={t('results.spectrum.about', { name })}
+        >
           {fact}
         </p>
       ) : null}

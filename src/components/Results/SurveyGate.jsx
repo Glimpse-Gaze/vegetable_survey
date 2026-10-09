@@ -5,17 +5,15 @@ import { withLocale } from '../../i18n/paths.js';
 import { isResponseId, resultsSharePath } from '../../utils/myResponse.js';
 
 export function SurveyNudge({ kind = 'compare', onThisMachine = false }) {
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
   return (
     <p className="survey-nudge">
       <Link to={withLocale(locale, '/survey')}>
         {onThisMachine
-          ? 'Complete the survey on this machine'
-          : 'Complete the survey'}
+          ? t('results.gate.completeHere')
+          : t('results.gate.complete')}
       </Link>
-      {kind === 'vote'
-        ? ' to rate answers.'
-        : ' to compare your votes with others.'}
+      {kind === 'vote' ? t('results.gate.toVote') : t('results.gate.toCompare')}
     </p>
   );
 }
@@ -27,7 +25,7 @@ export function ResponseCodeCard({
   invalid = false,
 }) {
   const navigate = useNavigate();
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
   const [draft, setDraft] = useState('');
   const [filledFrom, setFilledFrom] = useState('');
   const [copied, setCopied] = useState(false);
@@ -35,7 +33,7 @@ export function ResponseCodeCard({
   const [formError, setFormError] = useState('');
   const [checking, setChecking] = useState(false);
   const sharePath = withLocale(locale, resultsSharePath(categoryId, code));
-  const error = formError || (invalid ? 'Incorrect ID' : '');
+  const error = formError || (invalid ? t('results.gate.incorrect') : '');
   const opened = openedFor === categoryId;
   const showForm = opened || invalid || !code;
 
@@ -60,7 +58,7 @@ export function ResponseCodeCard({
     const next = draft.trim();
     if (!next || checking) return;
     if (!isResponseId(next)) {
-      setFormError('Incorrect ID');
+      setFormError(t('results.gate.incorrect'));
       setOpenedFor(categoryId);
       return;
     }
@@ -68,12 +66,12 @@ export function ResponseCodeCard({
     try {
       const result = await fetch(`/api/responses?id=${encodeURIComponent(next)}`);
       if (!result.ok) {
-        setFormError('Incorrect ID');
+        setFormError(t('results.gate.incorrect'));
         setOpenedFor(categoryId);
         return;
       }
     } catch {
-      setFormError('Incorrect ID');
+      setFormError(t('results.gate.incorrect'));
       setOpenedFor(categoryId);
       return;
     } finally {
@@ -92,7 +90,7 @@ export function ResponseCodeCard({
         type="button"
         onClick={() => setOpenedFor(categoryId)}
       >
-        Open a ranking code
+        {t('results.gate.openCode')}
       </button>
     );
   }
@@ -101,7 +99,7 @@ export function ResponseCodeCard({
     <div className="response-code-card">
       {code && !viewingOther ? (
         <p className="response-code-line">
-          Your code{' '}
+          {t('results.gate.yourCode')}{' '}
           <code className="response-code">{code}</code>
           <button
             className={
@@ -110,24 +108,24 @@ export function ResponseCodeCard({
             type="button"
             onClick={copyCode}
           >
-            {copied ? 'Copied' : 'Copy'}
+            {copied ? t('results.gate.copied') : t('results.gate.copy')}
           </button>
         </p>
       ) : null}
       {viewingOther && code && !invalid ? (
         <p className="response-code-line">
-          Viewing ranking{' '}
+          {t('results.gate.viewing')}{' '}
           <code className="response-code">{code}</code>
         </p>
       ) : null}
       {code && !viewingOther ? (
         <p className="response-code-hint">
-          Keep this to reopen your rankings, or share{' '}
+          {t('results.gate.keepCode')}{' '}
           <span className="response-code-path">{sharePath}</span>
         </p>
       ) : null}
       <form className="response-code-form" onSubmit={handleLoad}>
-        <label htmlFor="ranking-code">Open a ranking code</label>
+        <label htmlFor="ranking-code">{t('results.gate.openCode')}</label>
         <div className="response-code-row">
           <input
             id="ranking-code"
@@ -136,13 +134,13 @@ export function ResponseCodeCard({
               setDraft(event.target.value);
               setFormError('');
             }}
-            placeholder="Paste a code…"
+            placeholder={t('results.gate.paste')}
             autoComplete="off"
             spellCheck="false"
             aria-invalid={error ? true : undefined}
           />
           <button type="submit" disabled={!draft.trim() || checking}>
-            Open
+            {t('results.gate.open')}
           </button>
         </div>
         {error ? (

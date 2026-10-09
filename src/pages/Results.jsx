@@ -1,7 +1,9 @@
 import { lazy, Suspense, startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/useI18n.js';
+import { localizeResultsSection } from '../i18n/localizeResults.js';
 import { withLocale } from '../i18n/paths.js';
+import { useSurveyCatalog } from '../i18n/useSurveyCatalog.js';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
@@ -67,8 +69,8 @@ function edgeGain(position, max, direction) {
   return Math.min(leave, approach);
 }
 
-function formatVotes(n) {
-  return `${n.toLocaleString('en-GB')} ${n === 1 ? 'vote' : 'votes'}`;
+function formatVotes(n, t, numberLocale) {
+  return `${n.toLocaleString(numberLocale)} ${n === 1 ? t('results.vote') : t('results.votes')}`;
 }
 
 function formatShare(share) {
@@ -77,31 +79,34 @@ function formatShare(share) {
   return `${Math.round(pct)}%`;
 }
 
-function ordinal(n) {
+function ordinal(n, t) {
   const remainder = n % 100;
-  if (remainder >= 11 && remainder <= 13) return `${n}th`;
+  if (remainder >= 11 && remainder <= 13) return t('results.ordinal.other', { n });
   switch (n % 10) {
     case 1:
-      return `${n}st`;
+      return t('results.ordinal.one', { n });
     case 2:
-      return `${n}nd`;
+      return t('results.ordinal.two', { n });
     case 3:
-      return `${n}rd`;
+      return t('results.ordinal.few', { n });
     default:
-      return `${n}th`;
+      return t('results.ordinal.other', { n });
   }
 }
 
-function placeLabel(region) {
-  if (region.id === 'global') return 'worldwide';
-  return `in ${region.name}`;
+function placeLabel(region, t) {
+  if (region.id === 'global') return t('results.worldwide');
+  return t('results.inPlace', { place: region.name });
 }
 
-function audienceLabel(section) {
+function audienceLabel(section, t) {
   const language = section.language?.name;
-  const place = section.region.id === 'global' ? '' : ` in ${section.region.name}`;
-  if (language) return `among ${language} speakers${place}`;
-  return placeLabel(section.region);
+  const place =
+    section.region.id === 'global'
+      ? ''
+      : ` ${t('results.inPlace', { place: section.region.name })}`;
+  if (language) return t('results.amongSpeakers', { language, place });
+  return placeLabel(section.region, t);
 }
 
 function alignmentTone(rank) {
@@ -110,42 +115,51 @@ function alignmentTone(rank) {
   return 'place';
 }
 
-function alignmentCopy(section) {
+function alignmentCopy(section, t) {
   const picked = section.userOnBoard ? section.userRanked : null;
   const name =
     picked?.name ??
-    VEGETABLE_LABELS[section.userVoteId] ??
-    section.userVoteName;
+    section.userVoteName ??
+    VEGETABLE_LABELS[section.userVoteId];
   if (!name) return null;
 
-  const place = audienceLabel(section);
+  const place = audienceLabel(section, t);
   if (!picked) {
     const share = section.userRanked?.share ?? 0;
     const people = section.language
-      ? `${section.language.name} speakers`
-      : 'people';
+      ? t('results.speakers', { language: section.language.name })
+      : t('results.people');
     return {
-      kicker: `${share > 0 ? 'Only ' : ''}${formatShare(share)} of ${people} voted with you`,
+      kicker: t(share > 0 ? 'results.onlyShare' : 'results.shareVoted', {
+        share: formatShare(share),
+        people,
+      }),
       name,
       tone: 'lose',
-      connector: 'It',
-      outcome: `placed below top ${BLADE_BOARD_SIZE} ${place}`,
+      connector: t('results.it'),
+      outcome: t('results.placedBelow', { size: BLADE_BOARD_SIZE, place }),
     };
   }
 
-  const votedWithYou = section.language
-    ? `${formatShare(picked.share)} of ${section.language.name} speakers voted with you`
-    : `${formatShare(picked.share)} of people voted with you`;
+  const people = section.language
+    ? t('results.speakers', { language: section.language.name })
+    : t('results.people');
 
   return {
-    kicker: votedWithYou,
+    kicker: t('results.shareVoted', {
+      share: formatShare(picked.share),
+      people,
+    }),
     name,
     tone: alignmentTone(picked.rank),
-    connector: 'It is',
+    connector: t('results.itIs'),
     outcome:
       picked.rank === 1
-        ? `leading ${place}`
-        : `${ordinal(picked.rank)} ${place}`,
+        ? t('results.leading', { place })
+        : t('results.ordinalPlace', {
+            rank: ordinal(picked.rank, t),
+            place,
+          }),
   };
 }
 
@@ -164,6 +178,8 @@ function Crown() {
 }
 
 function Blade({ item, isYours, variant }) {
+  const { t, locale } = useI18n();
+  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en-GB';
   const fill = Math.max(0, item.share * 100);
   const isChampion = variant === 'champion';
 
@@ -181,7 +197,7 @@ function Blade({ item, isYours, variant }) {
     >
       {isChampion ? <Crown /> : null}
       <div className="blade-face">
-        {isYours ? <span className="blade-badge">Your vote</span> : null}
+        {isYours ? <span className="blade-badge">{t('results.yourVote')}</span> : null}
         <img
           src={item.art}
           alt=""
@@ -197,7 +213,7 @@ function Blade({ item, isYours, variant }) {
           </div>
           <p className="blade-name">{item.name}</p>
           <p className="blade-meta">
-            {formatVotes(item.votes)} · {formatShare(item.share)}
+            {formatVotes(item.votes, t, numberLocale)} · {formatShare(item.share)}
           </p>
         </div>
         <div className="blade-meter" aria-hidden="true">
@@ -209,6 +225,9 @@ function Blade({ item, isYours, variant }) {
 }
 
 function RankRail({ section, pauseAutoplay }) {
+  const { t } = useI18n();
+  const prevLabel = t('results.prevVeggies');
+  const nextLabel = t('results.nextVeggies');
   const railRef = useRef(null);
   const stageRef = useRef(null);
   const menuPauseRef = useRef(false);
@@ -510,7 +529,7 @@ function RankRail({ section, pauseAutoplay }) {
             edges.atStart ? 'blade-arrow is-prev is-edge' : 'blade-arrow is-prev'
           }
           type="button"
-          aria-label="Previous vegetables"
+          aria-label={prevLabel}
           aria-hidden={edges.atStart}
           disabled={edges.atStart}
           tabIndex={edges.atStart ? -1 : 0}
@@ -541,7 +560,7 @@ function RankRail({ section, pauseAutoplay }) {
             edges.atEnd ? 'blade-arrow is-next is-edge' : 'blade-arrow is-next'
           }
           type="button"
-          aria-label="Next vegetables"
+          aria-label={nextLabel}
           aria-hidden={edges.atEnd}
           disabled={edges.atEnd}
           tabIndex={edges.atEnd ? -1 : 0}
@@ -555,6 +574,7 @@ function RankRail({ section, pauseAutoplay }) {
 }
 
 function QuestionNote({ note }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -585,13 +605,13 @@ function QuestionNote({ note }) {
         className="question-note-button"
         type="button"
         aria-expanded={open}
-        aria-label="Why this question"
+        aria-label={t('results.whyQuestion')}
         onClick={() => setOpen((value) => !value)}
       >
         i
       </button>
       {open ? (
-        <p className="question-note-pop" role="dialog" aria-label="Why this question">
+        <p className="question-note-pop" role="dialog" aria-label={t('results.whyQuestion')}>
           {note}
         </p>
       ) : null}
@@ -599,28 +619,38 @@ function QuestionNote({ note }) {
   );
 }
 
-function filterSummary(section) {
-  const place = section.region.id === 'global' ? 'the world' : section.region.name;
+function filterSummary(section, t) {
+  const place =
+    section.region.id === 'global' ? t('results.worldRegion') : section.region.name;
   const language = section.language ? ` · ${section.language.name}` : '';
   const count = section.language ? section.responseCount : section.region.votes;
-  return `Showing ${place}${language} · ${count} answers`;
+  return t('results.showing', { place, language, count });
 }
 
 function PlaceFilter({ regionId, placeIds, onRegion }) {
+  const { t } = useI18n();
+  const catalog = useSurveyCatalog();
   return (
     <label className="map-select">
-      <span>Filter by place</span>
+      <span>{t('results.filterPlace')}</span>
       <select value={regionId} onChange={(event) => onRegion(event.target.value)}>
         {REGION_GROUPS.map((group) => {
           const ids = group.ids.filter((id) => placeIds.has(id));
           if (!ids.length) return null;
           return (
-            <optgroup key={group.label} label={group.label}>
+            <optgroup
+              key={group.label}
+              label={t(`results.regionGroups.${group.label}`)}
+            >
               {ids.map((id) => {
                 const region = REGIONS.find((item) => item.id === id);
+                const name =
+                  id === 'global'
+                    ? t('results.worldRegion')
+                    : catalog.countriesById.get(id)?.name ?? region.name;
                 return (
                   <option key={id} value={id}>
-                    {region.name}
+                    {name}
                   </option>
                 );
               })}
@@ -633,14 +663,16 @@ function PlaceFilter({ regionId, placeIds, onRegion }) {
 }
 
 function LanguageFilter({ languageId, languageOptions, onLanguage, className = 'map-select' }) {
+  const { t } = useI18n();
+  const catalog = useSurveyCatalog();
   return (
     <label className={className}>
-      <span>Filter by language</span>
+      <span>{t('results.filterLanguage')}</span>
       <select value={languageId} onChange={(event) => onLanguage(event.target.value)}>
-        <option value={ALL_LANGUAGES_ID}>All languages</option>
+        <option value={ALL_LANGUAGES_ID}>{t('results.allLanguages')}</option>
         {languageOptions.map((language) => (
           <option key={language.id} value={language.id}>
-            {language.name}
+            {catalog.languagesById.get(language.id)?.name ?? language.name}
           </option>
         ))}
       </select>
@@ -650,7 +682,9 @@ function LanguageFilter({ languageId, languageOptions, onLanguage, className = '
 
 export function Results() {
   const navigate = useNavigate();
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
+  const catalog = useSurveyCatalog();
+  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en-GB';
   const { categoryId } = useParams();
   const [searchParams] = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -664,10 +698,10 @@ export function Results() {
   const viewingOther = isResponseId(codeParam) && codeParam !== myResponseId;
   const userAnswers = viewingOther ? sharedAnswers : myAnswers;
   const category = getCategory(categoryId);
-  const section = useMemo(
-    () => getSection(category.id, regionId, userAnswers, languageId),
-    [category.id, regionId, userAnswers, languageId],
-  );
+  const section = useMemo(() => {
+    const raw = getSection(category.id, regionId, userAnswers, languageId);
+    return localizeResultsSection(raw, catalog, t);
+  }, [category.id, regionId, userAnswers, languageId, catalog, t]);
   const languageOptions = useMemo(
     () => languagesForRegion(regionId),
     [regionId],
@@ -689,7 +723,7 @@ export function Results() {
   );
   const nextId = nextCategoryId(category.id);
   const alignment =
-    category.layout === 'blades' ? alignmentCopy(section) : null;
+    category.layout === 'blades' ? alignmentCopy(section, t) : null;
   const showMap =
     category.layout === 'blades' || category.layout === 'spectrum';
   const bladesRef = useRef(null);
@@ -815,14 +849,14 @@ export function Results() {
             type="button"
             onClick={() => setMenuOpen(true)}
           >
-            {category.title}
+            {section.title}
           </button>
           <button
             className="results-menu-btn"
             type="button"
             aria-expanded={menuOpen}
             aria-controls="results-drawer"
-            aria-label={menuOpen ? 'Close categories' : 'Open categories'}
+            aria-label={menuOpen ? t('results.categories.close') : t('results.categories.open')}
             onClick={() => setMenuOpen((open) => !open)}
           >
             <span className="results-menu-lines" aria-hidden="true">
@@ -834,7 +868,7 @@ export function Results() {
         </div>
         {regionId !== 'global' || languageId !== ALL_LANGUAGES_ID ? (
           <p className="results-region-status">
-            {filterSummary(section)}
+            {filterSummary(section, t)}
             {regionId !== 'global' ? (
               <>
                 {' · '}
@@ -843,7 +877,7 @@ export function Results() {
                   type="button"
                   onClick={() => selectRegion('global')}
                 >
-                  Show the world
+                  {t('results.showWorld')}
                 </button>
               </>
             ) : null}
@@ -855,7 +889,7 @@ export function Results() {
                   type="button"
                   onClick={() => selectLanguage(ALL_LANGUAGES_ID)}
                 >
-                  All languages
+                  {t('results.allLanguages')}
                 </button>
               </>
             ) : null}
@@ -867,7 +901,7 @@ export function Results() {
         <button
           className="results-menu-backdrop"
           type="button"
-          aria-label="Close categories"
+          aria-label={t('results.categories.close')}
           onClick={() => setMenuOpen(false)}
         />
       ) : null}
@@ -877,12 +911,13 @@ export function Results() {
         id="results-drawer"
         inert={menuOpen ? undefined : true}
       >
-        <p className="results-nav-kicker">Categories</p>
+        <p className="results-nav-kicker">{t('results.categories.label')}</p>
         <p className="results-nav-meta">
-          Mock standings · {section.responseCount.toLocaleString('en-GB')}{' '}
-          answers
+          {t('results.categories.mockMeta', {
+            count: section.responseCount.toLocaleString(numberLocale),
+          })}
         </p>
-        <nav className="results-tabs" aria-label="Results categories">
+        <nav className="results-tabs" aria-label={t('results.categories.nav')}>
           {CATEGORIES.map((item) => (
             <button
               key={item.id}
@@ -892,13 +927,13 @@ export function Results() {
               }
               onClick={() => goTo(item.id)}
             >
-              {item.title}
+              {t(`results.categories.${item.id}.title`)}
             </button>
           ))}
         </nav>
         <div className="results-menu-filters">
           {regionId !== 'global' || languageId !== ALL_LANGUAGES_ID ? (
-            <p className="results-menu-status">{filterSummary(section)}</p>
+            <p className="results-menu-status">{filterSummary(section, t)}</p>
           ) : null}
           <PlaceFilter
             regionId={regionId}
@@ -912,7 +947,7 @@ export function Results() {
           />
         </div>
         <Link className="results-home-link" to={withLocale(locale, '/')} onClick={() => setMenuOpen(false)}>
-          Back to the main page
+          {t('results.categories.backHome')}
         </Link>
       </aside>
 
@@ -959,7 +994,7 @@ export function Results() {
                   </p>
                 ) : null}
                 <p className="alignment-body">
-                  You voted for{' '}
+                  {t('results.youVotedFor')}{' '}
                   <strong className={`alignment-var is-${alignment.tone}`}>
                     {alignment.name}
                   </strong>
@@ -977,11 +1012,9 @@ export function Results() {
           <div className="map-panel">
             <div className="map-panel-head">
               <div>
-                <p className="eyebrow">By place</p>
-                <h2 className="map-title">Where people answered from</h2>
-                <p className="map-copy">
-                By default, the results show global votes, including those who have chosen not to disclose their birthplace. The results can be filtered using the map shown below. Only regions with at least 20 responses are filterable. If your country is missing, please encourage more people to vote!
-                </p>
+                <p className="eyebrow">{t('results.byPlace')}</p>
+                <h2 className="map-title">{t('results.mapTitle')}</h2>
+                <p className="map-copy">{t('results.mapCopy')}</p>
               </div>
               <PlaceFilter
                 regionId={regionId}
@@ -1004,10 +1037,11 @@ export function Results() {
               onLanguage={selectLanguage}
             />
             <p className="map-status">
-              Showing {section.region.name}
-              {section.language ? ` · ${section.language.name}` : ''}
-              {' · '}
-              {section.responseCount} answers
+              {t('results.mapStatus', {
+                place: section.region.name,
+                language: section.language ? ` · ${section.language.name}` : '',
+                count: section.responseCount,
+              })}
               {regionId !== 'global' ? (
                 <>
                   {' · '}
@@ -1016,7 +1050,7 @@ export function Results() {
                     type="button"
                     onClick={() => selectRegion('global')}
                   >
-                    Show the world
+                    {t('results.showWorld')}
                   </button>
                 </>
               ) : null}
@@ -1028,7 +1062,7 @@ export function Results() {
                     type="button"
                     onClick={() => selectLanguage(ALL_LANGUAGES_ID)}
                   >
-                    All languages
+                    {t('results.allLanguages')}
                   </button>
                 </>
               ) : null}
@@ -1043,13 +1077,13 @@ export function Results() {
                 type="button"
                 onClick={() => goTo(nextId)}
               >
-                Next category
+                {t('results.categories.next')}
               </button>
             </div>
           ) : (
             <div className="results-next-wrap">
               <Link className="results-next is-quiet" to={withLocale(locale, '/')}>
-                Back to the main page
+                {t('results.categories.backHome')}
               </Link>
             </div>
           )}

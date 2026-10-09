@@ -16,12 +16,19 @@ export function useSurveyCatalog() {
     const localizedBuckets = applyLexicon(bucketItems, lexicon.vegetables);
     const localizedSpectrum = applyLexicon(spectrumVegetables, lexicon.vegetables);
 
+    const localizedVegetables = applyLexicon(vegetables, lexicon.vegetables);
+    const localizedCountries = applyLexicon(countries, lexicon.countries);
+    const localizedLanguages = applyLexicon(languages, lexicon.languages);
+
     return {
-      vegetables: applyLexicon(vegetables, lexicon.vegetables),
-      countries: applyLexicon(countries, lexicon.countries),
-      languages: applyLexicon(languages, lexicon.languages),
+      vegetables: localizedVegetables,
+      countries: localizedCountries,
+      languages: localizedLanguages,
       bucketItems: localizedBuckets,
       spectrumVegetables: localizedSpectrum,
+      vegetablesById: new Map(localizedVegetables.map((item) => [item.id, item])),
+      countriesById: new Map(localizedCountries.map((item) => [item.id, item])),
+      languagesById: new Map(localizedLanguages.map((item) => [item.id, item])),
       bucketById: new Map(localizedBuckets.map((item) => [item.id, item])),
       spectrumById: new Map(localizedSpectrum.map((item) => [item.id, item])),
     };

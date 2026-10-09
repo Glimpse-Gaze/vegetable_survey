@@ -4,6 +4,7 @@ import {
   layoutCommentRows,
   rankComments,
 } from '../../data/reasonResults.js';
+import { useI18n } from '../../i18n/useI18n.js';
 import {
   applyMyAnswerToRows,
   readMyCustomReason,
@@ -19,8 +20,8 @@ const MAX_LIKES = 5;
 const MAX_DISLIKES = 5;
 const PUFF_MS = 900;
 
-function formatVotes(n) {
-  return `${n.toLocaleString('en-GB')} ${n === 1 ? 'vote' : 'votes'}`;
+function formatVotes(n, t, numberLocale) {
+  return `${n.toLocaleString(numberLocale)} ${n === 1 ? t('results.vote') : t('results.votes')}`;
 }
 
 function formatShare(share) {
@@ -99,6 +100,7 @@ function pointFromEvent(event) {
 }
 
 function DriftRow({ row, leading = false, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
+  const { t } = useI18n();
   const loop = [...row.items, ...row.items];
 
   return (
@@ -131,11 +133,16 @@ function DriftRow({ row, leading = false, myVotes, canVote, onVote, onHoldStart,
             data-comment-id={item.id}
             data-boosts={item.score}
             aria-pressed={mine === 1}
-            aria-label={`${item.text}. ${
-              item.isMine ? 'Your answer. ' : ''
-            }${
-              mine === 1 ? 'Liked' : mine === -1 ? 'Sunk' : 'Not voted'
-            }. Tap or click to like. Double-tap, hold, or right-click to sink.`}
+            aria-label={t('results.reasons.voteAria', {
+              text: item.text,
+              mine: item.isMine ? t('results.yourAnswerPeriod') : '',
+              state:
+                mine === 1
+                  ? t('results.reasons.liked')
+                  : mine === -1
+                    ? t('results.reasons.sunk')
+                    : t('results.reasons.notVoted'),
+            })}
             onPointerDown={(event) => {
               if (!canVote) return;
               onHoldStart(event, item.id);
@@ -173,16 +180,18 @@ function DriftRow({ row, leading = false, myVotes, canVote, onVote, onHoldStart,
   );
 }
 
-function rateGesture() {
+function rateGesture(t) {
   const coarse =
     typeof window !== 'undefined' &&
     window.matchMedia('(pointer: coarse)').matches;
   return coarse
-    ? 'Tap once to like; double-tap or press and hold to dislike.'
-    : 'Click once to like; double-click or right-click to dislike.';
+    ? t('results.reasons.gestureCoarse')
+    : t('results.reasons.gestureFine');
 }
 
 export function ReasonResults({ section, viewingOwn = true }) {
+  const { t, locale } = useI18n();
+  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en-GB';
   const responseId = useMemo(() => readMyResponseId(), []);
   const canVote = Boolean(responseId);
   const myReason = useMemo(
@@ -451,11 +460,12 @@ export function ReasonResults({ section, viewingOwn = true }) {
       <div className="bucket-results is-single">
         <article className="bucket-card">
           <header className="bucket-card-head">
-            <p className="bucket-card-kicker">Top 5</p>
-            <h2 className="bucket-card-title">Why it feels vegetabley</h2>
+            <p className="bucket-card-kicker">{t('results.top5')}</p>
+            <h2 className="bucket-card-title">{t('results.reasons.title')}</h2>
             {section.leader ? (
               <p className="bucket-card-summary">
-                {formatShare(section.leader.share)} of people marked{' '}
+                {formatShare(section.leader.share)}
+                {t('results.reasons.marked')}
                 <strong>{section.leader.name}</strong>
               </p>
             ) : null}
@@ -477,12 +487,12 @@ export function ReasonResults({ section, viewingOwn = true }) {
                   <div className="bucket-row-topline">
                     <strong className="bucket-row-name">{item.name}</strong>
                     {item.isYours ? (
-                      <span className="bucket-row-badge">Your vote</span>
+                      <span className="bucket-row-badge">{t('results.yourVote')}</span>
                     ) : null}
-                  </div>
-                  <p className="bucket-row-meta">
-                    {formatVotes(item.votes)} · {formatShare(item.share)}
-                  </p>
+                    </div>
+                    <p className="bucket-row-meta">
+                      {formatVotes(item.votes, t, numberLocale)} · {formatShare(item.share)}
+                    </p>
                   <div className="bucket-row-meter" aria-hidden="true">
                     <span style={{ width: `${item.share * 100}%` }} />
                   </div>
@@ -494,9 +504,9 @@ export function ReasonResults({ section, viewingOwn = true }) {
       </div>
 
       <div className="reason-drift-wrap">
-        <h2 className="reason-drift-title">Custom user answers</h2>
+        <h2 className="reason-drift-title">{t('results.reasons.customTitle')}</h2>
         {canVote ? null : <SurveyNudge kind="vote" />}
-        <div className="reason-drift" aria-label="Custom user answers">
+        <div className="reason-drift" aria-label={t('results.reasons.customAria')}>
           {rows.map((row, index) => (
             <DriftRow
               key={row.id}
@@ -514,7 +524,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
         {canVote ? (
           <>
             <p className="reason-drift-hint">
-            You can rate people's responses. {rateGesture()} You can rate up to five answers. The best answers are promoted to the top row.
+              {t('results.reasons.hint', { gesture: rateGesture(t) })}
             </p>
             <div className="reason-reset-row">
               <button
@@ -525,12 +535,9 @@ export function ReasonResults({ section, viewingOwn = true }) {
                 onPointerUp={releaseReset}
                 onContextMenu={(event) => event.preventDefault()}
               >
-                {resetDone ? 'Cleared' : 'Reset input'}
+                {resetDone ? t('results.reasons.cleared') : t('results.reasons.reset')}
               </button>
-              <p className="reason-reset-tip">
-                Clears your 5 likes and 5 dislikes so you can vote on 10 answers
-                again.
-              </p>
+              <p className="reason-reset-tip">{t('results.reasons.resetTip')}</p>
             </div>
           </>
         ) : null}

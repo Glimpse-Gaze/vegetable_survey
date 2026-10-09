@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Outlet, Route, Routes, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { Home } from './pages/Home.jsx';
+import { LocaleSwitcher } from './components/LocaleSwitcher.jsx';
 import { useI18n } from './i18n/useI18n.js';
 import { isLocale } from './i18n/locales.js';
 import { withLocale } from './i18n/paths.js';
@@ -35,7 +36,12 @@ function LocaleOutlet() {
     );
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <LocaleSwitcher />
+      <Outlet />
+    </>
+  );
 }
 
 function LocaleFallback() {
