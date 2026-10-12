@@ -139,8 +139,12 @@ function SpectrumBlade({ item, bandId }) {
         <img
           src={item.art}
           alt=""
+          width={390}
+          height={390}
           decoding="async"
-          loading={item.rank <= 2 ? 'eager' : 'lazy'}
+          loading={item.rank <= 3 ? 'eager' : 'lazy'}
+          fetchPriority={item.rank <= 2 ? 'high' : 'auto'}
+          sizes="(max-width: 720px) 42vw, 12.2rem"
         />
       </div>
       <div className="spectrum-blade-copy">

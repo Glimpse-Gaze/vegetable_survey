@@ -16,9 +16,9 @@ export const spectrumCopy = {
     note: 'Halloweenowe lampy (jack-o’-lanterns) pierwotnie wykonywano z rzepy! Celtyccy imigranci przywieźli tę tradycję do USA w XIX wieku, gdzie rzepę zastąpiono dyniami.',
     fact: 'Rzepa pochodzi z Europy i zachodniej Azji. To zgrubiały korzeń, blisko spokrewniony z kapustą pekińską, kapustą pak choi, japońską musztardą oraz rapini. Wszystkie one należą do grupy Brassica rapa – to odmiany dzikiej kapusty, ale nie z tej samej linii, z której pochodzi brokuł. Te dwie linie dalej mogą się ze sobą krzyżować, tworząc warzywa takie jak brukiew czy rzepak!',
   },
-  celery: {
-    note: 'Seler to ten sam gatunek, tylko uprawiany dla korzenia zamiast łodyg.',
-    fact: 'Seler naciowy pochodzi ze śródziemnomorskich mokradeł. To łodyga liściowa z rodziny selerowatych (Apiaceae), tak samo jak marchewka. Tak samo jak inne przyprawy z tej rodziny (koperek, kumin, anyż), nasiona selera dodaje się do marynat i pieczywa albo miele na sól selerową.',
+  green_bean: {
+    note: 'Fasolka szparagowa, pinto, czarna, czerwona i biała to ten sam gatunek — tylko zbiór na innych etapach dojrzewania.',
+    fact: 'Fasolka szparagowa pochodzi z Ameryki Środkowej i Południowej. To jadalne strąki z niedojrzałymi nasionami z rodziny bobowatych (Fabaceae). Z tej samej rodziny pochodzą spożywcze podstawy: groszek, ciecierzyca, soja i soczewica.',
   },
   corn: {
     note: 'Żółta kukurydza stała się dominującą odmianą dopiero w XX wieku.',

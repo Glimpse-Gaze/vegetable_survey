@@ -5,12 +5,15 @@ import brusselsSprouts from '../content/Brussel_sprouts.jpg';
 import cabbage from '../content/Cabbage.jpg';
 import carrots from '../content/Carrots.jpg';
 import cauliflower from '../content/Cauliflower.jpg';
-import celery from '../content/Celery.jpg';
+import greenBean from '../content/Green_Bean.jpg';
 import corn from '../content/Corn.jpg';
+import cucumber from '../content/Cucumber.jpg';
+import lettuce from '../content/Lettuce.jpg';
 import onion from '../content/Onion.jpg';
 import pakChoi from '../content/Pok_choi.jpg';
 import potato from '../content/Potato.jpg';
 import pumpkin from '../content/Pumpkin.jpg';
+import sweetPotato from '../content/Sweet_Potato.jpg';
 import tomato from '../content/Tomato.jpg';
 import turnip from '../content/Turnips.jpg';
 import placeholder from '../content/Placeholder.jpg';
@@ -30,12 +33,15 @@ export const VEGETABLE_ART = {
   cabbage,
   carrot: carrots,
   cauliflower,
-  celery,
+  green_bean: greenBean,
   corn,
+  cucumber,
+  lettuce,
   onion,
   pak_choi: pakChoi,
   potato,
   pumpkin,
+  sweet_potato: sweetPotato,
   tomato,
   turnip,
 };
@@ -46,12 +52,16 @@ export const VEGETABLE_LABELS = {
   cabbage: 'Cabbage',
   carrot: 'Carrot',
   cauliflower: 'Cauliflower',
+  green_bean: 'Green bean',
   celery: 'Celery',
   corn: 'Corn',
+  cucumber: 'Cucumber',
+  lettuce: 'Lettuce',
   onion: 'Onion',
   pak_choi: 'Pak choi',
   potato: 'Potato',
   pumpkin: 'Pumpkin',
+  sweet_potato: 'Sweet potato',
   tomato: 'Tomato',
   turnip: 'Turnip',
 };
@@ -348,7 +358,7 @@ const BUCKET_ITEM_VOTES = {
   mushrooms: { not_vegetable: 462, in_between: 168, definitely_vegetable: 70 },
   cinnamon: { not_vegetable: 245, in_between: 315, definitely_vegetable: 140 },
   tobacco: { not_vegetable: 196, in_between: 280, definitely_vegetable: 224 },
-  turmeric: { not_vegetable: 154, in_between: 336, definitely_vegetable: 210 },
+  peanut: { not_vegetable: 154, in_between: 336, definitely_vegetable: 210 },
   rhubarb: { not_vegetable: 112, in_between: 343, definitely_vegetable: 245 },
   garlic: { not_vegetable: 84, in_between: 406, definitely_vegetable: 210 },
   olive: { not_vegetable: 63, in_between: 175, definitely_vegetable: 462 },
@@ -365,7 +375,7 @@ const BUCKET_ITEM_VOTES = {
   cabbage: { not_vegetable: 70, in_between: 140, definitely_vegetable: 490 },
   spinach: { not_vegetable: 84, in_between: 161, definitely_vegetable: 455 },
   onion: { not_vegetable: 70, in_between: 210, definitely_vegetable: 420 },
-  pea: { not_vegetable: 105, in_between: 210, definitely_vegetable: 385 },
+  celery: { not_vegetable: 105, in_between: 210, definitely_vegetable: 385 },
   pak_choi: { not_vegetable: 140, in_between: 210, definitely_vegetable: 350 },
   rocket: { not_vegetable: 175, in_between: 210, definitely_vegetable: 315 },
   bamboo_shoot: { not_vegetable: 140, in_between: 210, definitely_vegetable: 350 },

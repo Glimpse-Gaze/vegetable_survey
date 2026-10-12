@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import {
   COMMENT_DISPLAY_COUNT,
   layoutCommentRows,
@@ -234,7 +234,11 @@ export function ReasonResults({ section, viewingOwn = true }) {
         if (!result.ok) return;
         const body = await result.json();
         if (cancelled || layoutLocked.current || !body?.scores) return;
-        setRows(snapshotRows(pool, netsFromScores(body.scores), myReason, viewingOwn));
+        startTransition(() => {
+          setRows(
+            snapshotRows(pool, netsFromScores(body.scores), myReason, viewingOwn),
+          );
+        });
       } catch {
         // keep the seed snapshot
       } finally {
@@ -242,9 +246,17 @@ export function ReasonResults({ section, viewingOwn = true }) {
       }
     }
 
-    loadSnapshot();
+    const idle =
+      typeof window !== 'undefined' && 'requestIdleCallback' in window
+        ? window.requestIdleCallback(() => loadSnapshot(), { timeout: 1200 })
+        : window.setTimeout(loadSnapshot, 280);
     return () => {
       cancelled = true;
+      if (typeof window !== 'undefined' && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(idle);
+      } else {
+        window.clearTimeout(idle);
+      }
     };
   }, [pool, myReason, viewingOwn, locale]);
 
