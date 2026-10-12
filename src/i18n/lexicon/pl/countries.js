@@ -61,7 +61,7 @@ export const countries = {
   colombia: 'Kolumbia',
   comoros: 'Komory',
   congo_brazzaville: 'Kongo (Brazzaville)',
-  congo_kinshasa: ['Kongo (Kinszasa)', 'Demokratyczna Republika Konga'],
+  congo_kinshasa: ['Demokratyczna Republika Konga', 'Kongo (Kinszasa)'],
   costa_rica: 'Kostaryka',
   croatia: 'Chorwacja',
   cuba: 'Kuba',

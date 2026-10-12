@@ -1,6 +1,6 @@
 # The most vegetable vegetable
 
-A short, playful questionnaire about what people actually mean by **vegetable** — first instinct, reasons, sorting, a ranking of awkward cases, a written definition, then optional background.
+A short, playful questionnaire about what people actually mean by **vegetable** – first instinct, reasons, sorting, a ranking of awkward cases, a written definition, then optional background.
 
 This is a research prototype, not a botany test. There are no wrong answers.
 

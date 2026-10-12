@@ -30,9 +30,13 @@ function formatShare(share) {
   return `${Math.round(pct)}%`;
 }
 
-function readMyVotes() {
+function votesKey(locale) {
+  return `${MY_VOTES_KEY}:${locale || 'en'}`;
+}
+
+function readMyVotes(locale) {
   try {
-    const raw = localStorage.getItem(MY_VOTES_KEY);
+    const raw = localStorage.getItem(votesKey(locale));
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed : {};
@@ -41,9 +45,9 @@ function readMyVotes() {
   }
 }
 
-function writeMyVotes(votes) {
+function writeMyVotes(votes, locale) {
   try {
-    localStorage.setItem(MY_VOTES_KEY, JSON.stringify(votes));
+    localStorage.setItem(votesKey(locale), JSON.stringify(votes));
   } catch {
     // private mode
   }
@@ -199,7 +203,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
     [viewingOwn],
   );
   const pool = section.commentPool ?? [];
-  const [myVotes, setMyVotes] = useState(readMyVotes);
+  const [myVotes, setMyVotes] = useState(() => readMyVotes(locale));
   const [resetDone, setResetDone] = useState(false);
   const resetFlash = useRef(0);
   const [rows, setRows] = useState(() =>
@@ -220,6 +224,9 @@ export function ReasonResults({ section, viewingOwn = true }) {
 
   useEffect(() => {
     let cancelled = false;
+    layoutLocked.current = false;
+    setMyVotes(readMyVotes(locale));
+    setRows(snapshotRows(pool, {}, myReason, viewingOwn));
 
     async function loadSnapshot() {
       try {
@@ -239,7 +246,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
     return () => {
       cancelled = true;
     };
-  }, [pool, myReason, viewingOwn]);
+  }, [pool, myReason, viewingOwn, locale]);
 
   useEffect(
     () => () => {
@@ -282,7 +289,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
 
   function applyVote(commentId, nextValue, point) {
     if (!responseId) return;
-    const votesNow = readMyVotes();
+    const votesNow = readMyVotes(locale);
     const previous = votesNow[commentId] ?? 0;
     if (previous === nextValue) return;
     if (!canSetVote(votesNow, commentId, nextValue)) {
@@ -295,7 +302,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
     const votes = { ...votesNow };
     if (nextValue === 0) delete votes[commentId];
     else votes[commentId] = nextValue;
-    writeMyVotes(votes);
+    writeMyVotes(votes, locale);
     setMyVotes(votes);
     layoutLocked.current = true;
     if (nextValue === 1 || nextValue === -1) {
@@ -330,10 +337,10 @@ export function ReasonResults({ section, viewingOwn = true }) {
   }
 
   function resetVotes() {
-    const votesNow = readMyVotes();
+    const votesNow = readMyVotes(locale);
     if (!Object.keys(votesNow).length) return;
 
-    writeMyVotes({});
+    writeMyVotes({}, locale);
     setMyVotes({});
     setResetDone(true);
     window.clearTimeout(resetFlash.current);
@@ -406,7 +413,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
     const point = pointFromEvent(event);
 
     if (event.type === 'keydown') {
-      const current = readMyVotes()[commentId] ?? 0;
+      const current = readMyVotes(locale)[commentId] ?? 0;
       applyVote(commentId, nextFromSingleTap(current), point);
       return;
     }
@@ -425,7 +432,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
       if (tapTimer.current) window.clearTimeout(tapTimer.current);
       tapTimer.current = 0;
       tapTarget.current = null;
-      const current = readMyVotes()[commentId] ?? 0;
+      const current = readMyVotes(locale)[commentId] ?? 0;
       applyVote(commentId, nextFromRightClick(current), point);
       return;
     }
@@ -439,7 +446,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
       window.clearTimeout(tapTimer.current);
       tapTimer.current = 0;
       tapTarget.current = null;
-      const current = readMyVotes()[commentId] ?? 0;
+      const current = readMyVotes(locale)[commentId] ?? 0;
       applyVote(commentId, nextFromDoubleTap(current), point);
       return;
     }
@@ -450,7 +457,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
     tapTimer.current = window.setTimeout(() => {
       tapTimer.current = 0;
       tapTarget.current = null;
-      const current = readMyVotes()[commentId] ?? 0;
+      const current = readMyVotes(locale)[commentId] ?? 0;
       applyVote(commentId, nextFromSingleTap(current), tapPoint.current);
     }, TAP_MS);
   }
@@ -504,7 +511,13 @@ export function ReasonResults({ section, viewingOwn = true }) {
       </div>
 
       <div className="reason-drift-wrap">
-        <h2 className="reason-drift-title">{t('results.reasons.customTitle')}</h2>
+        <h2 className="reason-drift-title">
+          {t('results.reasons.customTitle')}
+          <span className="reason-drift-locale">
+            {' '}
+            {t('results.reasons.localeFlair')}
+          </span>
+        </h2>
         {canVote ? null : <SurveyNudge kind="vote" />}
         <div className="reason-drift" aria-label={t('results.reasons.customAria')}>
           {rows.map((row, index) => (
@@ -560,8 +573,8 @@ export function ReasonResults({ section, viewingOwn = true }) {
           role="status"
         >
           {capTip.kind === 'like'
-            ? 'You can like only 5 answers'
-            : 'You can dislike only 5 answers'}
+            ? t('results.reasons.likeCap')
+            : t('results.reasons.dislikeCap')}
         </p>
       ) : null}
     </div>

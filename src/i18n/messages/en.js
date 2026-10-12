@@ -20,7 +20,8 @@ export const en = {
     seeResults: 'See the results',
     skipTitle: 'Before you skip ahead',
     skipMessage:
-      "Please note: it's recommended to complete the survey before displaying the results.",
+      'Results are more fun when you fill in the survey first.',
+    skipContinue: 'Continue',
   },
   welcome: {
     eyebrow: 'Welcome',
@@ -62,7 +63,7 @@ export const en = {
     lead: 'Sort each item into a bucket.',
     fine: 'Drag the items, or click a bucket and then an item.',
     coarse:
-      'Tap a bucket, then an item — or tap an item, then a bucket. Hold an item to drag it. Tap × on a sorted item to put it back.',
+      'Tap a bucket, then an item – or tap an item, then a bucket. Hold an item to drag it. Tap × on a sorted item to put it back.',
     continueHint: 'Sort every item',
     toSort: 'Items to sort',
     returnItem: 'Return {name} to the list',
@@ -78,7 +79,7 @@ export const en = {
       'Place each item on the vegetableness spectrum. Least vegetabley items at the top, most vegetabley at the bottom.',
     fine: 'Drag and drop, or click a slot and then an item. Use arrows to nudge a placed item up or down.',
     coarse:
-      'Tap a rank, then an item — or tap an item, then a rank. Hold an item to drag it. Use the arrows to move it, or × to put it back.',
+      'Tap a rank, then an item – or tap an item, then a rank. Hold an item to drag it. Use the arrows to move it, or × to put it back.',
     continueHint: 'Place all ten items',
     least: 'Least vegetabley',
     middle: 'In the middle',
@@ -119,7 +120,7 @@ export const en = {
     saving: 'Saving your answers…',
   },
   thanks: {
-    title: 'That’s all — thank you.',
+    title: 'That’s all – thank you.',
     resultsTitle: 'Interactive results',
     resultsBody:
       'On the results pages you can see how your answers compare globally, and rate other people’s comments.',
@@ -177,42 +178,42 @@ export const en = {
         title: 'First instincts',
         prompt: "Which vegetable comes to people's mind first?",
         designNote:
-          'This question checks people’s first instincts. It looks for the common associations of the word “vegetable”: plants that are popular, easy to find in a shop, or simply eaten most often.',
+          'This question checks people’s first instincts. It looks for the common associations of the word “vegetable”: such as the most frequently eaten plants or their specific parts.',
       },
       'why-vegetabley': {
         eyebrow: 'Question 2',
         title: 'Why does it feel vegetabley?',
         prompt: 'The reasons people marked for their first instinct.',
         designNote:
-          'This question asks people to justify that first instinct. It nudges them to look again at their own criteria for what makes something a vegetable.',
+          'This question asks people to justify that first instinct. It nudges them to ponder their own criteria for what makes something a vegetable.',
       },
       'sort-buckets': {
         eyebrow: 'Question 3',
         title: 'Which of these count as vegetables?',
         prompt: 'Not a vegetable, in-between, or definitely a vegetable?',
         designNote:
-          'This question looks at the cultural idea of a vegetable, mixing familiar plants with less obvious ones. It tests the criteria people are using: savouriness, colour, how a plant is cooked, or its botanical status.',
+          'This question looks at the cultural idea of a vegetable, mixing familiar consumable plants with some less obvious ones. It is designed to test the criteria that people are using: how the given plant is consumed, its flavour, colour, or botanical status. People tend to spend the most time on this question.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Question 4',
         title: 'Vegetableness spectrum',
         prompt: 'From the least to the most vegetabley plants.',
         designNote:
-          'These ten plants were selected as they represent different botanical families, or very different parts of the same family. Roots vs stems, leaves, flowers, fruits, and grains. This ranking is there to see whether the botanical status, plant anatomy, or geographic origin has any bearing on how vegetabley something feels.',
+          'I selected these ten plants as they represent different botanical families, or very different parts of the same family: roots, stems, leaves, flowers, fruits, and grains. The ranking is there to see whether the botanical status, plant anatomy, or geographic origin has any bearing on how vegetabley something feels.',
       },
       'most-vegetable': {
         eyebrow: 'Question 5',
         title: 'The most vegetable vegetable',
         prompt: 'What feels the most vegetabley?',
         designNote:
-          'This question was inspired by the podcast The Rest Is Science. Like the spectrum before it, it asks people to sort and rank their judgment of edible plants. It comes late in the survey, after people have stress-tested the idea of a vegetable, so it can be compared with those first instincts.',
+          'This question was inspired by the podcast The Rest Is Science. It comes late in the survey, after people have already stress-tested their idea of a vegetable, so it can be compared with their first instincts.',
       },
       'vegetabley-words': {
         eyebrow: 'Question 6',
         title: 'What makes something feel like a vegetable?',
         prompt: 'People described their criteria for vegetableness.',
         designNote:
-          '“Vegetable” is a social idea. It depends on context, place, language, and more. This question gives people room to explain their earlier choices and describe the criteria they were using.',
+          '“Vegetable” is naturally a social concept. It depends on context, place, language, and more. This question gives people room to explain their choices, criteria, and share their opinions.',
       },
     },
     whyQuestion: 'Why this question',
@@ -247,6 +248,16 @@ export const en = {
     leading: 'leading {place}',
     placedBelow: 'placed below top {size} {place}',
     ordinalPlace: '{rank} {place}',
+    mapTip: {
+      live: '{votes} answers | click to filter',
+      noLanguage: 'No answers for this language',
+      few: 'Fewer than {threshold} answers',
+      iceWall: 'The Ice Wall',
+      iceWallHint: 'Do not approach!',
+      zoomIn: 'Zoom in',
+      zoomOut: 'Zoom out',
+      aria: 'World map of survey responses',
+    },
     ordinal: {
       one: '{n}st',
       two: '{n}nd',
@@ -265,7 +276,7 @@ export const en = {
       notVeg: ' is not a vegetable',
       inBetween: ' somewhere in-between',
       isVeg: ' is a vegetable',
-      lookupLabel: 'See the results for',
+      lookupLabel: 'See detailed results for',
       chooseItem: 'Choose an item',
       howSorted: 'How people sorted',
       youMarked: 'You marked it as',
@@ -277,6 +288,7 @@ export const en = {
       marked: ' of people marked ',
       customTitle: 'Custom user answers',
       customAria: 'Custom user answers',
+      localeFlair: '(in English)',
       hint:
         "You can rate people's responses. {gesture} You can rate up to five answers. The best answers are promoted to the top row.",
       gestureCoarse:
@@ -291,6 +303,8 @@ export const en = {
       liked: 'Liked',
       sunk: 'Sunk',
       notVoted: 'Not voted',
+      likeCap: 'You can like only 5!',
+      dislikeCap: 'You can dislike only 5!',
     },
     spectrum: {
       least: 'Least',
@@ -309,7 +323,7 @@ export const en = {
     gate: {
       complete: 'Complete the survey',
       completeHere: 'Complete the survey on this machine',
-      toCompare: ' to compare your votes with others.',
+      toCompare: ' to rate answers.',
       toVote: ' to rate answers.',
       openCode: 'Open a ranking code',
       yourCode: 'Your code',

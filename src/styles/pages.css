@@ -36,14 +36,8 @@
   outline-offset: 3px;
 }
 
-.results-page .results-chrome {
-  padding-right: 7.25rem;
-}
-
-@media (max-width: 720px) {
-  .results-page .results-chrome {
-    padding-right: 6.75rem;
-  }
+.locale-switcher--inline {
+  position: static;
 }
 
 .home-panel {

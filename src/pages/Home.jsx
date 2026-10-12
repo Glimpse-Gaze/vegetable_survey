@@ -36,7 +36,7 @@ export function Home() {
         <ConfirmDialog
           title={t('home.skipTitle')}
           message={t('home.skipMessage')}
-          confirmLabel={t('dialog.proceed')}
+          confirmLabel={t('home.skipContinue')}
           cancelLabel={t('dialog.cancel')}
           onConfirm={() => navigate(withLocale(locale, '/results'))}
           onCancel={() => setAskResults(false)}

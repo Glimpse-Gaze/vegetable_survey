@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/useI18n.js';
+import { placeNotePop } from '../../utils/placeNotePop.js';
 
 function formatMean(mean) {
   return mean.toFixed(1);
@@ -65,9 +66,14 @@ function FactNote({ name, fact }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
+  const popRef = useRef(null);
 
   useEffect(() => {
     if (!open) return undefined;
+
+    function reposition() {
+      placeNotePop(rootRef.current, popRef.current);
+    }
 
     function onPointer(event) {
       if (!rootRef.current?.contains(event.target)) setOpen(false);
@@ -77,13 +83,18 @@ function FactNote({ name, fact }) {
       if (event.key === 'Escape') setOpen(false);
     }
 
+    reposition();
+    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, true);
     document.addEventListener('pointerdown', onPointer);
     document.addEventListener('keydown', onKey);
     return () => {
+      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition, true);
       document.removeEventListener('pointerdown', onPointer);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open]);
+  }, [open, fact]);
 
   return (
     <div className="question-note is-beside" ref={rootRef}>
@@ -98,6 +109,7 @@ function FactNote({ name, fact }) {
       </button>
       {open ? (
         <p
+          ref={popRef}
           className="question-note-pop"
           role="dialog"
           aria-label={t('results.spectrum.about', { name })}

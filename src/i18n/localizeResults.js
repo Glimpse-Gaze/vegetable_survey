@@ -1,8 +1,26 @@
+import { commentsForLocale } from '../data/reasonResults.js';
+import { notesForLocale } from '../data/noteResults.js';
+import { spectrumCopy as spectrumCopyPl } from './lexicon/pl/spectrumCopy.js';
+
 const BAND_KEYS = {
   least: 'q4.least',
   middle: 'q4.middle',
   most: 'q4.most',
 };
+
+const SPECTRUM_COPY = {
+  pl: spectrumCopyPl,
+};
+
+function withSpectrumCopy(item, locale) {
+  const copy = SPECTRUM_COPY[locale]?.[item.id];
+  if (!copy) return item;
+  return {
+    ...item,
+    note: copy.note ?? item.note,
+    fact: copy.fact ?? item.fact,
+  };
+}
 
 function nameFromMaps(id, fallback, maps) {
   if (!id) return fallback;
@@ -33,7 +51,7 @@ function remapItem(item, maps, t) {
 }
 
 /** Overlay translated chrome and lexicon names onto a results section. */
-export function localizeResultsSection(section, catalog, t) {
+export function localizeResultsSection(section, catalog, t, locale = 'en') {
   if (!section) return section;
 
   const maps = [
@@ -102,7 +120,9 @@ export function localizeResultsSection(section, catalog, t) {
     next.bands = section.bands.map((band) => ({
       ...band,
       title: t(BAND_KEYS[band.id] ?? band.title),
-      items: (band.items ?? []).map((item) => remapItem(item, maps, t)),
+      items: (band.items ?? []).map((item) =>
+        withSpectrumCopy(remapItem(item, maps, t), locale),
+      ),
     }));
   }
 
@@ -116,6 +136,14 @@ export function localizeResultsSection(section, catalog, t) {
       section.userVoteName,
       maps,
     );
+  }
+
+  if (Array.isArray(section.commentPool)) {
+    next.commentPool = commentsForLocale(locale);
+  }
+
+  if (Array.isArray(section.notePool)) {
+    next.notePool = notesForLocale(locale);
   }
 
   return next;

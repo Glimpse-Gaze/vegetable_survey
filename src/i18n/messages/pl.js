@@ -18,7 +18,8 @@ export const pl = {
     seeResults: 'Zobacz wyniki',
     skipTitle: 'Zanim przejdziesz dalej',
     skipMessage:
-      'Warto najpierw wypełnić ankietę, zanim wyświetlisz wyniki.',
+      'Wyniki dają większą frajdę, kiedy najpierw wypełnisz ankietę.',
+    skipContinue: 'Kontynuuj',
   },
   welcome: {
     eyebrow: 'Witaj',
@@ -76,7 +77,7 @@ export const pl = {
     lead: 'Przyporządkuj każdy przykład do kategorii.',
     fine: 'Przeciągnij przykłady albo najpierw kliknij kategorię, a potem przykład.',
     coarse:
-      'Dotknij kategorii, potem przykładu — albo najpierw przykładu, a potem kategorii. Przytrzymaj przykład, żeby go przeciągnąć. Dotknij × przy ułożonym przykładzie, żeby go cofnąć.',
+      'Dotknij kategorii, potem przykładu – albo najpierw przykładu, a potem kategorii. Przytrzymaj przykład, żeby go przeciągnąć. Dotknij × przy ułożonym przykładzie, żeby go cofnąć.',
     continueHint: 'Posortuj wszystkie przykłady',
     toSort: 'Przykłady do posortowania',
     returnItem: 'Cofnij {name} na listę',
@@ -92,7 +93,7 @@ export const pl = {
       'Umieść każdy przykład na skali warzywności. Najmniej warzywne na górze, najbardziej warzywne na dole.',
     fine: 'Przeciągnij i upuść albo kliknij pozycję, a potem przykład. Strzałkami przesuniesz ułożony przykład w górę lub w dół.',
     coarse:
-      'Dotknij pozycji, potem przykładu — albo najpierw przykładu, a potem pozycji. Przytrzymaj przykład, żeby go przeciągnąć. Strzałkami przesuniesz go w górę lub w dół, a × cofnie go na listę.',
+      'Dotknij pozycji, potem przykładu – albo najpierw przykładu, a potem pozycji. Przytrzymaj przykład, żeby go przeciągnąć. Strzałkami przesuniesz go w górę lub w dół, a × cofnie go na listę.',
     continueHint: 'Ułóż wszystkie dziesięć przykładów',
     least: 'Najmniej warzywne',
     middle: 'Pośrodku',
@@ -191,42 +192,42 @@ export const pl = {
         title: 'Pierwsze skojarzenia',
         prompt: 'Jakie warzywo przychodzi ludziom na myśl jako pierwsze?',
         designNote:
-          'To pytanie sprawdza pierwsze skojarzenia. Szuka popularnych powiązań ze słowem „warzywo”: roślin popularnych, łatwych do znalezienia w sklepie albo po prostu jedzonych najczęściej.',
+        'To pytanie sprawdza pierwsze skojarzenia. Szuka popularnych powiązań ze słowem „warzywo”: mogą to być najczęściej jadane rośliny albo ich konkretna część. Polacy, idąc tropem etymologicznym, często myślą o „warzeniu”.',
       },
       'why-vegetabley': {
         eyebrow: 'Pytanie 2',
-        title: 'Dlaczego wydaje się warzywne?',
+        title: 'Dlaczego to wydaje się warzywne?',
         prompt: 'Powody, które ludzie zaznaczyli przy swoim pierwszym skojarzeniu.',
         designNote:
-          'To pytanie prosi o uzasadnienie pierwszego skojarzenia. Skłania do ponownego spojrzenia na własne kryteria tego, co czyni coś warzywem.',
+          'To pytanie prosi o uzasadnienie pierwszego skojarzenia. Skłania do zastanowienia się nad własnymi kryteriami tego, czym może być warzywo.',
       },
       'sort-buckets': {
         eyebrow: 'Pytanie 3',
         title: 'Które z tych rzeczy liczą się jako warzywa?',
         prompt: 'Nie warzywo, coś pomiędzy, czy zdecydowanie warzywo?',
         designNote:
-          'To pytanie bada kulturowe rozumienie warzywa, mieszając rośliny znajome z mniej oczywistymi. Sprawdza kryteria, jakich ludzie używają: wytrawność, kolor, sposób gotowania albo status botaniczny.',
+          'To pytanie bada kulturowe rozumienie warzywa, mieszając znajome jadalne rośliny z kilkoma mniej oczywistymi. Zostało ono opracowane w celu sprawdzenia kryteriów, jakimi kierują się ludzie: sposobu spożywania danej rośliny, jej walorów smakowych, barwy czy też przynależności botanicznej. Ludzie zwykle spędzają najwięcej czasu na tym pytaniu.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Pytanie 4',
         title: 'Skala warzywności',
         prompt: 'Od najmniej do najbardziej warzywnych roślin.',
         designNote:
-          'Te dziesięć roślin wybrano tak, by reprezentowały różne rodziny botaniczne albo bardzo różne części tej samej rodziny. Korzenie i łodygi, liście, kwiaty, owoce i ziarna. Ranking ma pokazać, czy status botaniczny, anatomia rośliny albo pochodzenie geograficzne wpływają na to, jak bardzo coś wydaje się warzywem.',
+          'Wybrałem te dziesięć roślin, ponieważ reprezentują różne rodziny botaniczne albo skrajnie różne części tej samej rodziny:  korzenie, łodygi, liście, kwiaty, owoce i ziarna. Ranking ma na celu zbadać czy status botaniczny, anatomia rośliny albo pochodzenie geograficzne wpływają na to, jak bardzo coś wydaje się warzywem.',
       },
       'most-vegetable': {
         eyebrow: 'Pytanie 5',
         title: 'Najbardziej warzywne warzywo',
         prompt: 'Co wydaje się najbardziej warzywne?',
         designNote:
-          'To pytanie zainspirował podcast The Rest Is Science. Podobnie jak wcześniejsza skala, prosi o uszeregowanie ocen jadalnych roślin. Pojawia się późno w ankiecie, gdy ludzie już przetestowali pojęcie warzywa, więc można je porównać z pierwszymi skojarzeniami.',
+          'To pytanie zainspirował podcast The Rest Is Science. Pojawia się późno w ankiecie, gdy ankietowani przetestowali już swoją definicję warzywa, wyniki można więc porównać z pierwszymi skojarzeniami.',
       },
       'vegetabley-words': {
         eyebrow: 'Pytanie 6',
         title: 'Co sprawia, że coś wydaje się warzywem?',
         prompt: 'Ludzie opisali swoje kryteria warzywności.',
         designNote:
-          '„Warzywo” to pojęcie społeczne. Zależy od kontekstu, miejsca, języka i nie tylko. To pytanie daje przestrzeń, by wyjaśnić wcześniejsze wybory i opisać używane kryteria.',
+          '„Warzywo” to oczywiście pojęcie społeczne. Zależy od kontekstu, miejsca, języka i nie tylko. To pytanie daje ankietowanym okazję na uzasadnienie wcześniejszych wyborów, kryteriów i podzielenie się opiniami.',
       },
     },
     whyQuestion: 'Dlaczego to pytanie',
@@ -242,16 +243,16 @@ export const pl = {
       Continents: 'Kontynenty',
       Countries: 'Kraje',
     },
-    showing: 'Wyświetlane: {place}{language} · {count} odpowiedzi',
+    showing: 'Wyświetlasz: {place}{language} · {count} odpowiedzi',
     byPlace: 'Według miejsca',
     mapTitle: 'Skąd odpowiadali ludzie',
     mapCopy:
-      'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Można je zawęzić mapą poniżej. Filtr działa tylko dla regionów z co najmniej 20 odpowiedziami. Jeśli brakuje Twojego kraju, zachęć więcej osób do głosowania!',
-    mapStatus: 'Wyświetlane: {place}{language} · {count} odpowiedzi',
+      'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Można je zawęzić mapą poniżej. Filtr działa tylko dla regionów z co najmniej 20 odpowiedziami. Jeśli brakuje Twojego kraju, zaproś więcej osób do głosowania!',
+    mapStatus: 'Wyświetlasz: {place}{language} · {count} odpowiedzi',
     youVotedFor: 'Głosowałeś/aś na',
     people: 'ludzi',
-    speakers: 'osób mówiących po {language}',
-    amongSpeakers: 'wśród osób mówiących po {language}{place}',
+    speakers: 'osób mówiących w języku: {language}',
+    amongSpeakers: 'wśród osób mówiących w języku: {language}{place}',
     worldwide: 'na świecie',
     inPlace: 'w: {place}',
     onlyShare: 'Tylko {share} z {people} głosowało tak jak Ty',
@@ -260,7 +261,17 @@ export const pl = {
     itIs: 'Jest',
     leading: 'na prowadzeniu {place}',
     placedBelow: 'poza pierwszą {size} {place}',
-    ordinalPlace: '{rank} {place}',
+    ordinalPlace: 'na {rank} miejscu {place}',
+    mapTip: {
+      live: '{votes} odp. | filtruj',
+      noLanguage: 'Brak odpowiedzi dla tego języka',
+      few: 'Mniej niż {threshold} odpowiedzi',
+      iceWall: 'Lodowa Ściana',
+      iceWallHint: 'Nie zbliżać się!',
+      zoomIn: 'Przybliż',
+      zoomOut: 'Oddal',
+      aria: 'Mapa świata z odpowiedziami z ankiety',
+    },
     ordinal: {
       one: '{n}.',
       two: '{n}.',
@@ -279,7 +290,7 @@ export const pl = {
       notVeg: ' nie jest warzywem',
       inBetween: ' gdzieś pomiędzy',
       isVeg: ' jest warzywem',
-      lookupLabel: 'Zobacz wyniki dla',
+      lookupLabel: 'Zobacz szczegółowe wyniki:',
       chooseItem: 'Wybierz przykład',
       howSorted: 'Jak ludzie posortowali',
       youMarked: 'Ty oznaczyłeś/aś to jako',
@@ -287,25 +298,28 @@ export const pl = {
       votesCol: 'Głosy',
     },
     reasons: {
-      title: 'Dlaczego wydaje się warzywne',
+      title: 'Dlaczego coś wydaje się warzywne',
       marked: ' osób zaznaczyło ',
       customTitle: 'Własne odpowiedzi użytkowników',
       customAria: 'Własne odpowiedzi użytkowników',
+      localeFlair: '(po polsku)',
       hint:
         'Możesz oceniać odpowiedzi innych. {gesture} Możesz ocenić do pięciu odpowiedzi. Najlepsze awansują do górnego rzędu.',
       gestureCoarse:
-        'Dotknij raz, żeby polubić; dwukrotnie albo przytrzymaj, żeby obniżyć.',
+        'Dotknij raz, żeby polubić; dwukrotnie albo przytrzymaj, żeby znielubić.',
       gestureFine:
-        'Kliknij raz, żeby polubić; dwukrotnie albo kliknij prawym, żeby obniżyć.',
+        'Kliknij raz, żeby polubić; kliknij prawym lub dwukrotnie, żeby znielubić.',
       reset: 'Wyczyść głosy',
       cleared: 'Wyczyszczono',
       resetTip:
         'Czyści Twoje 5 polubień i 5 obniżeń, żeby znów móc głosować na 10 odpowiedzi.',
       voteAria:
-        '{text}. {mine}{state}. Dotknij lub kliknij, żeby polubić. Dwukrotnie, przytrzymaj albo kliknij prawym, żeby obniżyć.',
+        '{text}. {mine}{state}. Dotknij lub kliknij, żeby polubić. Kliknij dwukrotnie, prawym przyciskiem, lub przytrzymaj, żeby znielubić.',
       liked: 'Polubione',
       sunk: 'Obniżone',
       notVoted: 'Bez głosu',
+      likeCap: 'Możesz polubić tylko 5!',
+      dislikeCap: 'Możesz znielubić tylko 5!',
     },
     spectrum: {
       least: 'Najmniej',
@@ -316,7 +330,7 @@ export const pl = {
     },
     notes: {
       boardAria: 'Publiczne odpowiedzi pisemne',
-      setOf: 'Zestaw {page} z {pages} · {size} notatek',
+      setOf: 'Zestaw {page} z {pages} · {size} notatek (po polsku)',
       nextSet: 'Następny zestaw',
       hint:
         'Możesz oceniać odpowiedzi innych. {gesture} Możesz ocenić do pięciu odpowiedzi. Następny zestaw pokazuje kolejne {size} notatek. Najlepsze pojawiają się najpierw.',
@@ -324,8 +338,9 @@ export const pl = {
     gate: {
       complete: 'Wypełnij ankietę',
       completeHere: 'Wypełnij ankietę na tym urządzeniu',
-      toCompare: ', żeby porównać swoje głosy z innymi.',
-      toVote: ', żeby oceniać odpowiedzi.',
+      toCompare:
+        ', żeby móc oceniać odpowiedzi innych.',
+      toVote: ', żeby móc oceniać odpowiedzi innych.',
       openCode: 'Otwórz kod rankingowy',
       yourCode: 'Twój kod',
       viewing: 'Podgląd rankingu',

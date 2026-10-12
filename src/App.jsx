@@ -36,9 +36,11 @@ function LocaleOutlet() {
     );
   }
 
+  const onResults = /\/results(?:\/|$)/.test(location.pathname);
+
   return (
     <>
-      <LocaleSwitcher />
+      {onResults ? null : <LocaleSwitcher />}
       <Outlet />
     </>
   );

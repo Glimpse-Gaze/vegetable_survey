@@ -18,9 +18,13 @@ const MAX_LIKES = 5;
 const MAX_DISLIKES = 5;
 const PUFF_MS = 900;
 
-function readMyVotes() {
+function votesKey(locale) {
+  return `${MY_VOTES_KEY}:${locale || 'en'}`;
+}
+
+function readMyVotes(locale) {
   try {
-    const raw = localStorage.getItem(MY_VOTES_KEY);
+    const raw = localStorage.getItem(votesKey(locale));
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed : {};
@@ -29,9 +33,9 @@ function readMyVotes() {
   }
 }
 
-function writeMyVotes(votes) {
+function writeMyVotes(votes, locale) {
   try {
-    localStorage.setItem(MY_VOTES_KEY, JSON.stringify(votes));
+    localStorage.setItem(votesKey(locale), JSON.stringify(votes));
   } catch {
     // private mode
   }
@@ -129,7 +133,7 @@ function rateGesture(t) {
 }
 
 export function NoteResults({ section, viewingOwn = true }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const responseId = useMemo(() => readMyResponseId(), []);
   const canVote = Boolean(responseId);
   const storedNote = useMemo(() => readMyOpenNote(), []);
@@ -138,11 +142,11 @@ export function NoteResults({ section, viewingOwn = true }) {
     : section.userNoteText || '';
   const canPin = Boolean(viewingOwn && storedNote.text && storedNote.isPublic);
   const pool = section.notePool ?? [];
-  const [myVotes, setMyVotes] = useState(readMyVotes);
+  const [myVotes, setMyVotes] = useState(() => readMyVotes(locale));
   const [resetDone, setResetDone] = useState(false);
   const resetFlash = useRef(0);
   const [board, setBoard] = useState(() =>
-    snapshotPage(pool, readMyVotes(), 0, myNote, canPin),
+    snapshotPage(pool, readMyVotes(locale), 0, myNote, canPin),
   );
   const tapTimer = useRef(0);
   const tapTarget = useRef(null);
@@ -155,6 +159,12 @@ export function NoteResults({ section, viewingOwn = true }) {
   const holdTimer = useRef(0);
   const holdFired = useRef(false);
   const holdOrigin = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const votes = readMyVotes(locale);
+    setMyVotes(votes);
+    setBoard(snapshotPage(pool, votes, 0, myNote, canPin));
+  }, [locale, pool, myNote, canPin]);
 
   useEffect(
     () => () => {
@@ -197,7 +207,7 @@ export function NoteResults({ section, viewingOwn = true }) {
 
   function applyVote(noteId, nextValue, point) {
     if (!responseId) return;
-    const votesNow = readMyVotes();
+    const votesNow = readMyVotes(locale);
     const previous = votesNow[noteId] ?? 0;
     if (previous === nextValue) return;
     if (!canSetVote(votesNow, noteId, nextValue)) {
@@ -210,7 +220,7 @@ export function NoteResults({ section, viewingOwn = true }) {
     const votes = { ...votesNow };
     if (nextValue === 0) delete votes[noteId];
     else votes[noteId] = nextValue;
-    writeMyVotes(votes);
+    writeMyVotes(votes, locale);
     setMyVotes(votes);
     if (nextValue === 1 || nextValue === -1) {
       showPuff(nextValue, point);
@@ -245,9 +255,9 @@ export function NoteResults({ section, viewingOwn = true }) {
 
   function resetVotes() {
     if (!responseId) return;
-    const votesNow = readMyVotes();
+    const votesNow = readMyVotes(locale);
     if (!Object.keys(votesNow).length) return;
-    writeMyVotes({});
+    writeMyVotes({}, locale);
     setMyVotes({});
     setResetDone(true);
     window.clearTimeout(resetFlash.current);
@@ -266,7 +276,7 @@ export function NoteResults({ section, viewingOwn = true }) {
   }
 
   function reshuffle() {
-    const votesNow = readMyVotes();
+    const votesNow = readMyVotes(locale);
     const ranked = rankNotes(pool, netsFromVotes(votesNow));
     const pages = notePageCount(ranked.length);
     const nextPage = (board.page + 1) % pages;
@@ -333,7 +343,7 @@ export function NoteResults({ section, viewingOwn = true }) {
     const point = pointFromEvent(event);
 
     if (event.type === 'keydown') {
-      const current = readMyVotes()[noteId] ?? 0;
+      const current = readMyVotes(locale)[noteId] ?? 0;
       applyVote(noteId, nextFromSingleTap(current), point);
       return;
     }
@@ -352,7 +362,7 @@ export function NoteResults({ section, viewingOwn = true }) {
       if (tapTimer.current) window.clearTimeout(tapTimer.current);
       tapTimer.current = 0;
       tapTarget.current = null;
-      const current = readMyVotes()[noteId] ?? 0;
+      const current = readMyVotes(locale)[noteId] ?? 0;
       applyVote(noteId, nextFromRightClick(current), point);
       return;
     }
@@ -365,7 +375,7 @@ export function NoteResults({ section, viewingOwn = true }) {
       window.clearTimeout(tapTimer.current);
       tapTimer.current = 0;
       tapTarget.current = null;
-      const current = readMyVotes()[noteId] ?? 0;
+      const current = readMyVotes(locale)[noteId] ?? 0;
       applyVote(noteId, nextFromDoubleTap(current), point);
       return;
     }
@@ -376,7 +386,7 @@ export function NoteResults({ section, viewingOwn = true }) {
     tapTimer.current = window.setTimeout(() => {
       tapTimer.current = 0;
       tapTarget.current = null;
-      const current = readMyVotes()[noteId] ?? 0;
+      const current = readMyVotes(locale)[noteId] ?? 0;
       applyVote(noteId, nextFromSingleTap(current), tapPoint.current);
     }, TAP_MS);
   }
@@ -384,17 +394,19 @@ export function NoteResults({ section, viewingOwn = true }) {
   return (
     <div className="note-results">
       <div className="note-board-toolbar">
-        <p className="note-board-status">
-          {t('results.notes.setOf', {
-            page: board.page + 1,
-            pages: board.pages,
-            size: NOTE_PAGE_SIZE,
-          })}
-        </p>
+        <div className="note-board-toolbar-main">
+          <p className="note-board-status">
+            {t('results.notes.setOf', {
+              page: board.page + 1,
+              pages: board.pages,
+              size: NOTE_PAGE_SIZE,
+            })}
+          </p>
+          {canVote ? null : <SurveyNudge kind="vote" />}
+        </div>
         <button className="note-reshuffle" type="button" onClick={reshuffle}>
           {t('results.notes.nextSet')}
         </button>
-        {canVote ? null : <SurveyNudge kind="vote" />}
       </div>
 
       <div className="note-board" aria-label={t('results.notes.boardAria')}>
@@ -508,8 +520,8 @@ export function NoteResults({ section, viewingOwn = true }) {
           role="status"
         >
           {capTip.kind === 'like'
-            ? 'You can like only 5 answers'
-            : 'You can dislike only 5 answers'}
+            ? t('results.reasons.likeCap')
+            : t('results.reasons.dislikeCap')}
         </p>
       ) : null}
     </div>

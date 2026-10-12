@@ -1,6 +1,8 @@
+import { OPEN_NOTES_PL } from './noteResults.pl.js';
+
 export const NOTE_PAGE_SIZE = 20;
 
-export const OPEN_NOTES = [
+export const OPEN_NOTES_EN = [
   {
     id: 'n01',
     boosts: 22,
@@ -298,6 +300,18 @@ export const OPEN_NOTES = [
   },
 ];
 
+/** @deprecated use notesForLocale / OPEN_NOTES_EN */
+export const OPEN_NOTES = OPEN_NOTES_EN;
+
+const OPEN_NOTES_BY_LOCALE = {
+  en: OPEN_NOTES_EN,
+  pl: OPEN_NOTES_PL,
+};
+
+export function notesForLocale(locale) {
+  return OPEN_NOTES_BY_LOCALE[locale] ?? OPEN_NOTES_EN;
+}
+
 export function scoreNote(note, net = 0) {
   return (note.boosts ?? 0) + net;
 }
@@ -331,13 +345,14 @@ export function pageNotes(ranked, pageIndex, pageSize = NOTE_PAGE_SIZE) {
 
 export function getNotesSection(category, region, view = null) {
   const shift = view?.shift ?? 0;
-  const boosts = OPEN_NOTES.map((note) => note.boosts);
+  const source = OPEN_NOTES_EN;
+  const boosts = source.map((note) => note.boosts);
   const notePool = shift
-    ? OPEN_NOTES.map((note, index) => ({
+    ? source.map((note, index) => ({
       ...note,
       boosts: boosts[(index + shift) % boosts.length],
     }))
-    : OPEN_NOTES;
+    : source;
   return {
     ...category,
     region,

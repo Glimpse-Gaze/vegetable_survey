@@ -1,10 +1,11 @@
 import { useI18n } from '../i18n/useI18n.js';
 
-export function LocaleSwitcher() {
+export function LocaleSwitcher({ className = '' }) {
   const { t, locale, setLocale, locales } = useI18n();
+  const classes = ['locale-switcher', className].filter(Boolean).join(' ');
 
   return (
-    <label className="locale-switcher">
+    <label className={classes}>
       <span className="sr-only">{t('home.language')}</span>
       <select
         value={locale}

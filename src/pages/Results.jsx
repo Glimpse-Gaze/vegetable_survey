@@ -4,6 +4,7 @@ import { useI18n } from '../i18n/useI18n.js';
 import { localizeResultsSection } from '../i18n/localizeResults.js';
 import { withLocale } from '../i18n/paths.js';
 import { useSurveyCatalog } from '../i18n/useSurveyCatalog.js';
+import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
@@ -14,6 +15,7 @@ import {
   readMyAnswers,
   readMyResponseId,
 } from '../utils/myResponse.js';
+import { placeNotePop } from '../utils/placeNotePop.js';
 import {
   CATEGORIES,
   getCategory,
@@ -577,9 +579,14 @@ function QuestionNote({ note }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
+  const popRef = useRef(null);
 
   useEffect(() => {
     if (!open) return undefined;
+
+    function reposition() {
+      placeNotePop(rootRef.current, popRef.current);
+    }
 
     function onPointer(event) {
       if (!rootRef.current?.contains(event.target)) setOpen(false);
@@ -589,13 +596,18 @@ function QuestionNote({ note }) {
       if (event.key === 'Escape') setOpen(false);
     }
 
+    reposition();
+    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, true);
     document.addEventListener('pointerdown', onPointer);
     document.addEventListener('keydown', onKey);
     return () => {
+      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition, true);
       document.removeEventListener('pointerdown', onPointer);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open]);
+  }, [open, note]);
 
   if (!note) return null;
 
@@ -611,7 +623,12 @@ function QuestionNote({ note }) {
         i
       </button>
       {open ? (
-        <p className="question-note-pop" role="dialog" aria-label={t('results.whyQuestion')}>
+        <p
+          ref={popRef}
+          className="question-note-pop"
+          role="dialog"
+          aria-label={t('results.whyQuestion')}
+        >
           {note}
         </p>
       ) : null}
@@ -700,8 +717,8 @@ export function Results() {
   const category = getCategory(categoryId);
   const section = useMemo(() => {
     const raw = getSection(category.id, regionId, userAnswers, languageId);
-    return localizeResultsSection(raw, catalog, t);
-  }, [category.id, regionId, userAnswers, languageId, catalog, t]);
+    return localizeResultsSection(raw, catalog, t, locale);
+  }, [category.id, regionId, userAnswers, languageId, catalog, t, locale]);
   const languageOptions = useMemo(
     () => languagesForRegion(regionId),
     [regionId],
@@ -911,7 +928,10 @@ export function Results() {
         id="results-drawer"
         inert={menuOpen ? undefined : true}
       >
-        <p className="results-nav-kicker">{t('results.categories.label')}</p>
+        <div className="results-nav-head">
+          <p className="results-nav-kicker">{t('results.categories.label')}</p>
+          <LocaleSwitcher className="locale-switcher--inline" />
+        </div>
         <p className="results-nav-meta">
           {t('results.categories.mockMeta', {
             count: section.responseCount.toLocaleString(numberLocale),
@@ -1089,7 +1109,9 @@ export function Results() {
           )}
 
           <div className="results-survey-foot">
-            {myResponseId ? null : <SurveyNudge onThisMachine={viewingOther} />}
+            {myResponseId ? null : (
+              <SurveyNudge kind="vote" onThisMachine={viewingOther} />
+            )}
             <ResponseCodeCard
               code={viewingOther ? codeParam : myResponseId}
               categoryId={category.id}
