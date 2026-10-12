@@ -14,7 +14,7 @@ const GLOBAL_ORDER = [
   'sweet_potato',
   'broccoli',
   'corn',
-  'celery',
+  'green_bean',
   'turnip',
 ];
 
@@ -30,7 +30,7 @@ const REGION_ORDER = {
     'carrot',
     'broccoli',
     'corn',
-    'celery',
+    'green_bean',
     'sweet_potato',
     'turnip',
   ],
@@ -43,7 +43,7 @@ const REGION_ORDER = {
     'sweet_potato',
     'corn',
     'broccoli',
-    'celery',
+    'green_bean',
     'turnip',
   ],
   asia: [
@@ -55,7 +55,7 @@ const REGION_ORDER = {
     'sweet_potato',
     'corn',
     'broccoli',
-    'celery',
+    'green_bean',
     'turnip',
   ],
   africa: [
@@ -65,7 +65,7 @@ const REGION_ORDER = {
     'onion',
     'carrot',
     'broccoli',
-    'celery',
+    'green_bean',
     'corn',
     'sweet_potato',
     'turnip',
@@ -76,7 +76,7 @@ const REGION_ORDER = {
     'lettuce',
     'onion',
     'carrot',
-    'celery',
+    'green_bean',
     'broccoli',
     'corn',
     'sweet_potato',
@@ -91,7 +91,7 @@ const REGION_ORDER = {
     'sweet_potato',
     'broccoli',
     'corn',
-    'celery',
+    'green_bean',
     'turnip',
   ],
 };

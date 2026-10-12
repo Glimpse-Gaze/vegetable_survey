@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import {
-  emptySpectrumSlots,
-  shuffleSpectrumVegetables,
-  spectrumVegetables,
-} from '../../data/spectrumVegetables.js';
+import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
+import { emptySpectrumSlots, shuffleSpectrumVegetables } from '../../data/spectrumVegetables.js';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
 import { SpectrumBoard } from './SpectrumBoard.jsx';
@@ -26,6 +24,8 @@ function nextOpenSlot(slots, fromIndex) {
 }
 
 export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
+  const { t } = useI18n();
+  const { spectrumVegetables } = useSurveyCatalog();
   const [paletteOrder] = useState(() =>
     shuffleSpectrumVegetables(spectrumVegetables),
   );
@@ -162,20 +162,11 @@ export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
 
   return (
     <QuestionContainer questionNumber={4}>
-      <h1 className="question-title">
-        How vegetabley does each of these feel to you?
-      </h1>
+      <h1 className="question-title">{t('q4.title')}</h1>
       <p className="microcopy">
-        Degree matters now. Place each item from least vegetabley at the top to
-        most at the bottom.{' '}
-        <span className="copy-fine">
-          Drag and drop, or click a slot and then an item. Use arrows to nudge a
-          placed item up or down.
-        </span>
-        <span className="copy-coarse">
-          Tap a rank, then an item — or tap an item, then a rank. Hold an item
-          to drag it. Use the arrows to move it, or × to put it back.
-        </span>
+        {t('q4.lead')}{' '}
+        <span className="copy-fine">{t('q4.fine')}</span>
+        <span className="copy-coarse">{t('q4.coarse')}</span>
       </p>
 
       <form className="question-form" onSubmit={handleSubmit}>
@@ -193,7 +184,7 @@ export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
         <QuestionNav
           onBack={onBack}
           continueDisabled={!canContinue}
-          continueHint={!canContinue ? 'Place all ten items' : undefined}
+          continueHint={!canContinue ? t('q4.continueHint') : undefined}
           continueHintId="spectrum-hint"
         />
       </form>

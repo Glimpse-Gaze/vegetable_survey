@@ -148,6 +148,13 @@
   visibility: visible;
 }
 
+.results-nav-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .results-nav-kicker {
   margin: 0;
   font-family: var(--font-display);
@@ -155,6 +162,12 @@
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.03em;
+}
+
+.results-nav-head .locale-switcher select {
+  min-height: 36px;
+  padding: 0 10px;
+  font-size: 0.88rem;
 }
 
 .results-nav-meta {
@@ -295,18 +308,13 @@
   z-index: 5;
 }
 
-.question-note.is-beside .question-note-pop {
-  left: 0;
-  z-index: 1;
-  transform: none;
-}
-
 .question-note-pop {
   position: absolute;
   top: calc(100% + 10px);
-  left: 50%;
+  left: 0;
   z-index: 6;
-  width: min(22rem, calc(100vw - 48px));
+  width: min(22rem, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
   margin: 0;
   padding: 12px 14px;
   border: 1.5px solid var(--border);
@@ -322,7 +330,6 @@
   text-align: left;
   text-transform: none;
   box-shadow: var(--shadow);
-  transform: translateX(-50%);
 }
 
 .results-section-title {
@@ -915,11 +922,13 @@
 }
 
 .spectrum-band-title {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   color: var(--muted);
-  font-size: 0.975rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
   text-transform: uppercase;
 }
 
@@ -991,6 +1000,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+  content-visibility: auto;
 }
 
 .spectrum-blade-copy {
@@ -1042,7 +1052,8 @@
 
 .spectrum-spread {
   overflow: visible;
-  margin-top: 12px;
+  /* Room for flair + ~85% bar ≈ former 100% bar tip. */
+  margin-top: 10px;
 }
 
 .spectrum-spread-chart {
@@ -1050,7 +1061,8 @@
   grid-template-columns: repeat(10, minmax(0, 1fr));
   align-items: end;
   gap: 3px;
-  height: 58px;
+  /* flair (~14) + gap (3) + max bar (~47) */
+  height: 64px;
 }
 
 .spectrum-spread-col {
@@ -1062,19 +1074,27 @@
   border-radius: 3px 3px 0 0;
 }
 
+.spectrum-spread-col.is-yours {
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 3px;
+}
+
 .spectrum-spread-col.is-yours .spectrum-blade-badge {
-  position: absolute;
-  top: 100%;
-  left: 50%;
+  position: static;
   z-index: 2;
-  margin-top: 2px;
-  transform: translateX(-50%);
+  order: -1;
+  margin: 0;
+  transform: none;
+  flex-shrink: 0;
 }
 
 .spectrum-spread-bar {
   display: block;
   width: 100%;
-  height: calc(6px + var(--share, 0) * 52px);
+  /* 100% scale tops out near old 85% of the previous full bar. */
+  height: calc(5px + var(--share, 0) * 42px);
   border-radius: 3px 3px 0 0;
   background: var(--green);
 }
@@ -1151,13 +1171,20 @@
   text-transform: uppercase;
 }
 
+.reason-drift-locale {
+  font-size: 0.78em;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
 .reason-drift {
   position: relative;
   display: grid;
   gap: 16px;
   padding: 12px 0;
   overflow: hidden;
-  contain: paint;
+  contain: layout paint style;
 }
 
 .reason-drift::before,
@@ -1283,14 +1310,14 @@
   width: max-content;
   gap: 12px;
   animation: reason-drift var(--drift-duration, 45s) linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .reason-drift-row.is-leading .reason-chip:not(.is-liked):not(.is-disliked) {
   background: #fff8e8;
   border-color: #e4c56b;
-  box-shadow:
-    0 0 0 1px rgba(212, 168, 58, 0.16),
-    0 4px 14px rgba(184, 140, 32, 0.14);
+  box-shadow: 0 0 0 1px rgba(212, 168, 58, 0.16);
 }
 
 .reason-drift-row.is-leading .reason-chip:not(.is-liked):not(.is-disliked):hover {
@@ -1303,7 +1330,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .reason-drift:hover .reason-drift-row {
+  .reason-drift-row:hover {
     animation-play-state: paused;
   }
 }
@@ -1322,7 +1349,7 @@
   font-size: 0.97rem;
   line-height: 1.2;
   white-space: nowrap;
-  box-shadow: 0 4px 10px rgba(47, 38, 22, 0.08);
+  box-shadow: none;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
@@ -1523,10 +1550,23 @@
 
 .note-board-toolbar {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   margin: 0 0 14px;
+}
+
+.note-board-toolbar-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.note-board-toolbar .survey-nudge {
+  margin: 0;
+  max-width: 28rem;
 }
 
 .note-board-status {
@@ -2348,6 +2388,11 @@
 @media (max-width: 640px) {
   .note-board-toolbar {
     flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .note-board-toolbar-main {
+    flex: 1 1 100%;
   }
 
   .blade,

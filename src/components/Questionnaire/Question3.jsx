@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import {
-  bucketItems,
   emptyBuckets,
   placedBucketIds,
 } from '../../data/bucketItems.js';
@@ -10,6 +11,8 @@ import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
 
 export function Question3({ onContinue, onBack, initialBuckets }) {
+  const { t } = useI18n();
+  const { bucketItems } = useSurveyCatalog();
   const [paletteOrder] = useState(() =>
     shuffleSpectrumVegetables(bucketItems),
   );
@@ -127,17 +130,11 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
 
   return (
     <QuestionContainer questionNumber={3}>
-      <h1 className="question-title">Which of these count as vegetables?</h1>
+      <h1 className="question-title">{t('q3.title')}</h1>
       <p className="microcopy">
-        Sort each item into a bucket. Degree doesn’t matter yet — just no, yes,
-        or something in-between.{' '}
-        <span className="copy-fine">
-          Drag them, or click a bucket and then an item.
-        </span>
-        <span className="copy-coarse">
-          Tap a bucket, then an item — or tap an item, then a bucket. Hold an
-          item to drag it. Tap × on a sorted item to put it back.
-        </span>
+        {t('q3.lead')}{' '}
+        <span className="copy-fine">{t('q3.fine')}</span>
+        <span className="copy-coarse">{t('q3.coarse')}</span>
       </p>
 
       <form className="question-form is-no-select" onSubmit={handleSubmit}>
@@ -160,7 +157,7 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
         <QuestionNav
           onBack={onBack}
           continueDisabled={!canContinue}
-          continueHint={!canContinue ? 'Sort every item' : undefined}
+          continueHint={!canContinue ? t('q3.continueHint') : undefined}
           continueHintId="bucket-hint"
         />
       </form>

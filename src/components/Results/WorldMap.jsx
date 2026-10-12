@@ -1,6 +1,9 @@
 import { startTransition, useEffect, useRef, useState } from 'react';
 import mapMarkup from '../../assets/map/World_Equal.svg?raw';
 import { LIVE_COUNTRIES, VOTE_THRESHOLD } from '../../data/resultsMock.js';
+import { countryIdFromMapTitle } from '../../i18n/countryNameIndex.js';
+import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 
 const KNOWN_BY_ISO3 = Object.fromEntries(
   LIVE_COUNTRIES.map((country) => [country.iso3, country]),
@@ -15,6 +18,16 @@ function countryIso3(group) {
   return [...group.classList].find(
     (token) => token.length === 3 && token === token.toUpperCase(),
   );
+}
+
+/** Innermost map group with an ISO3 class (e.g. Greenland inside Denmark). */
+function innermostCountryGroup(node) {
+  let el = node?.nodeType === 1 ? node : null;
+  while (el) {
+    if (el.classList && countryIso3(el)) return el;
+    el = el.parentElement;
+  }
+  return null;
 }
 
 function clamp(value, min, max) {
@@ -56,6 +69,8 @@ export function WorldMap({
   liveCountries = LIVE_COUNTRIES,
   languageFiltered = false,
 }) {
+  const { t } = useI18n();
+  const catalog = useSurveyCatalog();
   const hostRef = useRef(null);
   const viewportRef = useRef(null);
   const svgRef = useRef(null);
@@ -64,6 +79,7 @@ export function WorldMap({
   const selectedRef = useRef(selectedId);
   const liveRef = useRef(liveCountries);
   const languageFilteredRef = useRef(languageFiltered);
+  const countriesRef = useRef(catalog.countriesById);
   const baseRef = useRef(null);
   const viewRef = useRef(null);
   const zoomRef = useRef(1);
@@ -79,11 +95,25 @@ export function WorldMap({
     selectedRef.current = selectedId;
     liveRef.current = liveCountries;
     languageFilteredRef.current = languageFiltered;
-  }, [onSelect, selectedId, liveCountries, languageFiltered]);
+    countriesRef.current = catalog.countriesById;
+  }, [onSelect, selectedId, liveCountries, languageFiltered, catalog.countriesById]);
+
+  useEffect(() => {
+    setTip((prev) => {
+      if (!prev?.countryId) return prev;
+      const localized = countriesRef.current.get(prev.countryId)?.name;
+      if (!localized || localized === prev.name) return prev;
+      return { ...prev, name: localized };
+    });
+  }, [catalog.countriesById]);
 
   useEffect(() => {
     zoomRef.current = zoom;
   }, [zoom]);
+
+  useEffect(() => {
+    svgRef.current?.setAttribute('aria-label', t('results.mapTip.aria'));
+  }, [t]);
 
   function selectLiveGroup(group) {
     if (!group) return;
@@ -110,7 +140,7 @@ export function WorldMap({
     svg.removeAttribute('height');
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', 'World map of survey responses');
+    svg.setAttribute('aria-label', 'World map');
     svg.querySelector(':scope > title')?.remove();
     svg.querySelector(':scope > desc')?.remove();
 
@@ -128,31 +158,60 @@ export function WorldMap({
       '(hover: hover) and (pointer: fine)',
     ).matches;
 
-    function onEnter(event) {
-      if (!hoverTip) return;
-      const group = event.currentTarget;
-      const title = group.getAttribute('data-name');
-      if (!title) return;
+    function tipFromPointer(event) {
+      const group =
+        innermostCountryGroup(event.target) ?? event.currentTarget;
+      const title = group?.getAttribute('data-name');
+      if (!title) return null;
       const iso3 = countryIso3(group);
       const known = iso3 ? KNOWN_BY_ISO3[iso3] : null;
       const live = iso3
         ? liveRef.current.find((country) => country.iso3 === iso3)
         : null;
-      setTip({
-        name: title,
+      const countryId =
+        known?.id ?? countryIdFromMapTitle(title) ?? null;
+      const localized = countryId
+        ? countriesRef.current.get(countryId)?.name
+        : null;
+      return {
+        name: localized || known?.name || title,
+        countryId,
+        iceWall: iso3 === 'ATA',
         live: Boolean(live),
         hiddenLanguage: Boolean(known && !live && languageFilteredRef.current),
         votes: live?.votes ?? known?.votes ?? 0,
         x: event.clientX,
         y: event.clientY,
-      });
+      };
+    }
+
+    function onEnter(event) {
+      if (!hoverTip) return;
+      const next = tipFromPointer(event);
+      if (next) setTip(next);
     }
 
     function onMove(event) {
       const el = tipEl.current;
-      if (!el) return;
-      el.style.left = `${event.clientX + 14}px`;
-      el.style.top = `${event.clientY + 14}px`;
+      if (el) {
+        el.style.left = `${event.clientX + 14}px`;
+        el.style.top = `${event.clientY + 14}px`;
+      }
+      if (!hoverTip) return;
+      const next = tipFromPointer(event);
+      if (!next) return;
+      setTip((prev) => {
+        if (
+          prev &&
+          prev.countryId === next.countryId &&
+          prev.name === next.name &&
+          prev.iceWall === next.iceWall &&
+          prev.live === next.live
+        ) {
+          return prev;
+        }
+        return next;
+      });
     }
 
     function onLeave() {
@@ -166,10 +225,13 @@ export function WorldMap({
     }
 
     for (const group of groups) {
-      const titleNode = group.querySelector(':scope > title');
-      const name = titleNode?.textContent?.trim() ?? '';
-      if (name) group.setAttribute('data-name', name);
-      titleNode?.remove();
+      const labeled = [group, ...group.querySelectorAll(':scope g')];
+      for (const node of labeled) {
+        const titleNode = node.querySelector(':scope > title');
+        const name = titleNode?.textContent?.trim() ?? '';
+        if (name) node.setAttribute('data-name', name);
+        titleNode?.remove();
+      }
       const iso3 = countryIso3(group);
       if (iso3 && KNOWN_BY_ISO3[iso3]) group.classList.add('is-live');
       group.addEventListener('pointerenter', onEnter);
@@ -307,7 +369,7 @@ export function WorldMap({
         >
           <button
             type="button"
-            aria-label="Zoom in"
+            aria-label={t('results.mapTip.zoomIn')}
             disabled={zoom >= MAX_ZOOM}
             onClick={() => applyZoom(zoom + ZOOM_STEP)}
           >
@@ -315,7 +377,7 @@ export function WorldMap({
           </button>
           <button
             type="button"
-            aria-label="Zoom out"
+            aria-label={t('results.mapTip.zoomOut')}
             disabled={zoom <= MIN_ZOOM}
             onClick={() => applyZoom(zoom - ZOOM_STEP)}
           >
@@ -329,13 +391,19 @@ export function WorldMap({
           className="world-map-tip"
           style={{ left: tip.x + 14, top: tip.y + 14 }}
         >
-          <strong>{tip.name}</strong>
-          {tip.live ? (
-            <span>{tip.votes} answers · click to filter</span>
+          <strong>
+            {tip.iceWall ? t('results.mapTip.iceWall') : tip.name}
+          </strong>
+          {tip.iceWall ? (
+            <span>{t('results.mapTip.iceWallHint')}</span>
+          ) : tip.live ? (
+            <span>{t('results.mapTip.live', { votes: tip.votes })}</span>
           ) : tip.hiddenLanguage ? (
-            <span>No answers for this language</span>
+            <span>{t('results.mapTip.noLanguage')}</span>
           ) : (
-            <span>Fewer than {VOTE_THRESHOLD} answers</span>
+            <span>
+              {t('results.mapTip.few', { threshold: VOTE_THRESHOLD })}
+            </span>
           )}
         </div>
       ) : null}

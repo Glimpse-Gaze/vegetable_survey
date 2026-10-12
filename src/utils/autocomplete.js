@@ -17,7 +17,7 @@ export function findCanonicalMatch(query, vegetables) {
   return null;
 }
 
-export function getSuggestions(query, vegetables, limit = 6) {
+export function getSuggestions(query, vegetables, limit = 6, locale = 'en') {
   const q = normalizeText(query);
   if (q.length < 2) return [];
 
@@ -43,7 +43,7 @@ export function getSuggestions(query, vegetables, limit = 6) {
   scored.sort((a, b) => {
     if (a.namePrefix !== b.namePrefix) return a.namePrefix ? -1 : 1;
     if (a.length !== b.length) return a.length - b.length;
-    return a.name.localeCompare(b.name);
+    return a.name.localeCompare(b.name, locale);
   });
 
   return scored.slice(0, limit).map((item) => item.vegetable);
@@ -52,7 +52,7 @@ export function getSuggestions(query, vegetables, limit = 6) {
 export function getLookupSuggestions(
   query,
   items,
-  { limit = 8, featuredIds = [], browseAll = false } = {},
+  { limit = 8, featuredIds = [], browseAll = false, locale = 'en' } = {},
 ) {
   const q = normalizeText(query);
 
@@ -66,10 +66,10 @@ export function getLookupSuggestions(
     const featuredSet = new Set(featured.map((item) => item.id));
     const rest = items
       .filter((item) => !featuredSet.has(item.id))
-      .sort((a, b) => a.name.localeCompare(b.name, 'en'));
+      .sort((a, b) => a.name.localeCompare(b.name, locale));
 
     return [...featured, ...rest];
   }
 
-  return getSuggestions(query, items, browseAll ? 20 : limit);
+  return getSuggestions(query, items, browseAll ? 20 : limit, locale);
 }

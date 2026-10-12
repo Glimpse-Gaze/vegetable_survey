@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { countries, featuredCountryIds } from '../../data/countries.js';
-import { featuredLanguageIds, languages } from '../../data/languages.js';
+import { featuredCountryIds } from '../../data/countries.js';
+import { featuredLanguageIds } from '../../data/languages.js';
+import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import {
   findCanonicalMatch,
   getLookupSuggestions,
@@ -12,11 +14,11 @@ import { QuestionNav } from './QuestionNav.jsx';
 const DISCLOSE_ID = 'prefer_not_to_disclose';
 const ANTARCTICA_ID = 'antarctica';
 
-function resolveSingle(raw, picked, items) {
+function resolveSingle(raw, picked, items, discloseLabel) {
   const rawAnswer = (picked?.name ?? raw).trim();
   if (!rawAnswer) {
     return {
-      rawAnswer: 'I prefer not to disclose',
+      rawAnswer: discloseLabel,
       canonicalId: DISCLOSE_ID,
       skipped: true,
     };
@@ -40,6 +42,9 @@ export function Question7({
   continueDisabled = false,
   continueHint,
 }) {
+  const { t, locale } = useI18n();
+  const { countries, languages } = useSurveyCatalog();
+  const discloseLabel = t('q7.preferNot');
   const grewUp = initialBackground?.grewUp;
   const languagesState = initialBackground?.languages;
   const placeWithheldInitial = Boolean(grewUp?.withheld);
@@ -75,10 +80,12 @@ export function Question7({
   const placeSuggestions = getLookupSuggestions(placeValue, countries, {
     featuredIds: featuredCountryIds,
     browseAll: true,
+    locale,
   }).filter((item) => item.id !== DISCLOSE_ID);
   const languageSuggestions = getLookupSuggestions(languageValue, languages, {
     featuredIds: featuredLanguageIds,
     limit: 10,
+    locale,
   }).filter(
     (item) =>
       item.id !== DISCLOSE_ID &&
@@ -124,7 +131,7 @@ export function Question7({
   useEffect(() => {
     const grewUpAnswer = placeWithheld
       ? {
-          rawAnswer: 'I prefer not to disclose',
+          rawAnswer: discloseLabel,
           canonicalId: DISCLOSE_ID,
           skipped: true,
           withheld: true,
@@ -133,7 +140,7 @@ export function Question7({
             : null,
         }
       : {
-          ...resolveSingle(placeValue, placePicked, countries),
+          ...resolveSingle(placeValue, placePicked, countries, discloseLabel),
           withheld: false,
         };
 
@@ -155,12 +162,14 @@ export function Question7({
     placePicked,
     placeValue,
     placeWithheld,
+    discloseLabel,
+    countries,
   ]);
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    const resolvedPlace = resolveSingle(placeValue, placePicked, countries);
+    const resolvedPlace = resolveSingle(placeValue, placePicked, countries, discloseLabel);
     if (!placeWithheld && resolvedPlace.canonicalId === ANTARCTICA_ID) {
       setDoubt(true);
       return;
@@ -168,7 +177,7 @@ export function Question7({
 
     const grewUp = placeWithheld
       ? {
-          rawAnswer: 'I prefer not to disclose',
+          rawAnswer: discloseLabel,
           canonicalId: DISCLOSE_ID,
           skipped: true,
         }
@@ -193,7 +202,7 @@ export function Question7({
     const languagesAnswer = skippedLanguages
       ? [
           {
-            rawAnswer: 'I prefer not to disclose',
+            rawAnswer: discloseLabel,
             canonicalId: DISCLOSE_ID,
           },
         ]
@@ -212,11 +221,8 @@ export function Question7({
 
   return (
     <QuestionContainer questionNumber={7}>
-      <h1 className="question-title">Would you mind sharing your background?</h1>
-      <p className="microcopy">
-        Skip either question if you’d rather not say — we’ll record “I prefer
-        not to disclose.” You can also type something more specific.
-      </p>
+      <h1 className="question-title">{t('q7.title')}</h1>
+      <p className="microcopy">{t('q7.micro')}</p>
 
       <form className="question-form" onSubmit={handleSubmit}>
         <div
@@ -224,10 +230,10 @@ export function Question7({
             placeWithheld ? 'background-field is-withheld' : 'background-field'
           }
         >
-          <label htmlFor="grew-up">In which country or region did you grow up?</label>
+          <label htmlFor="grew-up">{t('q7.grewUp')}</label>
           {doubt ? (
             <p className="field-note" role="status">
-              I don't believe you.
+              {t('q7.doubt')}
             </p>
           ) : null}
           <AutocompleteInput
@@ -242,7 +248,7 @@ export function Question7({
             }}
             onPickSuggestion={handlePlacePick}
             suggestions={placeWithheld ? [] : placeSuggestions}
-            placeholder="Country, region, or continent..."
+            placeholder={t('q7.grewUpPlaceholder')}
             autoFocus={false}
           />
           <label className="disclose-check">
@@ -251,7 +257,7 @@ export function Question7({
               checked={placeWithheld}
               onChange={(event) => setPlaceWithheld(event.target.checked)}
             />
-            <span>I prefer not to disclose</span>
+            <span>{t('q7.preferNot')}</span>
           </label>
         </div>
 
@@ -260,7 +266,7 @@ export function Question7({
             languageWithheld ? 'background-field is-withheld' : 'background-field'
           }
         >
-          <label htmlFor="languages-spoken">What is your native language?</label>
+          <label htmlFor="languages-spoken">{t('q7.language')}</label>
           {languageItems.length > 0 ? (
             <ul className="chip-list">
               {languageItems.map((entry, index) => (
@@ -269,6 +275,7 @@ export function Question7({
                     type="button"
                     className={languageWithheld ? 'chip is-held' : 'chip'}
                     disabled={languageWithheld}
+                    aria-label={t('q7.removeLanguage', { name: entry.rawAnswer })}
                     onClick={() => removeLanguage(index)}
                   >
                     {entry.rawAnswer}
@@ -290,7 +297,7 @@ export function Question7({
             onCommit={addLanguage}
             closeOnPick={false}
             suggestions={languageWithheld ? [] : languageSuggestions}
-            placeholder="Type a native language..."
+            placeholder={t('q7.languagePlaceholder')}
             autoFocus={false}
           />
           <label className="disclose-check">
@@ -299,7 +306,7 @@ export function Question7({
               checked={languageWithheld}
               onChange={(event) => setLanguageWithheld(event.target.checked)}
             />
-            <span>I prefer not to disclose</span>
+            <span>{t('q7.preferNot')}</span>
           </label>
         </div>
 

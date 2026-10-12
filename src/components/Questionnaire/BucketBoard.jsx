@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  BUCKET_IDS,
-  bucketLabels,
-  getBucketItem,
-} from '../../data/bucketItems.js';
+import { BUCKET_IDS } from '../../data/bucketItems.js';
+import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 
 const GHOST_MS = 300;
 const SLOP = 12;
@@ -25,6 +23,8 @@ function BucketTile({
   onRemove,
   onTouchStart,
 }) {
+  const { t } = useI18n();
+
   return (
     <div className="bucket-tile">
       <button
@@ -55,7 +55,7 @@ function BucketTile({
         <button
           type="button"
           className="tile-remove"
-          aria-label={`Return ${item.name} to the list`}
+          aria-label={t('q3.returnItem', { name: item.name })}
           onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => {
             event.stopPropagation();
@@ -88,6 +88,8 @@ export function BucketBoard({
   onPlace,
   onReturnToPalette,
 }) {
+  const { t } = useI18n();
+  const { bucketById } = useSurveyCatalog();
   const [dragId, setDragId] = useState(null);
   const [overBucket, setOverBucket] = useState(null);
   const [overPalette, setOverPalette] = useState(false);
@@ -375,10 +377,10 @@ export function BucketBoard({
               onDragOver={(event) => handleBucketDragOver(event, bucketId)}
               onDrop={(event) => handleBucketDrop(event, bucketId)}
             >
-              <p className="bucket-label">{bucketLabels[bucketId]}</p>
+              <p className="bucket-label">{t(`buckets.${bucketId}`)}</p>
               <div className="bucket-items">
                 {buckets[bucketId].map((id) => {
-                  const item = getBucketItem(id);
+                  const item = bucketById.get(id);
                   if (!item) return null;
                   return (
                     <BucketTile
@@ -406,7 +408,7 @@ export function BucketBoard({
       </div>
 
       <div className="spectrum-pool">
-        <p className="spectrum-palette-label">Items to sort</p>
+        <p className="spectrum-palette-label">{t('q3.toSort')}</p>
         <div
           className={
             overPalette ? 'spectrum-palette is-over' : 'spectrum-palette'

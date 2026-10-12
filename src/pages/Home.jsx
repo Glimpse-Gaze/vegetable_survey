@@ -1,39 +1,44 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
+import { useI18n } from '../i18n/useI18n.js';
+import { withLocale } from '../i18n/paths.js';
 
 export function Home() {
   const navigate = useNavigate();
+  const { t, locale } = useI18n();
   const [askResults, setAskResults] = useState(false);
 
   return (
     <div className="home-shell">
       <section className="home-panel">
-        <p className="eyebrow">A folk concept study</p>
-        <h1 className="home-title">The Great Vegetable Survey</h1>
+        <p className="eyebrow">{t('home.eyebrow')}</p>
+        <h1 className="home-title">{t('home.title')}</h1>
         <p className="home-lede">
-          What do people count as a vegetable? 
-          <br /><br />Take the survey or skip
-          ahead to the interactive results.
+          {t('home.question')}
+          <br /><br />
+          {t('home.lede')}
         </p>
         <div className="home-actions">
-          <Link className="home-button home-button-primary" to="/survey">
-            Take the survey
+          <Link className="home-button home-button-primary" to={withLocale(locale, '/survey')}>
+            {t('home.takeSurvey')}
           </Link>
           <button
             className="home-button home-button-secondary"
             type="button"
             onClick={() => setAskResults(true)}
           >
-            See the results
+            {t('home.seeResults')}
           </button>
         </div>
       </section>
       {askResults ? (
         <ConfirmDialog
-          title="Before you skip ahead"
-          message="Please note: it's recommended to complete the survey before displaying the results."
-          onConfirm={() => navigate('/results')}
+          title={t('home.skipTitle')}
+          message={t('home.skipMessage')}
+          confirmLabel={t('home.skipContinue')}
+          cancelLabel={t('dialog.cancel')}
+          onConfirm={() => navigate(withLocale(locale, '/results'))}
           onCancel={() => setAskResults(false)}
         />
       ) : null}

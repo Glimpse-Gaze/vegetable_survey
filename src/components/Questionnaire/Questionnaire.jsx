@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../ConfirmDialog.jsx';
 import { PrivacyConsent } from './PrivacyConsent.jsx';
+import { WelcomeScreen } from './WelcomeScreen.jsx';
 import { Question1 } from './Question1.jsx';
 import { Question2 } from './Question2.jsx';
 import { Question3 } from './Question3.jsx';
@@ -23,13 +24,12 @@ import {
   subscribeSurveyPrefill,
 } from '../../utils/vegSurveyConsole.js';
 import { DEV_SPEEDRUN } from '../../data/devSpeedrun.js';
-
-const LOCK_TOAST = 'First instinct locked. No wrong answers.';
-const BACK_LOCKED_TOAST =
-  'Your initial intuition is locked. There are no bad answers!';
-const FILL_TOAST = 'Answers loaded from that ranking code.';
+import { useI18n } from '../../i18n/useI18n.js';
+import { isLocale } from '../../i18n/locales.js';
+import { withLocale } from '../../i18n/paths.js';
 
 const STEPS = {
+  WELCOME: 'welcome',
   CONSENT: 'consent',
   QUESTION_1: 'question1',
   QUESTION_2: 'question2',
@@ -42,6 +42,7 @@ const STEPS = {
 };
 
 const PREVIOUS_STEP = {
+  [STEPS.CONSENT]: STEPS.WELCOME,
   [STEPS.QUESTION_1]: STEPS.CONSENT,
   [STEPS.QUESTION_3]: STEPS.QUESTION_2,
   [STEPS.QUESTION_4]: STEPS.QUESTION_3,
@@ -52,6 +53,7 @@ const PREVIOUS_STEP = {
 
 function emptyResponse() {
   return {
+    locale: null,
     responseId: null,
     timestamp: null,
     processingConsent: null,
@@ -75,9 +77,10 @@ function emptyResponse() {
 
 export function Questionnaire() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(STEPS.CONSENT);
+  const { t, locale, setLocale } = useI18n();
+  const [step, setStep] = useState(STEPS.WELCOME);
   const [response, setResponse] = useState(() => emptyResponse());
-  const [toastMessage, setToastMessage] = useState(LOCK_TOAST);
+  const [toastMessage, setToastMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [toastTick, setToastTick] = useState(0);
   const [resetKey, setResetKey] = useState(0);
@@ -148,6 +151,7 @@ export function Questionnaire() {
       consumeSurveyPrefillFlag();
       setResponse({
         ...emptyResponse(),
+        locale,
         processingConsent: {
           agreed: true,
           agreedAt: new Date().toISOString(),
@@ -159,7 +163,7 @@ export function Questionnaire() {
 
     if (consumeSurveyPrefillFlag()) applyPrefill();
     return subscribeSurveyPrefill(applyPrefill);
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     if (!import.meta.env.DEV) return undefined;
@@ -189,11 +193,14 @@ export function Questionnaire() {
       body = null;
     }
     if (!result.ok) {
-      throw new Error(body?.error ?? 'Unknown code.');
+      throw new Error(body?.error ?? t('toast.unknownCode'));
     }
+
+    if (isLocale(body.locale)) setLocale(body.locale);
 
     const nextResponse = {
       ...emptyResponse(),
+      locale: isLocale(body.locale) ? body.locale : locale,
       processingConsent: {
         agreed: true,
         agreedAt: new Date().toISOString(),
@@ -227,12 +234,20 @@ export function Questionnaire() {
     writeMyResponse(body.id, nextResponse);
     persist(STEPS.THANKS, nextResponse);
     setCodePanel(false);
-    showToast(FILL_TOAST);
+    showToast(t('toast.filled'));
+  }
+
+  function handleWelcome() {
+    persist(STEPS.CONSENT, {
+      ...emptyResponse(),
+      locale,
+    });
   }
 
   function handleConsent({ processingConsent }) {
     persist(STEPS.QUESTION_1, {
       ...emptyResponse(),
+      locale: response.locale ?? locale,
       processingConsent,
     });
   }
@@ -240,12 +255,13 @@ export function Questionnaire() {
   function handleQuestion1(initialAssociation) {
     persist(STEPS.QUESTION_2, {
       ...emptyResponse(),
+      locale: response.locale ?? locale,
       responseId: crypto.randomUUID(),
       timestamp: new Date().toISOString(),
       processingConsent: response.processingConsent,
       initialAssociation,
     });
-    showToast(LOCK_TOAST);
+    showToast(t('toast.locked'));
   }
 
   function handleQuestion2({
@@ -309,6 +325,7 @@ export function Questionnaire() {
 
     const nextResponse = {
       ...response,
+      locale: response.locale ?? locale,
       background,
     };
 
@@ -322,7 +339,7 @@ export function Questionnaire() {
     setIsSubmitting(false);
 
     if (!result.ok) {
-      showToast(result.error ?? 'Could not save your answers. Try again.');
+      showToast(result.error ?? t('toast.saveError'));
       return;
     }
 
@@ -337,23 +354,29 @@ export function Questionnaire() {
   }
 
   function handleLockedBack() {
-    showToast(BACK_LOCKED_TOAST);
+    showToast(t('toast.lockedBack'));
   }
 
   function confirmLeave() {
     leavingRef.current = true;
     setLeaveAsk(false);
-    navigate('/');
+    navigate(withLocale(locale, '/'));
   }
 
   return (
     <main className="questionnaire">
       {codePanel ? <RankingCodeFill onLoad={loadFromRankingCode} /> : null}
       <div className="questionnaire-inner" key={`${step}-${resetKey}`}>
+        {step === STEPS.WELCOME ? (
+          <WelcomeScreen
+            onContinue={handleWelcome}
+            onBack={() => navigate(withLocale(locale, '/'))}
+          />
+        ) : null}
         {step === STEPS.CONSENT ? (
           <PrivacyConsent
             onContinue={handleConsent}
-            onBack={() => navigate('/')}
+            onBack={handleBack}
           />
         ) : null}
         {step === STEPS.QUESTION_1 ? (
@@ -405,7 +428,7 @@ export function Questionnaire() {
             onContinue={handleQuestion7}
             onBack={handleBack}
             continueDisabled={isSubmitting}
-            continueHint={isSubmitting ? 'Saving your answers…' : undefined}
+            continueHint={isSubmitting ? t('q7.saving') : undefined}
           />
         ) : null}
         {step === STEPS.THANKS ? (
@@ -416,8 +439,10 @@ export function Questionnaire() {
       <Toast message={toastMessage} visible={toastVisible} />
       {leaveAsk ? (
         <ConfirmDialog
-          title="Leave the survey?"
-          message="Are you sure you want to return? Your answers won't be saved."
+          title={t('leave.title')}
+          message={t('leave.message')}
+          confirmLabel={t('dialog.proceed')}
+          cancelLabel={t('dialog.cancel')}
           onConfirm={confirmLeave}
           onCancel={() => setLeaveAsk(false)}
         />

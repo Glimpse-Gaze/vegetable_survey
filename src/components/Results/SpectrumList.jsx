@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { useI18n } from '../../i18n/useI18n.js';
+import { placeNotePop } from '../../utils/placeNotePop.js';
 
 function formatMean(mean) {
   return mean.toFixed(1);
 }
 
 function Spread({ item }) {
+  const { t } = useI18n();
   const maxShare = Math.max(...item.slotShares, 0.0001);
   const label = item.slotShares
     .map((share, index) => `${index + 1}: ${Math.round(share * 100)}%`)
@@ -15,7 +18,10 @@ function Spread({ item }) {
       <div
         className="spectrum-spread-chart"
         role="img"
-        aria-label={`Share of rankings by slot. ${label}. Average place ${formatMean(item.meanRank)}.`}
+        aria-label={t('results.spectrum.shareBySlot', {
+          label,
+          mean: formatMean(item.meanRank),
+        })}
       >
         {item.slotShares.map((share, index) => {
           const slot = index + 1;
@@ -34,7 +40,7 @@ function Spread({ item }) {
             >
               <span className="spectrum-spread-bar" />
               {slot === item.userSlot ? (
-                <span className="spectrum-blade-badge">Your vote</span>
+                <span className="spectrum-blade-badge">{t('results.yourVote')}</span>
               ) : null}
             </span>
           );
@@ -46,8 +52,8 @@ function Spread({ item }) {
 
           return (
             <span key={slot} className="spectrum-spread-end">
-              {slot === 1 ? 'Least' : null}
-              {slot === 10 ? 'Most' : null}
+              {slot === 1 ? t('results.spectrum.least') : null}
+              {slot === 10 ? t('results.spectrum.most') : null}
             </span>
           );
         })}
@@ -57,11 +63,17 @@ function Spread({ item }) {
 }
 
 function FactNote({ name, fact }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
+  const popRef = useRef(null);
 
   useEffect(() => {
     if (!open) return undefined;
+
+    function reposition() {
+      placeNotePop(rootRef.current, popRef.current);
+    }
 
     function onPointer(event) {
       if (!rootRef.current?.contains(event.target)) setOpen(false);
@@ -71,13 +83,18 @@ function FactNote({ name, fact }) {
       if (event.key === 'Escape') setOpen(false);
     }
 
+    reposition();
+    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, true);
     document.addEventListener('pointerdown', onPointer);
     document.addEventListener('keydown', onKey);
     return () => {
+      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition, true);
       document.removeEventListener('pointerdown', onPointer);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open]);
+  }, [open, fact]);
 
   return (
     <div className="question-note is-beside" ref={rootRef}>
@@ -85,13 +102,18 @@ function FactNote({ name, fact }) {
         className="question-note-button"
         type="button"
         aria-expanded={open}
-        aria-label={`About ${name}`}
+        aria-label={t('results.spectrum.about', { name })}
         onClick={() => setOpen((value) => !value)}
       >
         i
       </button>
       {open ? (
-        <p className="question-note-pop" role="dialog" aria-label={`About ${name}`}>
+        <p
+          ref={popRef}
+          className="question-note-pop"
+          role="dialog"
+          aria-label={t('results.spectrum.about', { name })}
+        >
           {fact}
         </p>
       ) : null}
@@ -117,8 +139,12 @@ function SpectrumBlade({ item, bandId }) {
         <img
           src={item.art}
           alt=""
+          width={390}
+          height={390}
           decoding="async"
-          loading={item.rank <= 2 ? 'eager' : 'lazy'}
+          loading={item.rank <= 3 ? 'eager' : 'lazy'}
+          fetchPriority={item.rank <= 2 ? 'high' : 'auto'}
+          sizes="(max-width: 720px) 42vw, 12.2rem"
         />
       </div>
       <div className="spectrum-blade-copy">

@@ -1,4 +1,5 @@
 import { criteria } from './criteria.js';
+import { REASON_COMMENTS_PL } from './reasonComments.pl.js';
 
 export const COMMENT_DISPLAY_COUNT = 22;
 const REASON_RESPONDENTS = 700;
@@ -20,7 +21,7 @@ const REASON_VOTES = {
   just_feels: 63,
 };
 
-export const REASON_COMMENTS = [
+export const REASON_COMMENTS_EN = [
   { id: 'c01', text: 'If you can put it in a stew', boosts: 14 },
   { id: 'c02', text: 'My grandmother would call it one', boosts: 11 },
   { id: 'c03', text: "It's not dessert", boosts: 9 },
@@ -31,7 +32,7 @@ export const REASON_COMMENTS = [
   { id: 'c08', text: "It's savoury and a bit bitter", boosts: 6 },
   { id: 'c09', text: 'Grows in a garden bed, not on a tree', boosts: 5 },
   { id: 'c10', text: 'Something you hide in soup for children', boosts: 5 },
-  { id: 'c11', text: 'Leaves, roots, or stems — never seeds', boosts: 4 },
+  { id: 'c11', text: 'Leaves, roots, or stems – never seeds', boosts: 4 },
   { id: 'c12', text: 'The opposite of a snack', boosts: 4 },
   { id: 'c13', text: 'Makes the plate look responsible', boosts: 3 },
   { id: 'c14', text: 'It stains the chopping board green', boosts: 3 },
@@ -49,7 +50,7 @@ export const REASON_COMMENTS = [
   { id: 'c26', text: 'Sold loose, covered in dirt', boosts: 1 },
   { id: 'c27', text: 'A thing you salt because it is watery', boosts: 1 },
   { id: 'c28', text: 'You would grow it if you had a garden', boosts: 1 },
-  { id: 'c29', text: 'It wilts, browns, or goes limp — never moulds like bread', boosts: 1 },
+  { id: 'c29', text: 'It wilts, browns, or goes limp – never moulds like bread', boosts: 1 },
   { id: 'c30', text: 'The sound of a knife through it is a crunch', boosts: 1 },
   { id: 'c31', text: 'It needs a recipe, not a wrapper', boosts: 0 },
   { id: 'c32', text: 'Something your doctor would nod at', boosts: 0 },
@@ -69,9 +70,21 @@ export const REASON_COMMENTS = [
   { id: 'c46', text: 'The opposite of a pastry', boosts: 0 },
   { id: 'c47', text: 'Something that stains olive oil green', boosts: 0 },
   { id: 'c48', text: 'You say it is in season', boosts: 0 },
-  { id: 'c49', text: 'It has a stalk, a leaf, or a bulb — a body', boosts: 0 },
+  { id: 'c49', text: 'It has a stalk, a leaf, or a bulb – a body', boosts: 0 },
   { id: 'c50', text: 'The food that makes a meal look finished', boosts: 0 },
 ];
+
+/** @deprecated use commentsForLocale */
+export const REASON_COMMENTS = REASON_COMMENTS_EN;
+
+const REASON_COMMENTS_BY_LOCALE = {
+  en: REASON_COMMENTS_EN,
+  pl: REASON_COMMENTS_PL,
+};
+
+export function commentsForLocale(locale) {
+  return REASON_COMMENTS_BY_LOCALE[locale] ?? REASON_COMMENTS_EN;
+}
 
 const ROW_META = [
   { id: 'row-a', duration: '40s', reverse: false },
@@ -143,7 +156,7 @@ export function getReasonsSection(category, region, view = null) {
     region,
     items,
     leader: items[0],
-    commentPool: REASON_COMMENTS,
+    commentPool: REASON_COMMENTS_EN,
     responseCount: respondents,
   };
 }
