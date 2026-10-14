@@ -54,7 +54,14 @@ function surveyLocale(payload, text = '') {
   const raw = String(payload?.locale ?? '').trim().toLowerCase();
   if (raw === 'pl' || raw === 'en') return raw;
   // Older rows may lack locale; Polish diacritics are a strong signal.
-  if (/[ąćęłńóśźż]/ĘŁŃÓŚŹŻ]/.test(text)) return 'pl';
+  // Use escapes so Vite/Rolldown can parse this file while bundling vite.config.
+  if (
+    /[\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017a\u017c\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u0179\u017b]/.test(
+      text,
+    )
+  ) {
+    return 'pl';
+  }
   return 'en';
 }
 
