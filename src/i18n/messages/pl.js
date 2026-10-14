@@ -201,7 +201,7 @@ export const pl = {
     top5: 'Top 5',
     categories: {
       label: 'Kategorie',
-      mockMeta: 'Wyniki próbne · {count} odpowiedzi',
+      mockMeta: '{count} odpowiedzi',
       nav: 'Kategorie wyników',
       open: 'Otwórz kategorie',
       close: 'Zamknij kategorie',
@@ -270,6 +270,8 @@ export const pl = {
     mapCopy:
       'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Można je zawęzić mapą poniżej. Filtr działa tylko dla regionów z co najmniej 20 odpowiedziami. Jeśli brakuje Twojego kraju, zaproś więcej osób do głosowania!',
     mapStatus: 'Wyświetlasz: {place}{language} · {count} odpowiedzi',
+    mixDisclaimer:
+      'Obecne wyniki łączą prawdziwe odpowiedzi z wygenerowanymi sztucznie. Zaproś więcej osób do głosowania, żebyśmy mogli pokazywać wyłącznie odpowiedzi ludzkie!',
     youVotedFor: 'Głosowałeś/aś na',
     people: 'ludzi',
     speakers: 'osób mówiących w języku: {language}',
@@ -285,6 +287,7 @@ export const pl = {
     ordinalPlace: 'na {rank} miejscu {place}',
     mapTip: {
       live: '{votes} odp. | filtruj',
+      emerging: '{votes} odp. | potrzeba {threshold}!',
       noLanguage: 'Brak odpowiedzi dla tego języka',
       few: 'Mniej niż {threshold} odpowiedzi',
       iceWall: 'Lodowa Ściana',

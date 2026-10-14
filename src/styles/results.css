@@ -882,10 +882,18 @@
   fill: #2c6a38;
 }
 
+.world-map-frame .is-emerging path {
+  fill: #d1790d;
+}
+
+.world-map-frame .is-emerging:hover path {
+  fill: #b56c12;
+}
+
 .world-map-frame .is-live.is-selected path,
 .world-map-frame .is-selected path,
 .world-map-frame .is-live.is-selected:hover path {
-  fill: #d98217;
+  fill: #1f5a2c;
 }
 
 .world-map-frame .water {
@@ -913,6 +921,23 @@
 .map-language {
   width: min(22rem, 100%);
   margin-top: 16px;
+}
+
+.results-mix-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.results-drawer .results-mix-note {
+  margin-top: -4px;
+}
+
+.map-mix-note {
+  margin-top: 8px;
+  max-width: 40rem;
 }
 
 .map-status {

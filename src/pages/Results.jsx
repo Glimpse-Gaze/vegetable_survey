@@ -27,12 +27,22 @@ import {
   REGIONS,
   BLADE_BOARD_SIZE,
   VEGETABLE_LABELS,
+  VEGETABLE_ART,
   ALL_LANGUAGES_ID,
   LIVE_COUNTRIES,
+  VOTE_THRESHOLD,
   languagesForRegion,
   regionsForLanguage,
   nativeCount,
 } from '../data/resultsMock.js';
+import {
+  applyLiveBlend,
+  emptyLiveSummary,
+  isMixingLive,
+  mapCountriesFromLive,
+} from '../data/blendLiveResults.js';
+import { bandForRank } from '../data/spectrumVegetables.js';
+import placeholder from '../content/Placeholder.jpg';
 import '../styles/results.css';
 
 const WorldMap = lazy(() =>
@@ -711,16 +721,45 @@ export function Results() {
   const [languageId, setLanguageId] = useState(ALL_LANGUAGES_ID);
   const [sharedAnswers, setSharedAnswers] = useState(null);
   const [codeInvalid, setCodeInvalid] = useState(false);
+  const [liveSummary, setLiveSummary] = useState(emptyLiveSummary);
   const codeParam = searchParams.get('code');
   const myResponseId = useMemo(() => readMyResponseId(), []);
   const myAnswers = useMemo(() => readMyAnswers(), []);
   const viewingOther = isResponseId(codeParam) && codeParam !== myResponseId;
   const userAnswers = viewingOther ? sharedAnswers : myAnswers;
   const category = getCategory(categoryId);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/results-live')
+      .then(async (result) => {
+        if (!result.ok || cancelled) return;
+        const body = await result.json();
+        if (!cancelled && body && typeof body === 'object') {
+          setLiveSummary({ ...emptyLiveSummary(), ...body });
+        }
+      })
+      .catch(() => {
+        // keep mock-only view
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const section = useMemo(() => {
     const raw = getSection(category.id, regionId, userAnswers, languageId);
-    return localizeResultsSection(raw, catalog, t, locale);
-  }, [category.id, regionId, userAnswers, languageId, catalog, t, locale]);
+    const blended = applyLiveBlend(raw, category.id, liveSummary, {
+      artFor: (id) => VEGETABLE_ART[id] ?? placeholder,
+      labelFor: (id) =>
+        catalog.vegetablesById?.get(id)?.name
+        ?? VEGETABLE_LABELS[id]
+        ?? id,
+      bandForRank,
+    });
+    return localizeResultsSection(blended, catalog, t, locale);
+  }, [category.id, regionId, userAnswers, languageId, liveSummary, catalog, t, locale]);
+  const mixingLive = isMixingLive(liveSummary);
   const languageOptions = useMemo(
     () => languagesForRegion(regionId),
     [regionId],
@@ -729,17 +768,23 @@ export function Results() {
     () => new Set(regionsForLanguage(languageId)),
     [languageId],
   );
-  const liveCountries = useMemo(
-    () => LIVE_COUNTRIES
+  const liveCountries = useMemo(() => {
+    const mock = LIVE_COUNTRIES
       .filter((country) => placeIds.has(country.id))
       .map((country) => ({
         ...country,
         votes: languageId === ALL_LANGUAGES_ID
           ? country.votes
           : nativeCount(country.id, languageId),
-      })),
-    [placeIds, languageId],
-  );
+      }));
+    const merged = mapCountriesFromLive(mock, liveSummary.places);
+    return merged.filter((country) => {
+      if (placeIds.has(country.id)) return true;
+      // Show emerging live-only countries on the world map.
+      return (country.liveCount ?? country.votes ?? 0) > 0
+        && (country.votes ?? 0) < VOTE_THRESHOLD;
+    });
+  }, [placeIds, languageId, liveSummary.places]);
   const nextId = nextCategoryId(category.id);
   const alignment =
     category.layout === 'blades' ? alignmentCopy(section, t) : null;
@@ -939,6 +984,9 @@ export function Results() {
             count: section.responseCount.toLocaleString(numberLocale),
           })}
         </p>
+        {mixingLive ? (
+          <p className="results-mix-note">{t('results.mixDisclaimer')}</p>
+        ) : null}
         <nav className="results-tabs" aria-label={t('results.categories.nav')}>
           {CATEGORIES.map((item) => (
             <button
@@ -1090,6 +1138,11 @@ export function Results() {
                 </>
               ) : null}
             </p>
+            {mixingLive ? (
+              <p className="results-mix-note map-mix-note">
+                {t('results.mixDisclaimer')}
+              </p>
+            ) : null}
           </div>
           ) : null}
 

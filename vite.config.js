@@ -14,6 +14,8 @@ import {
   listReasonVoteScores,
   upsertReasonVote,
 } from './server/reasonVotes.js';
+import { loadLiveResults } from './server/liveResults.js';
+import { saveIssueReport } from './server/issueReports.js';
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -105,6 +107,73 @@ function surveyApiPlugin(databaseUrl, rateSecret) {
             errorStatus(
               error,
               message.includes('Write a little') ? 400 : 500,
+            ),
+            { error: message },
+          );
+        }
+      });
+
+      server.middlewares.use('/api/results-live', async (req, res, next) => {
+        if (req.method !== 'GET') {
+          next();
+          return;
+        }
+        try {
+          if (!databaseUrl) {
+            json(res, 200, {
+              liveCount: 0,
+              associations: {},
+              mostVegetable: {},
+              criteria: {},
+              places: {},
+              languages: {},
+              buckets: {},
+              spectrum: {},
+              customReasons: [],
+              notes: [],
+            });
+            return;
+          }
+          const summary = await loadLiveResults(databaseUrl);
+          json(res, 200, summary);
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : 'Could not load.';
+          json(res, 500, { error: message });
+        }
+      });
+
+      server.middlewares.use('/api/issue-reports', async (req, res, next) => {
+        if (req.method !== 'POST') {
+          next();
+          return;
+        }
+        try {
+          if (!databaseUrl) {
+            json(res, 503, { error: 'DATABASE_URL is not set.' });
+            return;
+          }
+          const body = await readJsonBody(req);
+          const bucket = hashedIpBucket(clientIp(req), rateSecret || databaseUrl);
+          const row = await saveIssueReport(
+            {
+              message: body.message,
+              locale: body.locale,
+              path: body.path,
+              userAgent: req.headers?.['user-agent'],
+            },
+            databaseUrl,
+            bucket,
+          );
+          json(res, 201, row);
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : 'Could not save.';
+          json(
+            res,
+            errorStatus(
+              error,
+              message.includes('Please write') ? 400 : 500,
             ),
             { error: message },
           );

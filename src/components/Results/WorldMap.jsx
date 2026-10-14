@@ -121,7 +121,8 @@ export function WorldMap({
     const live = iso3
       ? liveRef.current.find((country) => country.iso3 === iso3)
       : null;
-    if (!live) return;
+    // Only filterable once a region clears the vote threshold.
+    if (!live || live.votes < VOTE_THRESHOLD) return;
     const current = selectedRef.current;
     startTransition(() => {
       onSelectRef.current(live.id === current ? 'global' : live.id);
@@ -177,7 +178,8 @@ export function WorldMap({
         name: localized || known?.name || title,
         countryId,
         iceWall: iso3 === 'ATA',
-        live: Boolean(live),
+        live: Boolean(live && live.votes >= VOTE_THRESHOLD),
+        emerging: Boolean(live && live.votes > 0 && live.votes < VOTE_THRESHOLD),
         hiddenLanguage: Boolean(known && !live && languageFilteredRef.current),
         votes: live?.votes ?? known?.votes ?? 0,
         x: event.clientX,
@@ -206,7 +208,9 @@ export function WorldMap({
           prev.countryId === next.countryId &&
           prev.name === next.name &&
           prev.iceWall === next.iceWall &&
-          prev.live === next.live
+          prev.live === next.live &&
+          prev.emerging === next.emerging &&
+          prev.votes === next.votes
         ) {
           return prev;
         }
@@ -232,8 +236,6 @@ export function WorldMap({
         if (name) node.setAttribute('data-name', name);
         titleNode?.remove();
       }
-      const iso3 = countryIso3(group);
-      if (iso3 && KNOWN_BY_ISO3[iso3]) group.classList.add('is-live');
       group.addEventListener('pointerenter', onEnter);
       group.addEventListener('pointermove', onMove);
       group.addEventListener('pointerleave', onLeave);
@@ -263,10 +265,14 @@ export function WorldMap({
     for (const group of groupsRef.current) {
       const iso3 = countryIso3(group);
       const live = iso3 ? liveByIso[iso3] : null;
-      group.classList.toggle('is-live', Boolean(live));
+      const votes = live?.votes ?? 0;
+      const isReady = Boolean(live && votes >= VOTE_THRESHOLD);
+      const isEmerging = Boolean(live && votes > 0 && votes < VOTE_THRESHOLD);
+      group.classList.toggle('is-live', isReady);
+      group.classList.toggle('is-emerging', isEmerging);
       group.classList.toggle(
         'is-selected',
-        Boolean(live && live.id === selectedId),
+        Boolean(live && live.id === selectedId && isReady),
       );
     }
   }, [selectedId, liveCountries]);
@@ -398,6 +404,13 @@ export function WorldMap({
             <span>{t('results.mapTip.iceWallHint')}</span>
           ) : tip.live ? (
             <span>{t('results.mapTip.live', { votes: tip.votes })}</span>
+          ) : tip.emerging ? (
+            <span>
+              {t('results.mapTip.emerging', {
+                votes: tip.votes,
+                threshold: VOTE_THRESHOLD,
+              })}
+            </span>
           ) : tip.hiddenLanguage ? (
             <span>{t('results.mapTip.noLanguage')}</span>
           ) : (

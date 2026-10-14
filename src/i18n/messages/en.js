@@ -187,7 +187,7 @@ export const en = {
     top5: 'Top 5',
     categories: {
       label: 'Categories',
-      mockMeta: 'Mock standings · {count} answers',
+      mockMeta: '{count} answers',
       nav: 'Results categories',
       open: 'Open categories',
       close: 'Close categories',
@@ -256,6 +256,8 @@ export const en = {
     mapCopy:
       'By default, the results show global votes, including those who have chosen not to disclose their birthplace. The results can be filtered using the map shown below. Only regions with at least 20 responses are filterable. If your country is missing, please encourage more people to vote!',
     mapStatus: 'Showing {place}{language} · {count} answers',
+    mixDisclaimer:
+      'Current results mix real answers with artificially generated ones. Please invite more people to vote, so we can display only human-made answers!',
     youVotedFor: 'You voted for',
     people: 'people',
     speakers: '{language} speakers',
@@ -271,6 +273,7 @@ export const en = {
     ordinalPlace: '{rank} {place}',
     mapTip: {
       live: '{votes} answers | click to filter',
+      emerging: '{votes} answers | we need {threshold}!',
       noLanguage: 'No answers for this language',
       few: 'Fewer than {threshold} answers',
       iceWall: 'The Ice Wall',
