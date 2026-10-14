@@ -1,7 +1,9 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Outlet, Route, Routes, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { Home } from './pages/Home.jsx';
+import { BrandFooter } from './components/BrandFooter.jsx';
 import { LocaleSwitcher } from './components/LocaleSwitcher.jsx';
+import { ReportIssuesButton } from './components/ReportIssues.jsx';
 import { useI18n } from './i18n/useI18n.js';
 import { isLocale } from './i18n/locales.js';
 import { withLocale } from './i18n/paths.js';
@@ -40,8 +42,16 @@ function LocaleOutlet() {
 
   return (
     <>
-      {onResults ? null : <LocaleSwitcher />}
+      {onResults ? null : (
+        <>
+          <div className="locale-tools">
+            <LocaleSwitcher />
+          </div>
+          <ReportIssuesButton variant="fab" />
+        </>
+      )}
       <Outlet />
+      {onResults ? null : <BrandFooter />}
     </>
   );
 }

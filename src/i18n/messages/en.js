@@ -10,8 +10,28 @@ export const en = {
     proceed: 'Proceed',
     cancel: 'Cancel',
   },
+  brand: {
+    createdPrefix: 'Created for fun by',
+    name: 'Glimpse & Gaze',
+  },
+  report: {
+    button: 'Report issues',
+    title: 'Report issues',
+    description:
+      'Did you spot a bug, have an idea for a new feature, or just want to say hello? Send a note here – I’m an independent developer building this for fun, and I’ll do my best to help.',
+    fieldLabel: 'Your message',
+    placeholder: 'Describe the issue or a suggestion…',
+    charsLeft: '{count} characters left',
+    submit: 'Send report',
+    sending: 'Sending…',
+    close: 'Close',
+    thanksTitle: 'Thanks!',
+    thanksMessage: 'Your note was sent. I appreciate you taking the time.',
+    error: 'Could not send the report. Please try again later.',
+  },
   home: {
     language: 'Language',
+    changeLanguage: 'Change language',
     eyebrow: 'A folk concept study',
     title: 'The Great Vegetable Survey',
     question: 'What do people count as a vegetable?',
@@ -173,6 +193,7 @@ export const en = {
       close: 'Close categories',
       next: 'Next category',
       backHome: 'Back to the main page',
+      otherProjects: 'See other projects',
       'first-instincts': {
         eyebrow: 'Question 1',
         title: 'First instincts',
@@ -199,7 +220,7 @@ export const en = {
         title: 'Vegetableness spectrum',
         prompt: 'From the least to the most vegetabley plants.',
         designNote:
-          'I selected these ten plants as they represent different botanical families, or very different parts of the same family: roots, stems, leaves, flowers, fruits, and grains. The ranking is there to see whether the botanical status, plant anatomy, or geographic origin has any bearing on how vegetabley something feels.',
+          'I selected these ten plants as they represent different botanical families, or very different parts of the same family: roots, leaves, flowers, fruits or grains. The ranking is there to see whether the botanical status, morphology, or geographic origin has any bearing on how vegetabley something feels.',
       },
       'most-vegetable': {
         eyebrow: 'Question 5',
@@ -230,7 +251,7 @@ export const en = {
       Countries: 'Countries',
     },
     showing: 'Showing {place}{language} · {count} answers',
-    byPlace: 'By place',
+    byPlace: 'Global opinions',
     mapTitle: 'Where people answered from',
     mapCopy:
       'By default, the results show global votes, including those who have chosen not to disclose their birthplace. The results can be filtered using the map shown below. Only regions with at least 20 responses are filterable. If your country is missing, please encourage more people to vote!',

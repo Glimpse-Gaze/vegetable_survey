@@ -8,8 +8,28 @@ export const pl = {
     proceed: 'Tak',
     cancel: 'Anuluj',
   },
+  brand: {
+    createdPrefix: 'Stworzone dla zabawy przez',
+    name: 'Glimpse & Gaze',
+  },
+  report: {
+    button: 'Zgłoś problem',
+    title: 'Zgłoś problem',
+    description:
+      'Znalazłeś/aś błąd albo masz pomysł na nową funkcję? Napisz — jestem niezależnym twórcą i robię to dla zabawy, ale postaram się pomóc.',
+    fieldLabel: 'Twoja wiadomość',
+    placeholder: 'Opisz problem lub sugestię…',
+    charsLeft: 'Pozostało {count} znaków',
+    submit: 'Wyślij zgłoszenie',
+    sending: 'Wysyłanie…',
+    close: 'Zamknij',
+    thanksTitle: 'Dzięki!',
+    thanksMessage: 'Twoja wiadomość została wysłana. Dziękuję za poświęcony czas.',
+    error: 'Nie udało się wysłać zgłoszenia. Spróbuj ponownie później.',
+  },
   home: {
     language: 'Język',
+    changeLanguage: 'Zmień język',
     eyebrow: 'Badanie opinii publicznej',
     title: 'Wielka ankieta warzywna',
     question: 'Co ludzie uznają za warzywo?',
@@ -187,6 +207,7 @@ export const pl = {
       close: 'Zamknij kategorie',
       next: 'Następna kategoria',
       backHome: 'Wróć na stronę główną',
+      otherProjects: 'Zobacz inne projekty',
       'first-instincts': {
         eyebrow: 'Pytanie 1',
         title: 'Pierwsze skojarzenia',
@@ -213,7 +234,7 @@ export const pl = {
         title: 'Skala warzywności',
         prompt: 'Od najmniej do najbardziej warzywnych roślin.',
         designNote:
-          'Wybrałem te dziesięć roślin, ponieważ reprezentują różne rodziny botaniczne albo skrajnie różne części tej samej rodziny:  korzenie, łodygi, liście, kwiaty, owoce i ziarna. Ranking ma na celu zbadać czy status botaniczny, anatomia rośliny albo pochodzenie geograficzne wpływają na to, jak bardzo coś wydaje się warzywem.',
+          'Wybrałem te dziesięć roślin, ponieważ reprezentują różne rodziny botaniczne albo skrajnie różne części tej samej rodziny:  korzenie, liście, kwiaty, owoce lub ziarna. Ranking ma na celu zbadać czy status botaniczny, morfologia albo pochodzenie geograficzne wpływają na to, jak bardzo coś wydaje się warzywem.',
       },
       'most-vegetable': {
         eyebrow: 'Pytanie 5',
@@ -244,7 +265,7 @@ export const pl = {
       Countries: 'Kraje',
     },
     showing: 'Wyświetlasz: {place}{language} · {count} odpowiedzi',
-    byPlace: 'Według miejsca',
+    byPlace: 'Globalne opinie',
     mapTitle: 'Skąd odpowiadali ludzie',
     mapCopy:
       'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Można je zawęzić mapą poniżej. Filtr działa tylko dla regionów z co najmniej 20 odpowiedziami. Jeśli brakuje Twojego kraju, zaproś więcej osób do głosowania!',
@@ -257,10 +278,10 @@ export const pl = {
     inPlace: 'w: {place}',
     onlyShare: 'Tylko {share} z {people} głosowało tak jak Ty',
     shareVoted: '{share} z {people} głosowało tak jak Ty',
-    it: 'To',
+    it: '',
     itIs: 'Jest',
     leading: 'na prowadzeniu {place}',
-    placedBelow: 'poza pierwszą {size} {place}',
+    placedBelow: 'Ten wybór jest poza pierwszą {size}. {place}',
     ordinalPlace: 'na {rank} miejscu {place}',
     mapTip: {
       live: '{votes} odp. | filtruj',

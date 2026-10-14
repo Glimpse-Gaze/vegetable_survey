@@ -22,3 +22,15 @@ CREATE TABLE IF NOT EXISTS custom_reason_votes (
   updated_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (comment_id, visitor_id)
 );
+
+CREATE TABLE IF NOT EXISTS issue_reports (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  message text NOT NULL,
+  locale text,
+  path text,
+  user_agent text
+);
+
+CREATE INDEX IF NOT EXISTS issue_reports_created_at_idx
+  ON issue_reports (created_at DESC);

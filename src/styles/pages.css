@@ -6,15 +6,222 @@
   padding:
     max(32px, env(safe-area-inset-top))
     max(20px, env(safe-area-inset-right))
-    max(64px, env(safe-area-inset-bottom))
+    max(72px, calc(56px + env(safe-area-inset-bottom)))
     max(20px, env(safe-area-inset-left));
 }
 
-.locale-switcher {
+.locale-tools {
   position: fixed;
   top: max(16px, env(safe-area-inset-top));
   right: max(16px, env(safe-area-inset-right));
   z-index: 80;
+}
+
+.locale-switcher {
+  position: relative;
+  display: inline-flex;
+}
+
+.report-issues-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 650;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(29, 42, 28, 0.04);
+}
+
+.report-issues-btn img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.report-issues-btn:hover {
+  background: var(--paper-deep);
+}
+
+.report-issues-btn:focus-visible {
+  outline: 3px solid rgba(44, 106, 56, 0.45);
+  outline-offset: 3px;
+}
+
+.report-issues-btn.is-fab {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 70;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(29, 42, 28, 0.12);
+}
+
+.report-issues-btn.is-fab img {
+  width: 20px;
+  height: 20px;
+}
+
+.report-issues-btn.is-drawer {
+  width: 100%;
+  justify-content: flex-start;
+  border-radius: 14px;
+}
+
+.report-issues-btn:disabled,
+.home-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .locale-switcher[data-tooltip]::after,
+  .report-issues-btn.is-fab[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    z-index: 90;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: var(--ink);
+    color: #f7fff6;
+    font-size: 0.78rem;
+    font-weight: 650;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 140ms ease, transform 140ms ease;
+  }
+
+  .locale-switcher[data-tooltip]::after {
+    top: calc(100% + 8px);
+    right: 0;
+  }
+
+  .report-issues-btn.is-fab[data-tooltip]::after {
+    right: calc(100% + 10px);
+    bottom: 50%;
+    transform: translateY(50%) translateX(4px);
+  }
+
+  .locale-switcher:hover[data-tooltip]::after,
+  .locale-switcher:focus-within[data-tooltip]::after,
+  .report-issues-btn.is-fab:hover[data-tooltip]::after,
+  .report-issues-btn.is-fab:focus-visible[data-tooltip]::after {
+    opacity: 1;
+    transform: none;
+  }
+
+  .report-issues-btn.is-fab:hover[data-tooltip]::after,
+  .report-issues-btn.is-fab:focus-visible[data-tooltip]::after {
+    transform: translateY(50%);
+  }
+}
+
+.report-card {
+  width: min(28rem, 100%);
+  text-align: left;
+}
+
+.report-card h2,
+.report-card > form > p:first-of-type {
+  text-align: center;
+}
+
+.report-label {
+  display: block;
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.report-textarea {
+  display: block;
+  width: 100%;
+  min-height: 9rem;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.report-textarea:focus-visible {
+  outline: 3px solid rgba(44, 106, 56, 0.45);
+  outline-offset: 2px;
+}
+
+.report-count {
+  margin: 8px 0 14px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: right;
+}
+
+.brand-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  padding: 0 64px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  text-align: center;
+  pointer-events: none;
+}
+
+.brand-footer a {
+  color: var(--green-deep);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  pointer-events: auto;
+}
+
+.brand-footer a:hover {
+  color: var(--green);
+}
+
+.brand-footer-mark {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 50%;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.brand-footer--results {
+  position: static;
+  margin: 28px auto 8px;
+  padding: 0;
 }
 
 .locale-switcher select {
@@ -41,6 +248,8 @@
 }
 
 .home-panel {
+  position: relative;
+  z-index: 1;
   width: min(40rem, 100%);
   text-align: center;
   animation: rise 320ms ease;
