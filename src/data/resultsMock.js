@@ -1,5 +1,6 @@
 import { CONTINENTS } from './continents.js';
 import { bucketItems } from './bucketItems.js';
+import beetroot from '../content/Beetroot.jpg';
 import broccoli from '../content/Broccoli.jpg';
 import brusselsSprouts from '../content/Brussel_sprouts.jpg';
 import cabbage from '../content/Cabbage.jpg';
@@ -9,14 +10,17 @@ import celery from '../content/Celery.jpg';
 import greenBean from '../content/Green_Bean.jpg';
 import corn from '../content/Corn.jpg';
 import cucumber from '../content/Cucumber.jpg';
+import kale from '../content/Kale.jpg';
 import lettuce from '../content/Lettuce.jpg';
 import onion from '../content/Onion.jpg';
 import pakChoi from '../content/Pok_choi.jpg';
 import potato from '../content/Potato.jpg';
 import pumpkin from '../content/Pumpkin.jpg';
+import rapeseed from '../content/Rapeseed.jpg';
 import sweetPotato from '../content/Sweet_Potato.jpg';
 import tomato from '../content/Tomato.jpg';
 import turnip from '../content/Turnips.jpg';
+import zucchini from '../content/Zucchini.jpg';
 import placeholder from '../content/Placeholder.jpg';
 import { DEV_SPEEDRUN } from './devSpeedrun.js';
 import { vegetables } from './vegetables.js';
@@ -29,6 +33,7 @@ import { languages } from './languages.js';
 import { SPECTRUM_METHOD } from './spectrumVegetables.js';
 
 export const VEGETABLE_ART = {
+  beetroot,
   broccoli,
   brussels_sprouts: brusselsSprouts,
   cabbage,
@@ -38,17 +43,22 @@ export const VEGETABLE_ART = {
   green_bean: greenBean,
   corn,
   cucumber,
+  kale,
   lettuce,
+  marrow: zucchini,
   onion,
   pak_choi: pakChoi,
   potato,
   pumpkin,
+  rapeseed,
   sweet_potato: sweetPotato,
   tomato,
   turnip,
+  zucchini,
 };
 
 export const VEGETABLE_LABELS = {
+  beetroot: 'Beetroot',
   broccoli: 'Broccoli',
   brussels_sprouts: 'Brussels sprouts',
   cabbage: 'Cabbage',
@@ -58,14 +68,18 @@ export const VEGETABLE_LABELS = {
   celery: 'Celery',
   corn: 'Corn',
   cucumber: 'Cucumber',
+  kale: 'Kale',
   lettuce: 'Lettuce',
+  marrow: 'Marrow',
   onion: 'Onion',
   pak_choi: 'Pak choi',
   potato: 'Potato',
   pumpkin: 'Pumpkin',
+  rapeseed: 'Rapeseed',
   sweet_potato: 'Sweet potato',
   tomato: 'Tomato',
   turnip: 'Turnip',
+  zucchini: 'Zucchini',
 };
 
 const CATALOGUE_NAMES = Object.fromEntries(
@@ -380,7 +394,7 @@ const BUCKET_ITEM_VOTES = {
   celery: { not_vegetable: 105, in_between: 210, definitely_vegetable: 385 },
   pak_choi: { not_vegetable: 140, in_between: 210, definitely_vegetable: 350 },
   rocket: { not_vegetable: 175, in_between: 210, definitely_vegetable: 315 },
-  bamboo_shoot: { not_vegetable: 140, in_between: 210, definitely_vegetable: 350 },
+  bamboo_shoots: { not_vegetable: 140, in_between: 210, definitely_vegetable: 350 },
   lotus_root: { not_vegetable: 175, in_between: 245, definitely_vegetable: 280 },
 };
 
@@ -396,7 +410,7 @@ function userBucketsFromAnswers(answers) {
   return map;
 }
 
-function overlayCategory(category, answers) {
+export function overlayCategory(category, answers) {
   if (!answers) {
     return {
       ...category,

@@ -3,6 +3,7 @@ import { useI18n } from '../../i18n/useI18n.js';
 import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import {
   emptyBuckets,
+  isCompleteBuckets,
   placedBucketIds,
 } from '../../data/bucketItems.js';
 import { shuffleSpectrumVegetables } from '../../data/spectrumVegetables.js';
@@ -23,7 +24,7 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
   const [armedId, setArmedId] = useState(null);
   const placed = placedBucketIds(buckets);
   const palette = paletteOrder.filter((item) => !placed.includes(item.id));
-  const canContinue = placed.length === bucketItems.length;
+  const canContinue = isCompleteBuckets(buckets);
 
   useEffect(() => {
     let origin = null;

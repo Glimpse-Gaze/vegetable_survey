@@ -2,13 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { BUCKET_IDS } from '../../data/bucketItems.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
-
-const GHOST_MS = 300;
-const SLOP = 12;
-
-const nativeDrag =
-  typeof window !== 'undefined' &&
-  window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+import {
+  HOLD_MS,
+  HOLD_SLOP,
+  attachHoldTracking,
+  buzzArmed,
+  detachHoldTracking,
+  isTouchLikePointer,
+  movementExceeded,
+  shouldTrackWithTouch,
+  supportsNativeDrag,
+} from '../../utils/touchHoldDrag.js';
 
 function BucketTile({
   item,
@@ -38,7 +42,7 @@ function BucketTile({
         ]
           .filter(Boolean)
           .join(' ')}
-        draggable={nativeDrag}
+        draggable={supportsNativeDrag}
         onClick={(event) => {
           event.stopPropagation();
           if (locked) return;
@@ -147,7 +151,7 @@ export function BucketBoard({
     const current = session.current;
     if (current) {
       window.clearTimeout(current.timer);
-      unlisten(current);
+      detachHoldTracking(current);
     }
     session.current = null;
     setPressedId(null);
@@ -159,7 +163,8 @@ export function BucketBoard({
 
   useEffect(() => {
     function blockScroll(event) {
-      if (session.current?.armed) event.preventDefault();
+      // Block as soon as a hold session exists so older iOS cannot steal the gesture.
+      if (session.current) event.preventDefault();
     }
 
     function blockCallout(event) {
@@ -208,29 +213,20 @@ export function BucketBoard({
   function detach(current) {
     if (current.detached) return;
     current.detached = true;
+    current.armed = true;
     suppressClick.current = true;
     window.getSelection()?.removeAllRanges();
+    buzzArmed();
     setDragId(current.id);
     setGhost(ghostFrom(current, current.lastX ?? current.x, current.lastY ?? current.y));
   }
 
-  function unlisten(current) {
-    if (!current?.onMove) return;
-    window.removeEventListener('pointermove', current.onMove);
-    window.removeEventListener('pointerup', current.onUp);
-    window.removeEventListener('pointercancel', current.onUp);
-    window.removeEventListener('touchmove', current.onTouchMove);
-    window.removeEventListener('touchend', current.onTouchEnd);
-    window.removeEventListener('touchcancel', current.onTouchEnd);
-  }
-
   function onTouchStart(event, item, bucketId, locked = false) {
-    if (event.pointerType === 'mouse') return;
-    if (event.button != null && event.button !== 0) return;
+    if (!isTouchLikePointer(event)) return;
     const previous = session.current;
     if (previous) {
       window.clearTimeout(previous.timer);
-      unlisten(previous);
+      detachHoldTracking(previous);
     }
     const box = event.currentTarget.getBoundingClientRect();
     const next = {
@@ -250,92 +246,72 @@ export function BucketBoard({
       timer: 0,
       onMove: null,
       onUp: null,
+      onTouchMove: null,
+      onTouchEnd: null,
     };
     next.timer = window.setTimeout(() => {
       if (session.current !== next) return;
-      next.armed = true;
       detach(next);
-    }, GHOST_MS);
-    next.onMove = (moveEvent) => onTouchMove(moveEvent);
-    next.onUp = (endEvent) => onTouchEnd(endEvent);
-    next.onTouchMove = (touchEvent) => {
-      const touch = touchEvent.touches[0];
-      if (!touch || session.current !== next) return;
-      onTouchMove({
-        pointerId: next.pointerId,
-        clientX: touch.clientX,
-        clientY: touch.clientY,
-      });
-      if (session.current?.armed) touchEvent.preventDefault();
-    };
-    next.onTouchEnd = (touchEvent) => {
-      const touch = touchEvent.changedTouches[0];
-      onTouchEnd({
-        type: touchEvent.type === 'touchcancel' ? 'pointercancel' : 'pointerup',
-        pointerId: next.pointerId,
-        clientX: touch?.clientX ?? next.lastX,
-        clientY: touch?.clientY ?? next.lastY,
-      });
-    };
-    if (event.pointerType === 'touch') {
-      window.addEventListener('touchmove', next.onTouchMove, { passive: false });
-      window.addEventListener('touchend', next.onTouchEnd);
-      window.addEventListener('touchcancel', next.onTouchEnd);
-    } else {
-      window.addEventListener('pointermove', next.onMove);
-      window.addEventListener('pointerup', next.onUp);
-      window.addEventListener('pointercancel', next.onUp);
-    }
-    session.current = next;
-    setPressedId(item.id);
-  }
+    }, HOLD_MS);
 
-  function onTouchMove(event) {
-    const current = session.current;
-    if (!current || current.pointerId !== event.pointerId) return;
-    current.lastX = event.clientX;
-    current.lastY = event.clientY;
-    const dx = event.clientX - current.x;
-    const dy = event.clientY - current.y;
-    if (!current.armed) {
-      if (dx * dx + dy * dy > SLOP * SLOP) {
-        window.clearTimeout(current.timer);
-        unlisten(current);
-        session.current = null;
-        setPressedId(null);
+    function onMove(moveEvent) {
+      const current = session.current;
+      if (!current || current !== next || current.pointerId !== moveEvent.pointerId) {
+        return false;
       }
-      return;
+      current.lastX = moveEvent.clientX;
+      current.lastY = moveEvent.clientY;
+      if (!current.armed) {
+        if (movementExceeded(current.x, current.y, moveEvent.clientX, moveEvent.clientY, HOLD_SLOP)) {
+          window.clearTimeout(current.timer);
+          detachHoldTracking(current);
+          session.current = null;
+          setPressedId(null);
+          return false;
+        }
+        // Still within slop: claim gesture so the page does not scroll.
+        return true;
+      }
+      if (!current.detached) return true;
+      setGhost(ghostFrom(current, moveEvent.clientX, moveEvent.clientY));
+      highlightUnder(moveEvent.clientX, moveEvent.clientY);
+      return true;
     }
-    if (!current.detached) return;
-    setGhost(ghostFrom(current, event.clientX, event.clientY));
-    highlightUnder(event.clientX, event.clientY);
-  }
 
-  function onTouchEnd(event) {
-    const current = session.current;
-    if (!current || current.pointerId !== event.pointerId) return;
-    window.clearTimeout(current.timer);
-    unlisten(current);
-    const detached = current.detached;
-    const id = current.id;
-    session.current = null;
-    if (!detached) {
-      setPressedId(null);
-      if (event.type === 'pointercancel' || current.locked) return;
-      suppressClick.current = true;
+    function onUp(endEvent) {
+      const current = session.current;
+      if (!current || current !== next || current.pointerId !== endEvent.pointerId) return;
+      window.clearTimeout(current.timer);
+      detachHoldTracking(current);
+      const detached = current.detached;
+      const id = current.id;
+      session.current = null;
+      if (!detached) {
+        setPressedId(null);
+        if (endEvent.type === 'pointercancel' || current.locked) return;
+        suppressClick.current = true;
+        window.setTimeout(() => {
+          suppressClick.current = false;
+        }, 450);
+        finishTap(id, current.bucketId);
+        return;
+      }
       window.setTimeout(() => {
         suppressClick.current = false;
-      }, 450);
-      finishTap(id, current.bucketId);
-      return;
+      }, 400);
+      const hit = findDrop(endEvent.clientX, endEvent.clientY);
+      if (hit?.bucketId) onPlace(id, hit.bucketId);
+      else if (hit?.palette) onReturnToPalette(id);
+      clearSession();
     }
-    window.setTimeout(() => {
-      suppressClick.current = false;
-    }, 400);
-    const hit = findDrop(event.clientX, event.clientY);
-    if (hit?.bucketId) onPlace(id, hit.bucketId);
-    else if (hit?.palette) onReturnToPalette(id);
-    clearSession();
+
+    attachHoldTracking(next, {
+      onMove,
+      onUp,
+      useTouch: shouldTrackWithTouch(event),
+    });
+    session.current = next;
+    setPressedId(item.id);
   }
 
   function finishTap(id, bucketId) {

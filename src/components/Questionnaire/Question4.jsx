@@ -169,7 +169,7 @@ export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
         <span className="copy-coarse">{t('q4.coarse')}</span>
       </p>
 
-      <form className="question-form" onSubmit={handleSubmit}>
+      <form className="question-form is-no-select" onSubmit={handleSubmit}>
         <SpectrumBoard
           palette={palette}
           slots={slots}

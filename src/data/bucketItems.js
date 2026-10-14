@@ -54,12 +54,15 @@ export function placedBucketIds(buckets) {
   return BUCKET_IDS.flatMap((bucketId) => buckets?.[bucketId] ?? []);
 }
 
-export function isCompleteBuckets(buckets) {
+/** Minimum items a respondent must sort before continuing Q3. */
+export const MIN_SORTED_BUCKETS = 15;
+
+export function isCompleteBuckets(buckets, minimum = MIN_SORTED_BUCKETS) {
   if (!buckets) return false;
   const placed = placedBucketIds(buckets);
   const unique = new Set(placed);
   return (
-    unique.size === bucketItems.length &&
+    unique.size >= minimum &&
     placed.every((id) => getBucketItem(id))
   );
 }

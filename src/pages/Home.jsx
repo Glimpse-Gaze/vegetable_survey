@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { BrandFooter } from '../components/BrandFooter.jsx';
 import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { useI18n } from '../i18n/useI18n.js';
 import { withLocale } from '../i18n/paths.js';
@@ -42,6 +43,7 @@ export function Home() {
           </button>
         </div>
       </section>
+      <BrandFooter className="brand-footer--page" />
       {askResults ? (
         <ConfirmDialog
           title={t('home.skipTitle')}

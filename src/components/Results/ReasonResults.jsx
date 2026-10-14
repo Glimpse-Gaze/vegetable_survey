@@ -25,8 +25,8 @@ function formatVotes(n, t, numberLocale) {
 }
 
 function formatShare(share) {
-  const pct = share * 100;
-  if (pct < 1) return '<1%';
+  const pct = Math.min(100, Math.max(0, (share ?? 0) * 100));
+  if (pct > 0 && pct < 1) return '<1%';
   return `${Math.round(pct)}%`;
 }
 

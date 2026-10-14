@@ -4,7 +4,7 @@
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import sharp from 'sharp';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -12,9 +12,44 @@ const contentDir = path.join(root, 'src', 'content');
 const MAX_EDGE = 960;
 const QUALITY = 78;
 const SKIP_UNDER_KB = 400;
-const force = process.argv.includes('--force');
 
-async function compressFile(filePath) {
+export async function compressContentImages({
+  force = false,
+  log = console.log,
+} = {}) {
+  let entries;
+  try {
+    entries = await fs.readdir(contentDir, { withFileTypes: true });
+  } catch (error) {
+    if (error?.code === 'ENOENT') return [];
+    throw error;
+  }
+
+  const jpgs = entries
+    .filter((entry) => entry.isFile() && /\.jpe?g$/i.test(entry.name))
+    .map((entry) => path.join(contentDir, entry.name));
+
+  const results = [];
+  for (const filePath of jpgs) {
+    results.push(await compressFile(filePath, force));
+  }
+
+  for (const result of results) {
+    if (result.skipped) {
+      log(
+        `${result.file}: skipped${result.reason ? ` (${result.reason})` : ''}`,
+      );
+      continue;
+    }
+    const beforeKb = (result.before / 1024).toFixed(1);
+    const afterKb = (result.after / 1024).toFixed(1);
+    log(`${result.file}: ${beforeKb} KB → ${afterKb} KB`);
+  }
+
+  return results;
+}
+
+async function compressFile(filePath, force) {
   const before = (await fs.stat(filePath)).size;
   if (!force && before < SKIP_UNDER_KB * 1024) {
     return { file: path.basename(filePath), skipped: true, before };
@@ -33,7 +68,12 @@ async function compressFile(filePath) {
     .toBuffer();
 
   if (output.length >= before && !force) {
-    return { file: path.basename(filePath), skipped: true, before, reason: 'no-gain' };
+    return {
+      file: path.basename(filePath),
+      skipped: true,
+      before,
+      reason: 'no-gain',
+    };
   }
 
   await fs.writeFile(filePath, output);
@@ -44,24 +84,10 @@ async function compressFile(filePath) {
   };
 }
 
-const entries = await fs.readdir(contentDir, { withFileTypes: true });
-const jpgs = entries
-  .filter((entry) => entry.isFile() && /\.jpe?g$/i.test(entry.name))
-  .map((entry) => path.join(contentDir, entry.name));
+const isCli =
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 
-const results = [];
-for (const file of jpgs) {
-  results.push(await compressFile(file));
-}
-
-for (const result of results) {
-  if (result.skipped) {
-    console.log(
-      `${result.file}: skipped${result.reason ? ` (${result.reason})` : ''}`,
-    );
-    continue;
-  }
-  const beforeKb = (result.before / 1024).toFixed(1);
-  const afterKb = (result.after / 1024).toFixed(1);
-  console.log(`${result.file}: ${beforeKb} KB → ${afterKb} KB`);
+if (isCli) {
+  await compressContentImages({ force: process.argv.includes('--force') });
 }

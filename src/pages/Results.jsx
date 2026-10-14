@@ -23,24 +23,28 @@ import {
   getCategory,
   getSection,
   nextCategoryId,
-  REGION_GROUPS,
-  REGIONS,
+  overlayCategory,
   BLADE_BOARD_SIZE,
   VEGETABLE_LABELS,
   VEGETABLE_ART,
   ALL_LANGUAGES_ID,
-  LIVE_COUNTRIES,
   VOTE_THRESHOLD,
-  languagesForRegion,
-  regionsForLanguage,
-  nativeCount,
 } from '../data/resultsMock.js';
 import {
   applyLiveBlend,
   emptyLiveSummary,
   isMixingLive,
-  mapCountriesFromLive,
 } from '../data/blendLiveResults.js';
+import {
+  buildLiveSection,
+  filterBallots,
+  filterableLanguages,
+  filterablePlaceIds,
+  isGlobalResultsView,
+  livePlaceTallies,
+  mapCountriesFromLiveTallies,
+  placeFilterGroups,
+} from '../data/liveFilter.js';
 import { bandForRank } from '../data/spectrumVegetables.js';
 import placeholder from '../content/Placeholder.jpg';
 import '../styles/results.css';
@@ -652,40 +656,35 @@ function filterSummary(section, t) {
   const place =
     section.region.id === 'global' ? t('results.worldRegion') : section.region.name;
   const language = section.language ? ` · ${section.language.name}` : '';
-  const count = section.language ? section.responseCount : section.region.votes;
+  const count = section.responseCount ?? section.region.votes ?? 0;
   return t('results.showing', { place, language, count });
 }
 
-function PlaceFilter({ regionId, placeIds, onRegion }) {
+function PlaceFilter({ regionId, groups, onRegion }) {
   const { t } = useI18n();
   const catalog = useSurveyCatalog();
   return (
     <label className="map-select">
       <span>{t('results.filterPlace')}</span>
       <select value={regionId} onChange={(event) => onRegion(event.target.value)}>
-        {REGION_GROUPS.map((group) => {
-          const ids = group.ids.filter((id) => placeIds.has(id));
-          if (!ids.length) return null;
-          return (
-            <optgroup
-              key={group.label}
-              label={t(`results.regionGroups.${group.label}`)}
-            >
-              {ids.map((id) => {
-                const region = REGIONS.find((item) => item.id === id);
-                const name =
-                  id === 'global'
-                    ? t('results.worldRegion')
-                    : catalog.countriesById.get(id)?.name ?? region.name;
-                return (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                );
-              })}
-            </optgroup>
-          );
-        })}
+        {groups.map((group) => (
+          <optgroup
+            key={group.label}
+            label={t(`results.regionGroups.${group.label}`)}
+          >
+            {group.ids.map((id) => {
+              const name =
+                id === 'global'
+                  ? t('results.worldRegion')
+                  : catalog.countriesById.get(id)?.name ?? id;
+              return (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              );
+            })}
+          </optgroup>
+        ))}
       </select>
     </label>
   );
@@ -747,44 +746,74 @@ export function Results() {
     };
   }, []);
 
+  const helpers = useMemo(() => ({
+    artFor: (id) => VEGETABLE_ART[id] ?? placeholder,
+    labelFor: (id) =>
+      catalog.vegetablesById?.get(id)?.name
+      ?? VEGETABLE_LABELS[id]
+      ?? id,
+    bandForRank,
+    boardSize: BLADE_BOARD_SIZE,
+  }), [catalog.vegetablesById]);
+
   const section = useMemo(() => {
-    const raw = getSection(category.id, regionId, userAnswers, languageId);
-    const blended = applyLiveBlend(raw, category.id, liveSummary, {
-      artFor: (id) => VEGETABLE_ART[id] ?? placeholder,
-      labelFor: (id) =>
-        catalog.vegetablesById?.get(id)?.name
-        ?? VEGETABLE_LABELS[id]
-        ?? id,
-      bandForRank,
-    });
-    return localizeResultsSection(blended, catalog, t, locale);
-  }, [category.id, regionId, userAnswers, languageId, liveSummary, catalog, t, locale]);
-  const mixingLive = isMixingLive(liveSummary);
-  const languageOptions = useMemo(
-    () => languagesForRegion(regionId),
-    [regionId],
+    const overlaid = overlayCategory(category, userAnswers);
+    let raw;
+    if (isGlobalResultsView(regionId, languageId)) {
+      // Global view keeps mock standings, then weights in real votes.
+      const mock = getSection(category.id, regionId, userAnswers, languageId);
+      raw = applyLiveBlend(mock, category.id, liveSummary, helpers);
+    } else {
+      // Region / language filters are live-only — no mock reweighting.
+      raw = buildLiveSection(
+        overlaid,
+        regionId,
+        languageId,
+        liveSummary.ballots,
+        helpers,
+      );
+    }
+    return localizeResultsSection(raw, catalog, t, locale);
+  }, [category, regionId, userAnswers, languageId, liveSummary, helpers, catalog, t, locale]);
+  const mixingLive = isMixingLive(liveSummary)
+    && isGlobalResultsView(regionId, languageId);
+
+  const placeGroups = useMemo(
+    () => placeFilterGroups(liveSummary.ballots, VOTE_THRESHOLD),
+    [liveSummary.ballots],
   );
-  const placeIds = useMemo(
-    () => new Set(regionsForLanguage(languageId)),
-    [languageId],
+  const allowedPlaceIds = useMemo(
+    () => filterablePlaceIds(liveSummary.ballots, VOTE_THRESHOLD),
+    [liveSummary.ballots],
+  );
+  const languageOptions = useMemo(
+    () => filterableLanguages(liveSummary.ballots, regionId, VOTE_THRESHOLD),
+    [liveSummary.ballots, regionId],
   );
   const liveCountries = useMemo(() => {
-    const mock = LIVE_COUNTRIES
-      .filter((country) => placeIds.has(country.id))
-      .map((country) => ({
-        ...country,
-        votes: languageId === ALL_LANGUAGES_ID
-          ? country.votes
-          : nativeCount(country.id, languageId),
-      }));
-    const merged = mapCountriesFromLive(mock, liveSummary.places);
-    return merged.filter((country) => {
-      if (placeIds.has(country.id)) return true;
-      // Show emerging live-only countries on the world map.
-      return (country.liveCount ?? country.votes ?? 0) > 0
-        && (country.votes ?? 0) < VOTE_THRESHOLD;
-    });
-  }, [placeIds, languageId, liveSummary.places]);
+    const scoped = filterBallots(
+      liveSummary.ballots,
+      'global',
+      languageId,
+    );
+    return mapCountriesFromLiveTallies(livePlaceTallies(scoped));
+  }, [liveSummary.ballots, languageId]);
+
+  // Drop filters that are no longer allowed once live tallies load.
+  useEffect(() => {
+    if (!liveSummary.ballots) return;
+    if (regionId !== 'global' && !allowedPlaceIds.has(regionId)) {
+      setRegionId('global');
+      setLanguageId(ALL_LANGUAGES_ID);
+      return;
+    }
+    if (
+      languageId !== ALL_LANGUAGES_ID
+      && !languageOptions.some((item) => item.id === languageId)
+    ) {
+      setLanguageId(ALL_LANGUAGES_ID);
+    }
+  }, [liveSummary.ballots, allowedPlaceIds, languageOptions, regionId, languageId]);
   const nextId = nextCategoryId(category.id);
   const alignment =
     category.layout === 'blades' ? alignmentCopy(section, t) : null;
@@ -881,20 +910,29 @@ export function Results() {
   }
 
   function selectRegion(id) {
+    if (id !== 'global' && !allowedPlaceIds.has(id)) return;
     startTransition(() => {
       setRegionId(id);
-      setLanguageId((current) => (
-        current !== ALL_LANGUAGES_ID
-        && id !== 'global'
-        && nativeCount(id, current) === 0
-          ? ALL_LANGUAGES_ID
-          : current
-      ));
+      setLanguageId((current) => {
+        if (current === ALL_LANGUAGES_ID) return current;
+        const stillAllowed = filterableLanguages(
+          liveSummary.ballots,
+          id,
+          VOTE_THRESHOLD,
+        ).some((item) => item.id === current);
+        return stillAllowed ? current : ALL_LANGUAGES_ID;
+      });
     });
     revealBlades();
   }
 
   function selectLanguage(id) {
+    if (
+      id !== ALL_LANGUAGES_ID
+      && !languageOptions.some((item) => item.id === id)
+    ) {
+      return;
+    }
     startTransition(() => {
       setLanguageId(id);
     });
@@ -1007,7 +1045,7 @@ export function Results() {
           ) : null}
           <PlaceFilter
             regionId={regionId}
-            placeIds={placeIds}
+            groups={placeGroups}
             onRegion={selectRegion}
           />
           <LanguageFilter
@@ -1089,7 +1127,7 @@ export function Results() {
               </div>
               <PlaceFilter
                 regionId={regionId}
-                placeIds={placeIds}
+                groups={placeGroups}
                 onRegion={selectRegion}
               />
             </div>

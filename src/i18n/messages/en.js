@@ -13,12 +13,13 @@ export const en = {
   brand: {
     createdPrefix: 'Created for fun by',
     name: 'Glimpse & Gaze',
+    support: 'Support me',
   },
   report: {
     button: 'Report issues',
     title: 'Report issues',
     description:
-      'Did you spot a bug, have an idea for a new feature, or just want to say hello? Send a note here – I’m an independent developer building this for fun, and I’ll do my best to help.',
+      'Did you spot a bug, have an idea for a new feature, or just want to say hello? Send a note here – I’m an independent developer building all this for fun, but I’ll do my best to help.',
     fieldLabel: 'Your message',
     placeholder: 'Describe the issue or a suggestion…',
     charsLeft: '{count} characters left',
@@ -26,7 +27,7 @@ export const en = {
     sending: 'Sending…',
     close: 'Close',
     thanksTitle: 'Thanks!',
-    thanksMessage: 'Your note was sent. I appreciate you taking the time.',
+    thanksMessage: 'Your note was sent. Cheers!',
     error: 'Could not send the report. Please try again later.',
   },
   home: {
@@ -84,8 +85,9 @@ export const en = {
     fine: 'Drag the items, or click a bucket and then an item.',
     coarse:
       'Tap a bucket, then an item – or tap an item, then a bucket. Hold an item to drag it. Tap × on a sorted item to put it back.',
-    continueHint: 'Sort every item',
-    toSort: 'Items to sort',
+    continueHint: 'Sort at least 15 items',
+    toSort:
+      "Sort at least 15 of these items. If you don't know any, leave them here.",
     returnItem: 'Return {name} to the list',
   },
   buckets: {
@@ -254,10 +256,10 @@ export const en = {
     byPlace: 'Global opinions',
     mapTitle: 'Where people answered from',
     mapCopy:
-      'By default, the results show global votes, including those who have chosen not to disclose their birthplace. The results can be filtered using the map shown below. Only regions with at least 20 responses are filterable. If your country is missing, please encourage more people to vote!',
+      'By default, the results show global votes, including those who have chosen not to disclose their birthplace. Place and language filters use real answers only, and only unlock once a region or language has at least 20 responses. If your country is missing, please encourage more people to vote!',
     mapStatus: 'Showing {place}{language} · {count} answers',
     mixDisclaimer:
-      'Current results mix real answers with artificially generated ones. Please invite more people to vote, so we can display only human-made answers!',
+      'Current global results mix real answers with artificially generated ones. Filtered views show real answers only. Please invite more people to vote, so we can display only human-made answers!',
     youVotedFor: 'You voted for',
     people: 'people',
     speakers: '{language} speakers',

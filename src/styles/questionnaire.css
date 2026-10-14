@@ -50,7 +50,7 @@ body {
   min-height: 100svh;
   display: flex;
   justify-content: center;
-  padding: 32px 20px 96px;
+  padding: 32px 20px max(48px, env(safe-area-inset-bottom));
 }
 
 .questionnaire {
@@ -564,6 +564,8 @@ h1.eyebrow {
   color: var(--ink);
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
@@ -584,6 +586,16 @@ h1.eyebrow {
   background: var(--card);
   box-shadow: 0 8px 18px rgba(47, 38, 22, 0.12);
   cursor: grab;
+  /* Buttons often ignore touch-action on older iOS; slots must claim the gesture. */
+  touch-action: none;
+}
+
+.spectrum-slot.is-filled.is-pressed {
+  background: #e4dccb;
+}
+
+.spectrum-slot.is-detached {
+  opacity: 0.35;
 }
 
 .spectrum-slot.is-filled:hover {
@@ -616,9 +628,12 @@ h1.eyebrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 20px;
-  margin-right: 10px;
+  flex: 0 0 28px;
+  align-self: stretch;
+  margin: -8px 6px -8px -8px;
+  padding: 8px;
   color: var(--muted);
+  touch-action: none;
 }
 
 .spectrum-grip-icon {
@@ -980,17 +995,25 @@ h1.eyebrow {
   padding: 22px 16px;
 }
 
+.bucket-tile {
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
 .buckets .spectrum-tile {
   flex: none;
   width: 100%;
   min-width: 0;
   height: var(--tile-h);
   touch-action: none;
+  -webkit-touch-callout: none;
 }
 
 .spectrum .spectrum-palette .spectrum-tile,
-.spectrum-grip {
+.spectrum-grip,
+.spectrum-slot.is-filled {
   touch-action: none;
+  -webkit-touch-callout: none;
 }
 
 .bucket-items .spectrum-tile {
@@ -1335,6 +1358,7 @@ h1.eyebrow {
   position: fixed;
   left: 50%;
   bottom: 24px;
+  z-index: 100;
   transform: translateX(-50%) translateY(16px);
   width: max-content;
   max-width: min(18rem, calc(100% - 32px));
@@ -1376,7 +1400,7 @@ h1.eyebrow {
 .confirm-layer {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: 110;
   display: grid;
   place-items: center;
   padding: 24px;
@@ -1440,7 +1464,7 @@ h1.eyebrow {
     padding:
       max(20px, env(safe-area-inset-top))
       max(16px, env(safe-area-inset-right))
-      max(88px, calc(72px + env(safe-area-inset-bottom)))
+      max(40px, env(safe-area-inset-bottom))
       max(16px, env(safe-area-inset-left));
   }
 

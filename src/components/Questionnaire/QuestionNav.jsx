@@ -1,4 +1,5 @@
 import { useI18n } from '../../i18n/useI18n.js';
+import { BrandFooter } from '../BrandFooter.jsx';
 
 export function QuestionNav({
   onBack,
@@ -24,40 +25,43 @@ export function QuestionNav({
   }
 
   return (
-    <div className="question-nav">
-      <div className="back-wrap">
-        <button
-          className={locked ? 'back-button is-disabled' : 'back-button'}
-          type="button"
-          aria-disabled={locked ? true : undefined}
-          aria-describedby={backHint ? backHintId : undefined}
-          onClick={handleBack}
-        >
-          {t('nav.back')}
-        </button>
-        {backHint ? (
-          <span className="back-hint" role="tooltip" id={backHintId}>
-            {backHint}
-          </span>
-        ) : null}
+    <>
+      <div className="question-nav">
+        <div className="back-wrap">
+          <button
+            className={locked ? 'back-button is-disabled' : 'back-button'}
+            type="button"
+            aria-disabled={locked ? true : undefined}
+            aria-describedby={backHint ? backHintId : undefined}
+            onClick={handleBack}
+          >
+            {t('nav.back')}
+          </button>
+          {backHint ? (
+            <span className="back-hint" role="tooltip" id={backHintId}>
+              {backHint}
+            </span>
+          ) : null}
+        </div>
+        <div className="continue-wrap">
+          <button
+            className="continue-button"
+            type="submit"
+            disabled={continueDisabled}
+            aria-describedby={
+              continueDisabled && continueHint ? continueHintId : undefined
+            }
+          >
+            {t('nav.continue')}
+          </button>
+          {continueDisabled && continueHint ? (
+            <span className="continue-hint" role="tooltip" id={continueHintId}>
+              {continueHint}
+            </span>
+          ) : null}
+        </div>
       </div>
-      <div className="continue-wrap">
-        <button
-          className="continue-button"
-          type="submit"
-          disabled={continueDisabled}
-          aria-describedby={
-            continueDisabled && continueHint ? continueHintId : undefined
-          }
-        >
-          {t('nav.continue')}
-        </button>
-        {continueDisabled && continueHint ? (
-          <span className="continue-hint" role="tooltip" id={continueHintId}>
-            {continueHint}
-          </span>
-        ) : null}
-      </div>
-    </div>
+      <BrandFooter className="brand-footer--page" />
+    </>
   );
 }

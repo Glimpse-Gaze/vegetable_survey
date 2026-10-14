@@ -50,6 +50,49 @@ function emptySpectrumSlots() {
   return Array.from({ length: SPECTRUM_SLOTS }, () => 0);
 }
 
+function compactBallot(payload, index) {
+  const buckets = {};
+  const sortBuckets = payload?.sortBuckets;
+  if (sortBuckets && typeof sortBuckets === 'object') {
+    for (const [columnId, ids] of Object.entries(sortBuckets)) {
+      if (!Array.isArray(ids)) continue;
+      for (const rawId of ids) {
+        const id = normalizeBucketId(rawId);
+        if (!id) continue;
+        buckets[id] = columnId;
+      }
+    }
+  }
+
+  const spectrum = Array.isArray(payload?.spectrum)
+    ? payload.spectrum.map((id) => String(id ?? '').trim()).filter(Boolean)
+    : [];
+
+  const custom = String(payload?.customCriterion ?? '').trim();
+  const note = payload?.openDescription;
+  const noteText = String(note?.text ?? '').trim();
+
+  return {
+    place: placeId(payload),
+    languages: languageIds(payload),
+    association: voteId(payload?.initialAssociation),
+    mostVegetable: voteId(payload?.mostVegetable),
+    criteria: Array.isArray(payload?.initialCriteria)
+      ? payload.initialCriteria.map((id) => String(id ?? '').trim()).filter(Boolean)
+      : [],
+    buckets,
+    spectrum: spectrum.length === SPECTRUM_SLOTS ? spectrum : [],
+    customReason:
+      custom && payload?.customCriterionPublic
+        ? { id: `live-reason-${index}`, text: custom.slice(0, 280) }
+        : null,
+    note:
+      noteText && note?.publicDisplay
+        ? { id: `live-note-${index}`, text: noteText.slice(0, 1200) }
+        : null,
+  };
+}
+
 function aggregatePayloads(payloads) {
   const associations = {};
   const mostVegetable = {};
@@ -60,73 +103,49 @@ function aggregatePayloads(payloads) {
   const spectrum = {};
   const customReasons = [];
   const notes = [];
+  const ballots = [];
 
   payloads.forEach((payload, index) => {
-    const assoc = voteId(payload?.initialAssociation);
-    bump(associations, assoc);
+    const ballot = compactBallot(payload, index);
+    ballots.push(ballot);
 
-    const most = voteId(payload?.mostVegetable);
-    bump(mostVegetable, most);
+    bump(associations, ballot.association);
+    bump(mostVegetable, ballot.mostVegetable);
 
-    for (const criterion of payload?.initialCriteria ?? []) {
+    for (const criterion of ballot.criteria) {
       bump(criteria, criterion);
     }
 
-    bump(places, placeId(payload));
-    for (const language of languageIds(payload)) {
+    bump(places, ballot.place);
+    for (const language of ballot.languages) {
       bump(languages, language);
     }
 
-    const sortBuckets = payload?.sortBuckets;
-    if (sortBuckets && typeof sortBuckets === 'object') {
-      for (const [columnId, ids] of Object.entries(sortBuckets)) {
-        if (!Array.isArray(ids)) continue;
-        for (const rawId of ids) {
-          const id = normalizeBucketId(rawId);
-          if (!id) continue;
-          if (!buckets[id]) {
-            buckets[id] = {
-              not_vegetable: 0,
-              in_between: 0,
-              definitely_vegetable: 0,
-            };
-          }
-          if (columnId in buckets[id]) {
-            buckets[id][columnId] += 1;
-          }
-        }
+    for (const [id, columnId] of Object.entries(ballot.buckets)) {
+      if (!buckets[id]) {
+        buckets[id] = {
+          not_vegetable: 0,
+          in_between: 0,
+          definitely_vegetable: 0,
+        };
+      }
+      if (columnId in buckets[id]) {
+        buckets[id][columnId] += 1;
       }
     }
 
-    const ranking = payload?.spectrum;
-    if (Array.isArray(ranking) && ranking.length === SPECTRUM_SLOTS) {
-      ranking.forEach((rawId, slot) => {
-        const id = String(rawId ?? '').trim();
-        if (!id) return;
+    if (ballot.spectrum.length === SPECTRUM_SLOTS) {
+      ballot.spectrum.forEach((id, slot) => {
         if (!spectrum[id]) spectrum[id] = emptySpectrumSlots();
         spectrum[id][slot] += 1;
       });
     }
 
-    const custom = String(payload?.customCriterion ?? '').trim();
-    if (custom && payload?.customCriterionPublic) {
-      customReasons.push({
-        id: `live-reason-${index}`,
-        text: custom.slice(0, 280),
-        boosts: 48,
-        live: true,
-      });
+    if (ballot.customReason) {
+      customReasons.push({ ...ballot.customReason, boosts: 48, live: true });
     }
-
-    const note = payload?.openDescription;
-    const noteText = String(note?.text ?? '').trim();
-    if (noteText && note?.publicDisplay) {
-      notes.push({
-        id: `live-note-${index}`,
-        text: noteText.slice(0, 1200),
-        boosts: 48,
-        live: true,
-      });
+    if (ballot.note) {
+      notes.push({ ...ballot.note, boosts: 48, live: true });
     }
   });
 
@@ -141,6 +160,7 @@ function aggregatePayloads(payloads) {
     spectrum,
     customReasons,
     notes,
+    ballots,
   };
 }
 

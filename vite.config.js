@@ -16,6 +16,7 @@ import {
 } from './server/reasonVotes.js';
 import { loadLiveResults } from './server/liveResults.js';
 import { saveIssueReport } from './server/issueReports.js';
+import { compressContentImagesPlugin } from './scripts/viteCompressContentImages.js';
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -235,6 +236,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
+      compressContentImagesPlugin(),
       surveyApiPlugin(env.DATABASE_URL, env.RATE_LIMIT_SECRET),
     ],
   };

@@ -11,12 +11,13 @@ export const pl = {
   brand: {
     createdPrefix: 'Stworzone dla zabawy przez',
     name: 'Glimpse & Gaze',
+    support: 'Wesprzyj mnie',
   },
   report: {
     button: 'Zgłoś problem',
     title: 'Zgłoś problem',
     description:
-      'Znalazłeś/aś błąd albo masz pomysł na nową funkcję? Napisz — jestem niezależnym twórcą i robię to dla zabawy, ale postaram się pomóc.',
+      'Znalazłeś/aś błąd albo masz pomysł na nową funkcję? Napisz do mnie – jestem niezależnym twórcą i robię to wszystko dla zabawy, ale postaram się pomóc.',
     fieldLabel: 'Twoja wiadomość',
     placeholder: 'Opisz problem lub sugestię…',
     charsLeft: 'Pozostało {count} znaków',
@@ -24,7 +25,7 @@ export const pl = {
     sending: 'Wysyłanie…',
     close: 'Zamknij',
     thanksTitle: 'Dzięki!',
-    thanksMessage: 'Twoja wiadomość została wysłana. Dziękuję za poświęcony czas.',
+    thanksMessage: 'Twoja wiadomość została wysłana. Miłego dnia!',
     error: 'Nie udało się wysłać zgłoszenia. Spróbuj ponownie później.',
   },
   home: {
@@ -98,8 +99,9 @@ export const pl = {
     fine: 'Przeciągnij przykłady albo najpierw kliknij kategorię, a potem przykład.',
     coarse:
       'Dotknij kategorii, potem przykładu – albo najpierw przykładu, a potem kategorii. Przytrzymaj przykład, żeby go przeciągnąć. Dotknij × przy ułożonym przykładzie, żeby go cofnąć.',
-    continueHint: 'Posortuj wszystkie przykłady',
-    toSort: 'Przykłady do posortowania',
+    continueHint: 'Posortuj co najmniej 15 przykładów',
+    toSort:
+      'Posortuj co najmniej 15 przykładów. Jeśli któregoś nie znasz, zostaw go tutaj.',
     returnItem: 'Cofnij {name} na listę',
   },
   buckets: {
@@ -268,10 +270,10 @@ export const pl = {
     byPlace: 'Globalne opinie',
     mapTitle: 'Skąd odpowiadali ludzie',
     mapCopy:
-      'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Można je zawęzić mapą poniżej. Filtr działa tylko dla regionów z co najmniej 20 odpowiedziami. Jeśli brakuje Twojego kraju, zaproś więcej osób do głosowania!',
+      'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Filtry miejsca i języka korzystają wyłącznie z prawdziwych odpowiedzi i odblokowują się dopiero przy co najmniej 20 odpowiedziach. Jeśli brakuje Twojego kraju, zaproś więcej osób do głosowania!',
     mapStatus: 'Wyświetlasz: {place}{language} · {count} odpowiedzi',
     mixDisclaimer:
-      'Obecne wyniki łączą prawdziwe odpowiedzi z wygenerowanymi sztucznie. Zaproś więcej osób do głosowania, żebyśmy mogli pokazywać wyłącznie odpowiedzi ludzkie!',
+      'Obecne wyniki globalne łączą prawdziwe odpowiedzi z wygenerowanymi sztucznie. Widoki z filtrami pokazują wyłącznie odpowiedzi ludzkie. Zaproś więcej osób do głosowania, żebyśmy mogli pokazywać tylko prawdziwe wyniki!',
     youVotedFor: 'Głosowałeś/aś na',
     people: 'ludzi',
     speakers: 'osób mówiących w języku: {language}',

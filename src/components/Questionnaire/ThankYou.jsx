@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { BrandFooter } from '../BrandFooter.jsx';
 import { useI18n } from '../../i18n/useI18n.js';
 import { withLocale } from '../../i18n/paths.js';
 import { QuestionContainer } from './QuestionContainer.jsx';
@@ -123,6 +124,7 @@ export function ThankYou({ responseId }) {
           )}
         </section>
       ) : null}
+      <BrandFooter className="brand-footer--page" />
     </QuestionContainer>
   );
 }
