@@ -1729,7 +1729,73 @@
 .note-card-text {
   flex: 1 1 auto;
   min-height: 0;
+  overflow: hidden;
+  scrollbar-width: none;
+}
+
+.note-card-text::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.note-card.is-clipped:hover .note-card-text,
+.note-card.is-clipped:focus-within .note-card-text {
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(47, 38, 22, 0.35) transparent;
+}
+
+.note-card.is-clipped:hover .note-card-text::-webkit-scrollbar,
+.note-card.is-clipped:focus-within .note-card-text::-webkit-scrollbar {
+  width: 6px;
+}
+
+.note-card.is-clipped:hover .note-card-text::-webkit-scrollbar-thumb,
+.note-card.is-clipped:focus-within .note-card-text::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(47, 38, 22, 0.35);
+}
+
+.note-card-more {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 8px;
+  margin: 0;
+  color: rgba(47, 38, 22, 0.55);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+}
+
+.note-card.is-clipped:hover .note-card-more,
+.note-card.is-clipped:focus-within .note-card-more {
+  opacity: 0;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .note-card.is-clipped .note-card-text {
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(47, 38, 22, 0.35) transparent;
+  }
+
+  .note-card.is-clipped .note-card-text::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .note-card.is-clipped .note-card-text::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(47, 38, 22, 0.35);
+  }
+
+  .note-card.is-clipped .note-card-more {
+    opacity: 0.7;
+  }
 }
 
 .note-card-flair {

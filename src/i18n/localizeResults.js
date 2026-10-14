@@ -1,3 +1,8 @@
+import {
+  isLiveTextItem,
+  liveTextItemsForLocale,
+  mergeLiveOverMock,
+} from '../data/blendLiveResults.js';
 import { commentsForLocale } from '../data/reasonResults.js';
 import { notesForLocale } from '../data/noteResults.js';
 import { spectrumCopy as spectrumCopyPl } from './lexicon/pl/spectrumCopy.js';
@@ -139,11 +144,20 @@ export function localizeResultsSection(section, catalog, t, locale = 'en') {
   }
 
   if (Array.isArray(section.commentPool)) {
-    next.commentPool = commentsForLocale(locale);
+    // Locale swap keeps same-locale live custom reasons; AI fillers swap fully.
+    const live = liveTextItemsForLocale(
+      section.commentPool.filter(isLiveTextItem),
+      locale,
+    );
+    next.commentPool = mergeLiveOverMock(commentsForLocale(locale), live);
   }
 
   if (Array.isArray(section.notePool)) {
-    next.notePool = notesForLocale(locale);
+    const live = liveTextItemsForLocale(
+      section.notePool.filter(isLiveTextItem),
+      locale,
+    );
+    next.notePool = mergeLiveOverMock(notesForLocale(locale), live);
   }
 
   return next;

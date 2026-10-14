@@ -109,6 +109,27 @@ function snapshotPage(pool, votes, pageIndex, myText, pinMine) {
   };
 }
 
+function useTextClipped(text) {
+  const textRef = useRef(null);
+  const [clipped, setClipped] = useState(false);
+
+  useEffect(() => {
+    const node = textRef.current;
+    if (!node) return undefined;
+
+    function measure() {
+      setClipped(node.scrollHeight > node.clientHeight + 1);
+    }
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [text]);
+
+  return { textRef, clipped };
+}
+
 function pointFromEvent(event) {
   if (typeof event?.clientX === 'number' && typeof event?.clientY === 'number') {
     return { x: event.clientX, y: event.clientY };
@@ -121,6 +142,85 @@ function pointFromEvent(event) {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
   };
+}
+
+function NoteCard({
+  item,
+  mine,
+  canVote,
+  viewingOwn,
+  paper,
+  tilt,
+  voteAria,
+  yourLabel,
+  onHoldStart,
+  onHoldMove,
+  onHoldEnd,
+  onVote,
+}) {
+  const { textRef, clipped } = useTextClipped(item.text);
+
+  return (
+    <button
+      type="button"
+      className={[
+        'note-card',
+        `is-paper-${paper}`,
+        mine === 1 ? 'is-liked' : '',
+        mine === -1 ? 'is-disliked' : '',
+        item.isMine && viewingOwn ? 'is-mine' : '',
+        canVote ? '' : 'is-locked',
+        clipped ? 'is-clipped' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      style={{ '--note-tilt': `${tilt}deg` }}
+      data-note-id={item.id}
+      disabled={!canVote}
+      aria-pressed={mine === 1}
+      aria-label={voteAria}
+      onPointerDown={(event) => {
+        if (!canVote) return;
+        onHoldStart(event, item.id);
+      }}
+      onPointerMove={(event) => {
+        if (!canVote) return;
+        onHoldMove(event);
+      }}
+      onPointerUp={(event) => {
+        if (!canVote) return;
+        onHoldEnd();
+        onVote(event, item.id);
+      }}
+      onPointerCancel={() => {
+        if (!canVote) return;
+        onHoldEnd();
+      }}
+      onContextMenu={(event) => {
+        if (!canVote) return;
+        onVote(event, item.id);
+      }}
+      onKeyDown={(event) => {
+        if (!canVote) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onVote(event, item.id);
+        }
+      }}
+    >
+      <span ref={textRef} className="note-card-text">
+        {item.text}
+      </span>
+      {clipped ? (
+        <span className="note-card-more" aria-hidden="true">
+          . . .
+        </span>
+      ) : null}
+      {item.isMine && viewingOwn ? (
+        <span className="note-card-flair">{yourLabel}</span>
+      ) : null}
+    </button>
+  );
 }
 
 function rateGesture(t) {
@@ -413,24 +513,15 @@ export function NoteResults({ section, viewingOwn = true }) {
         {board.items.map((item) => {
           const mine = myVotes[item.id] ?? 0;
           return (
-            <button
+            <NoteCard
               key={`${board.page}-${item.id}`}
-              type="button"
-              className={[
-                'note-card',
-                `is-paper-${paperFor(item.id)}`,
-                mine === 1 ? 'is-liked' : '',
-                mine === -1 ? 'is-disliked' : '',
-                item.isMine && viewingOwn ? 'is-mine' : '',
-                canVote ? '' : 'is-locked',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              style={{ '--note-tilt': `${tiltFor(item.id)}deg` }}
-              data-note-id={item.id}
-              disabled={!canVote}
-              aria-pressed={mine === 1}
-              aria-label={t('results.reasons.voteAria', {
+              item={item}
+              mine={mine}
+              canVote={canVote}
+              viewingOwn={viewingOwn}
+              paper={paperFor(item.id)}
+              tilt={tiltFor(item.id)}
+              voteAria={t('results.reasons.voteAria', {
                 text: item.text,
                 mine: item.isMine ? t('results.yourAnswerPeriod') : '',
                 state:
@@ -440,40 +531,12 @@ export function NoteResults({ section, viewingOwn = true }) {
                       ? t('results.reasons.sunk')
                       : t('results.reasons.notVoted'),
               })}
-              onPointerDown={(event) => {
-                if (!canVote) return;
-                onHoldStart(event, item.id);
-              }}
-              onPointerMove={(event) => {
-                if (!canVote) return;
-                onHoldMove(event);
-              }}
-              onPointerUp={(event) => {
-                if (!canVote) return;
-                onHoldEnd();
-                onVote(event, item.id);
-              }}
-              onPointerCancel={() => {
-                if (!canVote) return;
-                onHoldEnd();
-              }}
-              onContextMenu={(event) => {
-                if (!canVote) return;
-                onVote(event, item.id);
-              }}
-              onKeyDown={(event) => {
-                if (!canVote) return;
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  onVote(event, item.id);
-                }
-              }}
-            >
-              <span className="note-card-text">{item.text}</span>
-              {item.isMine && viewingOwn ? (
-                <span className="note-card-flair">{t('results.yourAnswer')}</span>
-              ) : null}
-            </button>
+              yourLabel={t('results.yourAnswer')}
+              onHoldStart={onHoldStart}
+              onHoldMove={onHoldMove}
+              onHoldEnd={onHoldEnd}
+              onVote={onVote}
+            />
           );
         })}
       </div>

@@ -50,6 +50,14 @@ function emptySpectrumSlots() {
   return Array.from({ length: SPECTRUM_SLOTS }, () => 0);
 }
 
+function surveyLocale(payload, text = '') {
+  const raw = String(payload?.locale ?? '').trim().toLowerCase();
+  if (raw === 'pl' || raw === 'en') return raw;
+  // Older rows may lack locale; Polish diacritics are a strong signal.
+  if (/[ąćęłńóśźż]/ĘŁŃÓŚŹŻ]/.test(text)) return 'pl';
+  return 'en';
+}
+
 function compactBallot(payload, index) {
   const buckets = {};
   const sortBuckets = payload?.sortBuckets;
@@ -71,10 +79,12 @@ function compactBallot(payload, index) {
   const custom = String(payload?.customCriterion ?? '').trim();
   const note = payload?.openDescription;
   const noteText = String(note?.text ?? '').trim();
+  const locale = surveyLocale(payload, noteText || custom);
 
   return {
     place: placeId(payload),
     languages: languageIds(payload),
+    locale,
     association: voteId(payload?.initialAssociation),
     mostVegetable: voteId(payload?.mostVegetable),
     criteria: Array.isArray(payload?.initialCriteria)
@@ -84,11 +94,19 @@ function compactBallot(payload, index) {
     spectrum: spectrum.length === SPECTRUM_SLOTS ? spectrum : [],
     customReason:
       custom && payload?.customCriterionPublic
-        ? { id: `live-reason-${index}`, text: custom.slice(0, 280) }
+        ? {
+            id: `live-reason-${index}`,
+            text: custom.slice(0, 280),
+            locale: surveyLocale(payload, custom),
+          }
         : null,
     note:
       noteText && note?.publicDisplay
-        ? { id: `live-note-${index}`, text: noteText.slice(0, 1200) }
+        ? {
+            id: `live-note-${index}`,
+            text: noteText.slice(0, 1200),
+            locale: surveyLocale(payload, noteText),
+          }
         : null,
   };
 }

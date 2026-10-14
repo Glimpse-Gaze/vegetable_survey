@@ -265,34 +265,78 @@ export function blendSpectrumSection(section, liveSpectrum, bandForRank) {
   };
 }
 
-export function blendReasonSection(section, liveReasons) {
-  if (!liveReasons?.length) return section;
-  const existing = new Set(
-    (section.commentPool ?? []).map((item) => item.text.trim().toLowerCase()),
-  );
-  const extras = liveReasons.filter(
-    (item) => item.text && !existing.has(item.text.trim().toLowerCase()),
-  );
-  if (!extras.length) return section;
-  return {
-    ...section,
-    commentPool: [...extras, ...(section.commentPool ?? [])],
-  };
+function normalizeTextLocale(value, text = '') {
+  const raw = String(value ?? '')
+    .trim()
+    .toLowerCase();
+  if (raw === 'pl' || raw === 'en') return raw;
+  if (/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(text)) return 'pl';
+  return 'en';
 }
 
-export function blendNoteSection(section, liveNotes) {
-  if (!liveNotes?.length) return section;
-  const existing = new Set(
-    (section.notePool ?? []).map((item) => item.text.trim().toLowerCase()),
-  );
-  const extras = liveNotes.filter(
-    (item) => item.text && !existing.has(item.text.trim().toLowerCase()),
-  );
-  if (!extras.length) return section;
-  return {
-    ...section,
-    notePool: [...extras, ...(section.notePool ?? [])],
-  };
+/** Keep only live free-text answers written in the active UI locale. */
+export function liveTextItemsForLocale(items, locale = 'en') {
+  const want = normalizeTextLocale(locale);
+  return (items ?? []).filter((item) => {
+    const text = String(item?.text ?? '');
+    if (!text.trim()) return false;
+    return normalizeTextLocale(item?.locale, text) === want;
+  });
+}
+
+/**
+ * Put real answers first and drop an equal number of AI fillers so the pool
+ * size stays stable (e.g. 5 live + 55 mock instead of 65 total).
+ */
+export function mergeLiveOverMock(mockPool, liveItems) {
+  const mock = Array.isArray(mockPool) ? mockPool : [];
+  if (!liveItems?.length) return mock;
+
+  const seen = new Set();
+  const live = [];
+  for (const item of liveItems) {
+    const key = String(item?.text ?? '')
+      .trim()
+      .toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    live.push({ ...item, live: true });
+  }
+  if (!live.length) return mock;
+
+  const ai = mock.filter((item) => {
+    const key = String(item?.text ?? '')
+      .trim()
+      .toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const keepAi = Math.max(0, mock.length - live.length);
+  return [...live, ...ai.slice(0, keepAi)];
+}
+
+export function isLiveTextItem(item) {
+  if (!item || typeof item !== 'object') return false;
+  if (item.live) return true;
+  return String(item.id ?? '').startsWith('live-');
+}
+
+export function blendReasonSection(section, liveReasons, locale = 'en') {
+  const scoped = liveTextItemsForLocale(liveReasons, locale);
+  if (!scoped.length) return section;
+  const next = mergeLiveOverMock(section.commentPool, scoped);
+  if (next === section.commentPool) return section;
+  return { ...section, commentPool: next };
+}
+
+export function blendNoteSection(section, liveNotes, locale = 'en') {
+  const scoped = liveTextItemsForLocale(liveNotes, locale);
+  if (!scoped.length) return section;
+  const next = mergeLiveOverMock(section.notePool, scoped);
+  if (next === section.notePool) return section;
+  return { ...section, notePool: next };
 }
 
 export function blendReasonCriteria(section, liveCriteria) {
@@ -331,6 +375,7 @@ export function blendReasonCriteria(section, liveCriteria) {
 
 export function applyLiveBlend(section, categoryId, live, helpers = {}) {
   if (!live?.liveCount) return section;
+  const locale = helpers.locale ?? 'en';
   let next = section;
 
   if (categoryId === 'first-instincts') {
@@ -339,13 +384,13 @@ export function applyLiveBlend(section, categoryId, live, helpers = {}) {
     next = blendBladeSection(next, live.mostVegetable, helpers);
   } else if (categoryId === 'why-vegetabley') {
     next = blendReasonCriteria(next, live.criteria);
-    next = blendReasonSection(next, live.customReasons);
+    next = blendReasonSection(next, live.customReasons, locale);
   } else if (categoryId === 'sort-buckets') {
     next = blendBucketSection(next, live.buckets);
   } else if (categoryId === 'vegetabley-spectrum') {
     next = blendSpectrumSection(next, live.spectrum, helpers.bandForRank);
   } else if (categoryId === 'vegetabley-words') {
-    next = blendNoteSection(next, live.notes);
+    next = blendNoteSection(next, live.notes, locale);
   }
 
   return next;

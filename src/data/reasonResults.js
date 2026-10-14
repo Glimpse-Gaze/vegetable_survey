@@ -106,7 +106,10 @@ export function rankComments(pool, nets = {}) {
     }))
     .sort(
       (a, b) =>
-        b.score - a.score || b.net - a.net || a.id.localeCompare(b.id),
+        Number(Boolean(b.live)) - Number(Boolean(a.live)) ||
+        b.score - a.score ||
+        b.net - a.net ||
+        a.id.localeCompare(b.id),
     );
 }
 

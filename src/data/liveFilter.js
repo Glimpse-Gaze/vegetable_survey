@@ -3,6 +3,7 @@ import { countries } from './countries.js';
 import { criteria } from './criteria.js';
 import { bucketItems } from './bucketItems.js';
 import { iso3ForCountry } from './countryIso3.js';
+import { liveTextItemsForLocale } from './blendLiveResults.js';
 import {
   ALL_LANGUAGES_ID,
   REGIONS,
@@ -103,6 +104,7 @@ export function aggregateBallots(ballots) {
       customReasons.push({
         id: ballot.customReason.id ?? `live-reason-${index}`,
         text: ballot.customReason.text,
+        locale: ballot.customReason.locale ?? ballot.locale ?? 'en',
         boosts: 48,
         live: true,
       });
@@ -111,6 +113,7 @@ export function aggregateBallots(ballots) {
       notes.push({
         id: ballot.note.id ?? `live-note-${index}`,
         text: ballot.note.text,
+        locale: ballot.note.locale ?? ballot.locale ?? 'en',
         boosts: 48,
         live: true,
       });
@@ -258,7 +261,7 @@ function buildBladeLive(category, region, language, aggregate, helpers) {
   };
 }
 
-function buildReasonsLive(category, region, language, aggregate) {
+function buildReasonsLive(category, region, language, aggregate, locale = 'en') {
   const respondents = Math.max(1, aggregate.liveCount);
   const items = rankVotes(
     aggregate.criteria,
@@ -276,7 +279,7 @@ function buildReasonsLive(category, region, language, aggregate) {
     language,
     items,
     leader: items[0] ?? null,
-    commentPool: aggregate.customReasons ?? [],
+    commentPool: liveTextItemsForLocale(aggregate.customReasons, locale),
     responseCount: aggregate.liveCount,
   };
 }
@@ -387,12 +390,12 @@ function buildSpectrumLive(category, region, language, aggregate, helpers) {
   };
 }
 
-function buildNotesLive(category, region, language, aggregate) {
+function buildNotesLive(category, region, language, aggregate, locale = 'en') {
   return {
     ...category,
     region,
     language,
-    notePool: aggregate.notes ?? [],
+    notePool: liveTextItemsForLocale(aggregate.notes, locale),
     userNoteText: category.userNoteText ?? '',
     responseCount: aggregate.liveCount,
   };
@@ -410,12 +413,13 @@ export function buildLiveSection(category, regionId, languageId, ballots, helper
     languageId && languageId !== ALL_LANGUAGES_ID
       ? { id: languageId, name: languageNameById[languageId] ?? languageId }
       : null;
+  const locale = helpers.locale ?? 'en';
 
   if (category.layout === 'blades') {
     return buildBladeLive(category, region, language, aggregate, helpers);
   }
   if (category.layout === 'reasons') {
-    return buildReasonsLive(category, region, language, aggregate);
+    return buildReasonsLive(category, region, language, aggregate, locale);
   }
   if (category.layout === 'buckets') {
     return buildBucketsLive(category, region, language, aggregate);
@@ -424,7 +428,7 @@ export function buildLiveSection(category, regionId, languageId, ballots, helper
     return buildSpectrumLive(category, region, language, aggregate, helpers);
   }
   if (category.layout === 'notes') {
-    return buildNotesLive(category, region, language, aggregate);
+    return buildNotesLive(category, region, language, aggregate, locale);
   }
   return {
     ...category,

@@ -754,7 +754,8 @@ export function Results() {
       ?? id,
     bandForRank,
     boardSize: BLADE_BOARD_SIZE,
-  }), [catalog.vegetablesById]);
+    locale,
+  }), [catalog.vegetablesById, locale]);
 
   const section = useMemo(() => {
     const overlaid = overlayCategory(category, userAnswers);
