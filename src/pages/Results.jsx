@@ -4,7 +4,9 @@ import { useI18n } from '../i18n/useI18n.js';
 import { localizeResultsSection } from '../i18n/localizeResults.js';
 import { withLocale } from '../i18n/paths.js';
 import { useSurveyCatalog } from '../i18n/useSurveyCatalog.js';
+import { BrandFooter } from '../components/BrandFooter.jsx';
 import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
+import { ReportIssuesButton } from '../components/ReportIssues.jsx';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
@@ -969,6 +971,7 @@ export function Results() {
         <Link className="results-home-link" to={withLocale(locale, '/')} onClick={() => setMenuOpen(false)}>
           {t('results.categories.backHome')}
         </Link>
+        <ReportIssuesButton className="results-report-btn" variant="drawer" />
       </aside>
 
       <main className="results-main">
@@ -1018,7 +1021,7 @@ export function Results() {
                   <strong className={`alignment-var is-${alignment.tone}`}>
                     {alignment.name}
                   </strong>
-                  . {alignment.connector}{' '}
+                  .{alignment.connector ? ` ${alignment.connector}` : ''}{' '}
                   <strong className={`alignment-var is-${alignment.tone}`}>
                     {alignment.outcome}
                   </strong>
@@ -1101,10 +1104,18 @@ export function Results() {
               </button>
             </div>
           ) : (
-            <div className="results-next-wrap">
-              <Link className="results-next is-quiet" to={withLocale(locale, '/')}>
+            <div className="results-next-wrap results-next-stack">
+              <Link className="results-next" to={withLocale(locale, '/')}>
                 {t('results.categories.backHome')}
               </Link>
+              <a
+                className="results-next is-quiet"
+                href="https://glimpsegaze.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {t('results.categories.otherProjects')}
+              </a>
             </div>
           )}
 
@@ -1119,8 +1130,10 @@ export function Results() {
               invalid={codeInvalid}
             />
           </div>
+          <BrandFooter className="brand-footer--results" />
         </section>
       </main>
+      <ReportIssuesButton variant="fab" />
     </div>
   );
 }

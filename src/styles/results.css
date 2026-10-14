@@ -104,8 +104,8 @@
   pointer-events: none;
 }
 
-.results-page.is-menu-open .results-region-status {
-  visibility: hidden;
+.results-page.is-menu-open .report-issues-btn.is-fab {
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -139,7 +139,9 @@
   transition: transform 220ms ease;
   pointer-events: none;
   visibility: hidden;
+  overflow-x: hidden;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .results-drawer.is-open {
@@ -222,15 +224,29 @@
   font-weight: 650;
 }
 
+.results-report-btn {
+  margin-top: 8px;
+}
+
 .results-menu-filters {
   display: grid;
   gap: 12px;
   margin-top: auto;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .results-menu-filters .map-select {
   width: 100%;
   min-width: 0;
+  max-width: 100%;
+}
+
+.results-menu-filters .map-select select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .results-menu-status {
@@ -2070,11 +2086,18 @@
   margin: 36px 0 12px;
 }
 
+.results-next-stack {
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
 .results-next {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 52px;
+  min-width: min(20rem, 100%);
   padding: 0 28px;
   border: 0;
   border-radius: 999px;

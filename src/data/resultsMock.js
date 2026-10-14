@@ -5,6 +5,7 @@ import brusselsSprouts from '../content/Brussel_sprouts.jpg';
 import cabbage from '../content/Cabbage.jpg';
 import carrots from '../content/Carrots.jpg';
 import cauliflower from '../content/Cauliflower.jpg';
+import celery from '../content/Celery.jpg';
 import greenBean from '../content/Green_Bean.jpg';
 import corn from '../content/Corn.jpg';
 import cucumber from '../content/Cucumber.jpg';
@@ -33,6 +34,7 @@ export const VEGETABLE_ART = {
   cabbage,
   carrot: carrots,
   cauliflower,
+  celery,
   green_bean: greenBean,
   corn,
   cucumber,

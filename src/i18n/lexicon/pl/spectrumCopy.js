@@ -9,16 +9,16 @@ export const spectrumCopy = {
     fact: 'Marchew pochodzi z Azji Środkowej, z okolic współczesnego Afganistanu. To korzeń palowy z rodziny selerowatych (Apiaceae). Jest spokrewniona z pietruszką, koprem włoskim i selerem, ale z tej samej rodziny pochodzą też przyprawy: koperek, kumin i anyż.',
   },
   tomato: {
-    note: 'Sztandarowy przykład sporu: owoc czy warzywo?',
-    fact: 'Pomidor pochodzi z zachodniej Ameryki Południowej. Botanicznie to owoc – jagoda – z rodziny psiankowatych (Solanaceae). Inne jadalne rośliny z tej samej rodziny to ziemniak, papryka, bakłażan oraz… tytoń.',
+    note: 'Pomidor należy do tej samej rodziny co tytoń, toteż zawiera śladowe ilości nikotyny.',
+    fact: 'Sztandarowy przykład sporu: owoc czy warzywo? Pomidor pochodzi z zachodniej Ameryki Południowej. Botanicznie to owoc – jagoda – z rodziny psiankowatych (Solanaceae). Inne jadalne rośliny z tej samej rodziny to ziemniak, papryka, bakłażan oraz… tytoń.',
   },
   turnip: {
     note: 'Halloweenowe lampy (jack-o’-lanterns) pierwotnie wykonywano z rzepy! Celtyccy imigranci przywieźli tę tradycję do USA w XIX wieku, gdzie rzepę zastąpiono dyniami.',
     fact: 'Rzepa pochodzi z Europy i zachodniej Azji. To zgrubiały korzeń, blisko spokrewniony z kapustą pekińską, kapustą pak choi, japońską musztardą oraz rapini. Wszystkie one należą do grupy Brassica rapa – to odmiany dzikiej kapusty, ale nie z tej samej linii, z której pochodzi brokuł. Te dwie linie dalej mogą się ze sobą krzyżować, tworząc warzywa takie jak brukiew czy rzepak!',
   },
   green_bean: {
-    note: 'Fasolka szparagowa, pinto, czarna, czerwona i biała to ten sam gatunek — tylko zbiór na innych etapach dojrzewania.',
-    fact: 'Fasolka szparagowa pochodzi z Ameryki Środkowej i Południowej. To jadalne strąki z niedojrzałymi nasionami z rodziny bobowatych (Fabaceae). Z tej samej rodziny pochodzą spożywcze podstawy: groszek, ciecierzyca, soja i soczewica.',
+    note: 'Fasolka szparagowa, pinto, czarna, czerwona i biała to ten sam gatunek – są jedynie zbierane na różnych etapach dojrzewania rośliny.',
+    fact: 'Fasolka szparagowa pochodzi z Ameryki Środkowej i Południowej. To jadalne strąki z niedojrzałymi nasionami z rodziny bobowatych (Fabaceae). Z tej samej rodziny pochodzą groszek, ciecierzyca, soja i soczewica.',
   },
   corn: {
     note: 'Żółta kukurydza stała się dominującą odmianą dopiero w XX wieku.',
@@ -37,7 +37,7 @@ export const spectrumCopy = {
     fact: 'Ogórek pochodzi z Azji Południowej. Botanicznie to owoc z rodziny dyniowatych (Cucurbitaceae). Inne jadalne rośliny z tej samej rodziny to dynia, melon, cukinia i inne kabaczki.',
   },
   sweet_potato: {
-    note: 'Batat to nie ziemniak! To korzeń, podczas gdy ziemniaki to bulwy łodygowe.',
+    note: 'Bataty to nie ziemniaki! To korzenie, podczas gdy ziemniaki to bulwy łodygowe.',
     fact: 'Batat pochodzi z Ameryki Środkowej i Południowej. To korzeń spichrzowy z rodziny powojowatych (Convolvulaceae). Innym jadalnym członkiem tej rodziny jest wilec wodny, popularny w Azji Południowo-Wschodniej. Polski „batat” ma ten sam źródłosłów co angielskie „potato” – oba pochodzą z "batata" w języku Taíno.',
   },
 };

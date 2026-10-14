@@ -3,11 +3,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { useI18n } from '../i18n/useI18n.js';
 import { withLocale } from '../i18n/paths.js';
+import { readMyResponseId } from '../utils/myResponse.js';
 
 export function Home() {
   const navigate = useNavigate();
   const { t, locale } = useI18n();
   const [askResults, setAskResults] = useState(false);
+  const resultsPath = withLocale(locale, '/results');
+
+  function handleSeeResults() {
+    if (readMyResponseId()) {
+      navigate(resultsPath);
+      return;
+    }
+    setAskResults(true);
+  }
 
   return (
     <div className="home-shell">
@@ -26,7 +36,7 @@ export function Home() {
           <button
             className="home-button home-button-secondary"
             type="button"
-            onClick={() => setAskResults(true)}
+            onClick={handleSeeResults}
           >
             {t('home.seeResults')}
           </button>
@@ -38,7 +48,7 @@ export function Home() {
           message={t('home.skipMessage')}
           confirmLabel={t('home.skipContinue')}
           cancelLabel={t('dialog.cancel')}
-          onConfirm={() => navigate(withLocale(locale, '/results'))}
+          onConfirm={() => navigate(resultsPath)}
           onCancel={() => setAskResults(false)}
         />
       ) : null}
