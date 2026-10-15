@@ -24,10 +24,10 @@
 }
 
 .locale-tools {
-  position: fixed;
+  position: absolute;
   top: max(16px, env(safe-area-inset-top));
   right: max(16px, env(safe-area-inset-right));
-  z-index: 80;
+  z-index: 5;
 }
 
 .locale-switcher {
@@ -243,14 +243,26 @@
 .locale-switcher select {
   min-height: 40px;
   padding: 0 12px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid transparent;
   border-radius: 999px;
-  background: var(--card);
+  background: transparent;
   color: var(--green-deep);
   font: inherit;
   font-size: 0.92rem;
   font-weight: 650;
   cursor: pointer;
+  box-shadow: none;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.locale-switcher select:hover,
+.locale-switcher select:focus-visible,
+.locale-switcher:focus-within select {
+  background: var(--card);
+  border-color: var(--border);
   box-shadow: 0 1px 0 rgba(29, 42, 28, 0.04);
 }
 
@@ -261,6 +273,13 @@
 
 .locale-switcher--inline {
   position: static;
+  flex: 0 0 auto;
+}
+
+.locale-switcher--inline select {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: 0 1px 0 rgba(29, 42, 28, 0.04);
 }
 
 .home-panel {

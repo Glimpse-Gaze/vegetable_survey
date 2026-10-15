@@ -17,7 +17,7 @@ export const pl = {
     button: 'Zgłoś problem',
     title: 'Zgłoś problem',
     description:
-      'Znalazłeś/aś błąd albo masz pomysł na nową funkcję? Napisz do mnie – jestem niezależnym twórcą i robię to wszystko dla zabawy, ale postaram się pomóc.',
+      'Zgłaszanie błędów i propozycje nowych funkcji są mile widziane. To niezależny projekt zrobiony dla zabawy, ale opisz swoje sugestie, a postaram się pomóc.',
     fieldLabel: 'Twoja wiadomość',
     placeholder: 'Opisz problem lub sugestię…',
     charsLeft: 'Pozostało {count} znaków',
@@ -98,7 +98,7 @@ export const pl = {
     lead: 'Przyporządkuj każdy przykład do kategorii.',
     fine: 'Przeciągnij przykłady albo najpierw kliknij kategorię, a potem przykład.',
     coarse:
-      'Dotknij kategorii, potem przykładu – albo najpierw przykładu, a potem kategorii. Przytrzymaj przykład, żeby go przeciągnąć. Dotknij × przy ułożonym przykładzie, żeby go cofnąć.',
+      'Dotknij kategorii, potem przykładu (albo odwrotnie). Przytrzymaj przykład, żeby go przeciągnąć. Dotknij × przy ułożonym przykładzie, żeby go cofnąć.',
     continueHint: 'Posortuj co najmniej 15 przykładów',
     toSort:
       'Posortuj co najmniej 15 przykładów. Jeśli któregoś nie znasz, zostaw go tutaj.',
@@ -115,7 +115,7 @@ export const pl = {
       'Umieść każdy przykład na skali warzywności. Najmniej warzywne na górze, najbardziej warzywne na dole.',
     fine: 'Przeciągnij i upuść albo kliknij pozycję, a potem przykład. Strzałkami przesuniesz ułożony przykład w górę lub w dół.',
     coarse:
-      'Dotknij pozycji, potem przykładu – albo najpierw przykładu, a potem pozycji. Przytrzymaj przykład, żeby go przeciągnąć. Strzałkami przesuniesz go w górę lub w dół, a × cofnie go na listę.',
+      'Dotknij pozycji, potem przykładu (albo odwrotnie). Przytrzymaj przykład, żeby go przeciągnąć. Strzałkami przesuniesz go w górę lub w dół, a × cofnie go na listę.',
     continueHint: 'Ułóż wszystkie dziesięć przykładów',
     least: 'Najmniej warzywne',
     middle: 'Pośrodku',
@@ -135,7 +135,7 @@ export const pl = {
   q6: {
     title: 'Co sprawia, że coś wydaje się warzywem?',
     micro:
-      'Jakich kryteriów użyłeś/aś, żeby posortować przykłady i wybrać najbardziej warzywne warzywo? Pisz dowolnie. Nie ma złych odpowiedzi.',
+      'Jake kryteria posłużyły Ci do uporządkowania przykładów i wybrania najbardziej warzywnego warzywa? Pisz dowolnie. Nie ma złych odpowiedzi.',
     label: 'Twój opis',
     placeholder: 'Opisz swój tok rozumowania...',
     publicConsent: 'Zgadzam się na wyświetlenie tej odpowiedzi publicznie.',
@@ -146,7 +146,7 @@ export const pl = {
     title: 'Czy chcesz podzielić się swoim pochodzeniem?',
     micro:
       'Jeśli wolisz nie odpowiadać, pomiń dowolne z tych pytań. Jeśli Twojej odpowiedzi nie ma na liście, wpisz ją samodzielnie.',
-    grewUp: 'W jakim kraju lub regionie dorastałeś/aś?',
+    grewUp: 'Z jakiego kraju pochodzisz?',
     grewUpPlaceholder: 'Kraj, region, kontynent...',
     language: 'Jaki jest Twój język ojczysty?',
     languagePlaceholder: 'Wpisz język ojczysty',
@@ -177,7 +177,7 @@ export const pl = {
     sendError: 'Nie udało się wysłać notatki.',
   },
   toast: {
-    locked: 'Pierwszy odruch zapisany. Nie ma złych odpowiedzi.',
+    locked: 'Pierwsza intuicja zapisana. Nie ma złych odpowiedzi.',
     lockedBack: 'Pierwsza intuicja jest już zapisana. Nie ma złych odpowiedzi!',
     filled: 'Wczytano odpowiedzi z tego kodu rankingowego.',
     saveError: 'Nie udało się zapisać odpowiedzi. Spróbuj ponownie.',
@@ -273,8 +273,8 @@ export const pl = {
       'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Filtry miejsca i języka korzystają wyłącznie z prawdziwych odpowiedzi i odblokowują się dopiero przy co najmniej 20 odpowiedziach. Jeśli brakuje Twojego kraju, zaproś więcej osób do głosowania!',
     mapStatus: 'Wyświetlasz: {place}{language} · {count} odpowiedzi',
     mixDisclaimer:
-      'Obecne wyniki globalne łączą prawdziwe odpowiedzi z wygenerowanymi sztucznie. Widoki z filtrami pokazują wyłącznie odpowiedzi ludzkie. Zaproś więcej osób do głosowania, żebyśmy mogli pokazywać tylko prawdziwe wyniki!',
-    youVotedFor: 'Głosowałeś/aś na',
+      'Obecne wyniki globalne łączą prawdziwe odpowiedzi z wygenerowanymi sztucznie. Widoki z filtrami (jeśli są dostępne) pokazują wyłącznie ludzkie odpowiedzi. Zaproś więcej osób do głosowania, żebyśmy mogli pokazywać tylko prawdziwe wyniki!',
+    youVotedFor: 'Twój głos padł na',
     people: 'ludzi',
     speakers: 'osób mówiących w języku: {language}',
     amongSpeakers: 'wśród osób mówiących w języku: {language}{place}',
@@ -319,7 +319,7 @@ export const pl = {
       lookupLabel: 'Zobacz szczegółowe wyniki:',
       chooseItem: 'Wybierz przykład',
       howSorted: 'Jak ludzie posortowali',
-      youMarked: 'Ty oznaczyłeś/aś to jako',
+      youMarked: 'Twój wybór:',
       category: 'Kategoria',
       votesCol: 'Głosy',
     },

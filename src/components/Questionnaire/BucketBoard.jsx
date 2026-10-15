@@ -30,7 +30,7 @@ function BucketTile({
   const { t } = useI18n();
 
   return (
-    <div className="bucket-tile">
+    <div className={onRemove ? 'bucket-tile has-remove' : 'bucket-tile'}>
       <button
         type="button"
         className={[

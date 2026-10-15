@@ -12,6 +12,7 @@ import {
   shouldTrackWithTouch,
   supportsNativeDrag,
 } from '../../utils/touchHoldDrag.js';
+import { MarqueeLabel } from './MarqueeLabel.jsx';
 import { SpectrumArrow } from './SpectrumArrow.jsx';
 
 // Kept in code; hide until the scale arrow earns its place again.
@@ -378,7 +379,10 @@ export function SpectrumBoard({
                       <span className="spectrum-grip" aria-hidden="true">
                         <GripIcon />
                       </span>
-                      <span className="spectrum-rank-label">{vegetable.name}</span>
+                      <MarqueeLabel
+                        className="spectrum-rank-label"
+                        text={vegetable.name}
+                      />
                       <div className="spectrum-rank-controls">
                         <button
                           type="button"

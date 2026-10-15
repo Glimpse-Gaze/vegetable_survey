@@ -19,7 +19,7 @@ export const en = {
     button: 'Report issues',
     title: 'Report issues',
     description:
-      'Did you spot a bug, have an idea for a new feature, or just want to say hello? Send a note here – I’m an independent developer building all this for fun, but I’ll do my best to help.',
+      'Bug reports and suggestions for new features are welcome. This is an independent project created for fun, but feel free to share your ideas, and I will do my best to help.',
     fieldLabel: 'Your message',
     placeholder: 'Describe the issue or a suggestion…',
     charsLeft: '{count} characters left',
@@ -84,7 +84,7 @@ export const en = {
     lead: 'Sort each item into a bucket.',
     fine: 'Drag the items, or click a bucket and then an item.',
     coarse:
-      'Tap a bucket, then an item – or tap an item, then a bucket. Hold an item to drag it. Tap × on a sorted item to put it back.',
+      'Tap a bucket, then an item (or vice versa). Hold an item to drag it. Tap × on a sorted item to put it back.',
     continueHint: 'Sort at least 15 items',
     toSort:
       "Sort at least 15 of these items. If you don't know any, leave them here.",
@@ -101,7 +101,7 @@ export const en = {
       'Place each item on the vegetableness spectrum. Least vegetabley items at the top, most vegetabley at the bottom.',
     fine: 'Drag and drop, or click a slot and then an item. Use arrows to nudge a placed item up or down.',
     coarse:
-      'Tap a rank, then an item – or tap an item, then a rank. Hold an item to drag it. Use the arrows to move it, or × to put it back.',
+      'Tap a rank, then an item (or vice versa). Hold an item to drag it. Use the arrows to move it, or × to put it back.',
     continueHint: 'Place all ten items',
     least: 'Least vegetabley',
     middle: 'In the middle',
@@ -259,7 +259,7 @@ export const en = {
       'By default, the results show global votes, including those who have chosen not to disclose their birthplace. Place and language filters use real answers only, and only unlock once a region or language has at least 20 responses. If your country is missing, please encourage more people to vote!',
     mapStatus: 'Showing {place}{language} · {count} answers',
     mixDisclaimer:
-      'Current global results mix real answers with artificially generated ones. Filtered views show real answers only. Please invite more people to vote, so we can display only human-made answers!',
+      'Current global results mix real answers with artificially generated ones. Filtered views (if available)show real answers only. Please invite more people to vote, so we can display only human-made answers!',
     youVotedFor: 'You voted for',
     people: 'people',
     speakers: '{language} speakers',

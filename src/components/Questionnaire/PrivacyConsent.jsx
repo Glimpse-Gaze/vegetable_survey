@@ -20,8 +20,7 @@ export function PrivacyConsent({ onContinue, onBack }) {
   }
 
   return (
-    <QuestionContainer>
-      <p className="eyebrow">{t('welcome.eyebrow')}</p>
+    <QuestionContainer eyebrow={t('welcome.eyebrow')}>
       <h1 className="question-title">{t('privacy.title')}</h1>
 
       <form className="question-form" onSubmit={handleSubmit}>

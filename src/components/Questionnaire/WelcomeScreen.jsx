@@ -11,8 +11,9 @@ export function WelcomeScreen({ onContinue, onBack }) {
   }
 
   return (
-    <QuestionContainer>
-      <h1 className="eyebrow">{t('welcome.eyebrow')}</h1>
+    <QuestionContainer
+      eyebrow={<h1 className="eyebrow">{t('welcome.eyebrow')}</h1>}
+    >
       <div className="welcome-note">
         <p>{t('welcome.intro')}</p>
         <p>{t('welcome.noBadAnswers')}</p>

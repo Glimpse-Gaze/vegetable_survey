@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BrandFooter } from '../components/BrandFooter.jsx';
 import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
+import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
 import { useI18n } from '../i18n/useI18n.js';
 import { withLocale } from '../i18n/paths.js';
 import { readMyResponseId } from '../utils/myResponse.js';
@@ -22,6 +23,9 @@ export function Home() {
 
   return (
     <div className="home-shell">
+      <div className="locale-tools">
+        <LocaleSwitcher />
+      </div>
       <section className="home-panel">
         <p className="eyebrow">{t('home.eyebrow')}</p>
         <h1 className="home-title">{t('home.title')}</h1>

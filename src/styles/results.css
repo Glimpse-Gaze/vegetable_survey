@@ -776,6 +776,10 @@
   max-width: none;
   color: var(--muted);
   font-size: 0.95rem;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 .map-select {
@@ -929,6 +933,10 @@
   font-size: 0.82rem;
   font-weight: 500;
   line-height: 1.4;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 .results-drawer .results-mix-note {

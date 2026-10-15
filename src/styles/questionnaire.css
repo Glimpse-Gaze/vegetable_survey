@@ -65,6 +65,24 @@ body {
   animation: rise 320ms ease;
 }
 
+.question-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.question-panel-head .eyebrow {
+  margin: 0;
+  min-width: 0;
+}
+
+.question-panel-head-spacer {
+  flex: 1 1 auto;
+  min-height: 1px;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -645,10 +663,41 @@ h1.eyebrow {
 .spectrum-rank-label {
   flex: 1 1 auto;
   min-width: 0;
+  overflow: hidden;
   font-size: 1rem;
   font-weight: 650;
   line-height: 1.25;
   white-space: nowrap;
+}
+
+.spectrum-rank-label .marquee-track {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.spectrum-rank-label.is-marquee .marquee-track {
+  max-width: none;
+  padding-right: 1.25em;
+  animation: pill-marquee 7s linear infinite;
+}
+
+@keyframes pill-marquee {
+  0%,
+  18% {
+    transform: translateX(0);
+  }
+  82%,
+  100% {
+    transform: translateX(calc(-1 * var(--marquee-shift, 0px)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spectrum-rank-label.is-marquee .marquee-track {
+    animation: none;
+  }
 }
 
 .spectrum-rank-controls {
@@ -746,17 +795,21 @@ h1.eyebrow {
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: -4px;
+  right: -4px;
   z-index: 2;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: 0;
   background: transparent;
   color: #fffaf2;
   cursor: pointer;
   touch-action: manipulation;
+}
+
+.bucket-tile.has-remove .spectrum-tile {
+  padding-right: 22px;
 }
 
 .tile-remove span,
@@ -1052,20 +1105,26 @@ h1.eyebrow {
   }
 
   .spectrum-slot {
+    position: relative;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     flex-wrap: nowrap;
     align-items: center;
+    overflow: hidden;
+    padding-right: 36px;
   }
 
   .spectrum-rank-controls {
     flex: 0 0 auto;
     justify-content: flex-end;
+    gap: 4px;
   }
 
   .spectrum-rank-label {
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: clip;
   }
 
   .spectrum-tile-label {
@@ -1079,11 +1138,15 @@ h1.eyebrow {
   }
 
   .spectrum-rank-button {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
   }
 
   .spectrum-rank-button.is-remove {
+    position: absolute;
+    top: -4px;
+    right: -2px;
+    z-index: 2;
     width: 28px;
     height: 28px;
     padding: 0;
@@ -1135,6 +1198,16 @@ h1.eyebrow {
   .tile-remove,
   .spectrum-rank-button.is-remove {
     display: inline-flex;
+  }
+
+  .tile-remove {
+    top: -6px;
+    right: -6px;
+  }
+
+  .tile-remove span {
+    width: 20px;
+    height: 20px;
   }
 }
 
