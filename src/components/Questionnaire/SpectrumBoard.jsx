@@ -338,7 +338,7 @@ export function SpectrumBoard({
           <div className="spectrum-track" role="list">
             {slots.map((id, index) => {
               const vegetable = id ? spectrumById.get(id) ?? null : null;
-              const active = index === activeSlot;
+              const active = !vegetable && index === activeSlot;
               const className = [
                 'spectrum-slot',
                 active ? 'is-active' : '',
@@ -363,7 +363,9 @@ export function SpectrumBoard({
                       ? (event) => onHoldStart(event, vegetable)
                       : undefined
                   }
-                  onClick={() => onActivateSlot(index)}
+                  onClick={
+                    vegetable ? undefined : () => onActivateSlot(index)
+                  }
                   onContextMenu={(event) => event.preventDefault()}
                   onDragStart={
                     vegetable

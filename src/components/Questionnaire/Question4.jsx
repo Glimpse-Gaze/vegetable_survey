@@ -147,6 +147,9 @@ export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
   }
 
   function handleActivateSlot(index) {
+    // Filled ranks are reorder-only (arrows / drag / ×). Empty slots stay
+    // tappable as drop targets for items still in the pool.
+    if (slots[index] != null) return;
     if (armedId) {
       handlePlace(armedId, index);
       return;

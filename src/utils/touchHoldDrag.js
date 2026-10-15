@@ -1,6 +1,7 @@
 /** Hold-to-drag helpers tuned for older iOS Safari (pre–iPhone 15 class). */
 
-export const HOLD_MS = 220;
+/** Short enough that grip-afforded mobile drags feel immediate. */
+export const HOLD_MS = 110;
 /** Finger jitter / rubber-band tolerance before a hold is cancelled. */
 export const HOLD_SLOP = 28;
 

@@ -3,6 +3,7 @@ export const pl = {
   nav: {
     back: 'Wróć',
     continue: 'Dalej',
+    submit: 'Wyślij',
   },
   dialog: {
     proceed: 'Tak',
@@ -140,7 +141,7 @@ export const pl = {
     placeholder: 'Opisz swój tok rozumowania...',
     publicConsent: 'Zgadzam się na wyświetlenie tej odpowiedzi publicznie.',
     skipTitle: 'Pominąć to pytanie?',
-    skipMessage: 'Na pewno nie chcesz opisać, jak o tym myślisz?',
+    skipMessage: 'Na pewno nie chcesz opisać swojego toku myślenia?',
   },
   q7: {
     title: 'Czy chcesz podzielić się swoim pochodzeniem?',

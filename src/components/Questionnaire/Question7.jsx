@@ -312,6 +312,7 @@ export function Question7({
 
         <QuestionNav
           onBack={onBack}
+          continueLabel={t('nav.submit')}
           continueDisabled={continueDisabled}
           continueHint={continueHint}
           continueHintId="submit-hint"

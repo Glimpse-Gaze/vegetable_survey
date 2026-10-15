@@ -7,12 +7,14 @@ export function QuestionNav({
   onLockedBack,
   backHint,
   backHintId,
+  continueLabel,
   continueDisabled = false,
   continueHint,
   continueHintId,
 }) {
   const { t } = useI18n();
   const locked = backMode !== 'enabled';
+  const forwardLabel = continueLabel ?? t('nav.continue');
 
   function handleBack() {
     if (backMode === 'locked') {
@@ -52,7 +54,7 @@ export function QuestionNav({
               continueDisabled && continueHint ? continueHintId : undefined
             }
           >
-            {t('nav.continue')}
+            {forwardLabel}
           </button>
           {continueDisabled && continueHint ? (
             <span className="continue-hint" role="tooltip" id={continueHintId}>

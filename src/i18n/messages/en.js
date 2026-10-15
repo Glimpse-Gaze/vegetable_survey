@@ -5,6 +5,7 @@ export const en = {
   nav: {
     back: 'Back',
     continue: 'Continue',
+    submit: 'Submit',
   },
   dialog: {
     proceed: 'Proceed',
@@ -259,7 +260,7 @@ export const en = {
       'By default, the results show global votes, including those who have chosen not to disclose their birthplace. Place and language filters use real answers only, and only unlock once a region or language has at least 20 responses. If your country is missing, please encourage more people to vote!',
     mapStatus: 'Showing {place}{language} · {count} answers',
     mixDisclaimer:
-      'Current global results mix real answers with artificially generated ones. Filtered views (if available)show real answers only. Please invite more people to vote, so we can display only human-made answers!',
+      'Current global results mix real answers with artificially generated ones. Filtered views (if available) show real answers only. Please invite more people to vote, so we can display only human-made answers!',
     youVotedFor: 'You voted for',
     people: 'people',
     speakers: '{language} speakers',

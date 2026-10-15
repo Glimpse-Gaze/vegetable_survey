@@ -1097,6 +1097,10 @@ h1.eyebrow {
 
   .spectrum-track {
     flex: 1 1 auto;
+    overflow: visible;
+    /* Room for the × badge to sit above each pill corner. */
+    padding-top: 16px;
+    padding-right: 14px;
   }
 
   .spectrum-end-label {
@@ -1111,8 +1115,17 @@ h1.eyebrow {
     box-sizing: border-box;
     flex-wrap: nowrap;
     align-items: center;
-    overflow: hidden;
+    /* Keep visible so the × can sit on top of the pill corner. */
+    overflow: visible;
     padding-right: 36px;
+  }
+
+  .spectrum-slot.is-filled {
+    overflow: visible;
+  }
+
+  .spectrum-slot .spectrum-rank-label {
+    overflow: hidden;
   }
 
   .spectrum-rank-controls {
@@ -1144,9 +1157,9 @@ h1.eyebrow {
 
   .spectrum-rank-button.is-remove {
     position: absolute;
-    top: -4px;
-    right: -2px;
-    z-index: 2;
+    top: -8px;
+    right: -6px;
+    z-index: 3;
     width: 28px;
     height: 28px;
     padding: 0;
