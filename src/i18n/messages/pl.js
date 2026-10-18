@@ -279,6 +279,7 @@ export const pl = {
     people: 'ludzi',
     speakers: 'osób mówiących w języku: {language}',
     amongSpeakers: 'wśród osób mówiących w języku: {language}{place}',
+    amongSpeakersIn: 'wśród osób mówiących w języku: {language} w: {place}',
     worldwide: 'na świecie',
     inPlace: 'w: {place}',
     onlyShare: 'Tylko {share} z {people} głosowało tak jak Ty',

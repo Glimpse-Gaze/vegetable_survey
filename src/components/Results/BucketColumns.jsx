@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { numberLocale as intlLocale } from '../../i18n/locales.js';
 import { useI18n } from '../../i18n/useI18n.js';
 
 function formatVotes(n, t, numberLocale) {
-  return `${n.toLocaleString(numberLocale)} ${n === 1 ? t('results.vote') : t('results.votes')}`;
+  const count = n.toLocaleString(numberLocale);
+  const label = n === 1 ? t('results.vote') : t('results.votes');
+  return numberLocale.startsWith('zh') ? `${count}${label}` : `${count} ${label}`;
 }
 
 function formatShare(share) {
@@ -13,7 +16,7 @@ function formatShare(share) {
 
 export function BucketColumns({ section }) {
   const { t, locale } = useI18n();
-  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en-GB';
+  const numberLocale = intlLocale(locale);
   const [lookupId, setLookupId] = useState('');
   const selected =
     section.lookupItems.find((item) => item.id === lookupId) ?? null;
@@ -28,10 +31,11 @@ export function BucketColumns({ section }) {
               <h2 className="bucket-card-title">{column.title}</h2>
               {column.leader ? (
                 <p className="bucket-card-summary">
-                  {formatShare(column.leader.share)}
-                  {column.id === 'in_between'
-                    ? t('results.buckets.put')
-                    : t('results.buckets.agreeIs')}
+                  {`${formatShare(column.leader.share)}${
+                    column.id === 'in_between'
+                      ? t('results.buckets.put')
+                      : t('results.buckets.agreeIs')
+                  }`}
                   <strong>{column.leader.name}</strong>
                   {column.id === 'not_vegetable'
                     ? t('results.buckets.notVeg')

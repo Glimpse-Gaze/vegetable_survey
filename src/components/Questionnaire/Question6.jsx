@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { numberLocale as intlLocale } from '../../i18n/locales.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import { ConfirmDialog } from '../ConfirmDialog.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
@@ -9,7 +10,7 @@ const MIN_PUBLIC_NOTE = 3;
 
 export function Question6({ onContinue, onBack, initialDescription }) {
   const { t, locale } = useI18n();
-  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en';
+  const numberLocale = intlLocale(locale);
   const [text, setText] = useState(initialDescription?.text ?? '');
   const [publicDisplay, setPublicDisplay] = useState(
     initialDescription?.publicDisplay ?? false,

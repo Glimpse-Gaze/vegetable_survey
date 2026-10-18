@@ -265,6 +265,7 @@ export const en = {
     people: 'people',
     speakers: '{language} speakers',
     amongSpeakers: 'among {language} speakers{place}',
+    amongSpeakersIn: 'among {language} speakers in {place}',
     worldwide: 'worldwide',
     inPlace: 'in {place}',
     onlyShare: 'Only {share} of {people} voted with you',

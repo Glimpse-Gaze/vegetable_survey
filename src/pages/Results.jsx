@@ -1,5 +1,6 @@
 import { lazy, Suspense, startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { numberLocale as intlLocale } from '../i18n/locales.js';
 import { useI18n } from '../i18n/useI18n.js';
 import { localizeResultsSection } from '../i18n/localizeResults.js';
 import { withLocale } from '../i18n/paths.js';
@@ -88,7 +89,9 @@ function edgeGain(position, max, direction) {
 }
 
 function formatVotes(n, t, numberLocale) {
-  return `${n.toLocaleString(numberLocale)} ${n === 1 ? t('results.vote') : t('results.votes')}`;
+  const count = n.toLocaleString(numberLocale);
+  const label = n === 1 ? t('results.vote') : t('results.votes');
+  return numberLocale.startsWith('zh') ? `${count}${label}` : `${count} ${label}`;
 }
 
 function formatShare(share) {
@@ -119,12 +122,14 @@ function placeLabel(region, t) {
 
 function audienceLabel(section, t) {
   const language = section.language?.name;
-  const place =
-    section.region.id === 'global'
-      ? ''
-      : ` ${t('results.inPlace', { place: section.region.name })}`;
-  if (language) return t('results.amongSpeakers', { language, place });
-  return placeLabel(section.region, t);
+  if (!language) return placeLabel(section.region, t);
+  if (section.region.id === 'global') {
+    return t('results.amongSpeakers', { language, place: '' });
+  }
+  return t('results.amongSpeakersIn', {
+    language,
+    place: section.region.name,
+  });
 }
 
 function alignmentTone(rank) {
@@ -197,7 +202,7 @@ function Crown() {
 
 function Blade({ item, isYours, variant }) {
   const { t, locale } = useI18n();
-  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en-GB';
+  const numberLocale = intlLocale(locale);
   const fill = Math.max(0, item.share * 100);
   const isChampion = variant === 'champion';
 
@@ -712,7 +717,10 @@ export function Results() {
   const navigate = useNavigate();
   const { t, locale } = useI18n();
   const catalog = useSurveyCatalog();
-  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en-GB';
+  const numberLocale = intlLocale(locale);
+  const cjk = locale === 'zh';
+  const gap = cjk ? '' : ' ';
+  const stop = cjk ? '。' : '.';
   const { categoryId } = useParams();
   const [searchParams] = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1104,15 +1112,18 @@ export function Results() {
                   </p>
                 ) : null}
                 <p className="alignment-body">
-                  {t('results.youVotedFor')}{' '}
+                  {t('results.youVotedFor')}
+                  {gap}
                   <strong className={`alignment-var is-${alignment.tone}`}>
                     {alignment.name}
                   </strong>
-                  .{alignment.connector ? ` ${alignment.connector}` : ''}{' '}
+                  {stop}
+                  {alignment.connector ? `${gap}${alignment.connector}` : ''}
+                  {gap}
                   <strong className={`alignment-var is-${alignment.tone}`}>
                     {alignment.outcome}
                   </strong>
-                  .
+                  {stop}
                 </p>
               </div>
             </div>

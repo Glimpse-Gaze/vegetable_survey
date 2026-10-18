@@ -6,7 +6,9 @@ const PREFILL_FLAG = 'veg-survey-prefill';
 const PREFILL_EVENT = 'veg-survey-prefill';
 
 function onSurveyPage() {
-  return /^\/(en|pl)\/survey\/?$/.test(window.location.pathname);
+  const locale = localeFromPath(window.location.pathname);
+  if (!locale) return false;
+  return new RegExp(`^/${locale}/survey/?$`).test(window.location.pathname);
 }
 
 function openSurvey() {

@@ -1,5 +1,6 @@
 import { criteria } from './criteria.js';
 import { REASON_COMMENTS_PL } from './reasonComments.pl.js';
+import { REASON_COMMENTS_ZH } from './reasonComments.zh.js';
 
 export const COMMENT_DISPLAY_COUNT = 22;
 const REASON_RESPONDENTS = 700;
@@ -80,6 +81,7 @@ export const REASON_COMMENTS = REASON_COMMENTS_EN;
 const REASON_COMMENTS_BY_LOCALE = {
   en: REASON_COMMENTS_EN,
   pl: REASON_COMMENTS_PL,
+  zh: REASON_COMMENTS_ZH,
 };
 
 export function commentsForLocale(locale) {

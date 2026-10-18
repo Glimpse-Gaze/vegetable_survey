@@ -1,4 +1,5 @@
 import { OPEN_NOTES_PL } from './noteResults.pl.js';
+import { OPEN_NOTES_ZH } from './noteResults.zh.js';
 
 export const NOTE_PAGE_SIZE = 20;
 
@@ -306,6 +307,7 @@ export const OPEN_NOTES = OPEN_NOTES_EN;
 const OPEN_NOTES_BY_LOCALE = {
   en: OPEN_NOTES_EN,
   pl: OPEN_NOTES_PL,
+  zh: OPEN_NOTES_ZH,
 };
 
 export function notesForLocale(locale) {

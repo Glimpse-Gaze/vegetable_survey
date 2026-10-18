@@ -7,6 +7,7 @@ import { isLocale } from './i18n/locales.js';
 import { withLocale } from './i18n/paths.js';
 import './styles/questionnaire.css';
 import './styles/pages.css';
+import './styles/zh.css';
 
 const Questionnaire = lazy(() =>
   import('./components/Questionnaire/Questionnaire.jsx').then((mod) => ({

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BrandFooter } from '../BrandFooter.jsx';
+import { numberLocale as intlLocale } from '../../i18n/locales.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import { withLocale } from '../../i18n/paths.js';
 import { QuestionContainer } from './QuestionContainer.jsx';
@@ -10,7 +11,7 @@ const MAX_DEV_MESSAGE = 1000;
 
 export function ThankYou({ responseId }) {
   const { t, locale } = useI18n();
-  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en';
+  const numberLocale = intlLocale(locale);
   const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);

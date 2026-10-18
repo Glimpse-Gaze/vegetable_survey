@@ -1,0 +1,60 @@
+/* Simplified Chinese. Latin display type is tight on purpose; Han glyphs
+   fill the em box, so those metrics only change under zh-Hans. */
+html[lang='zh-Hans'] {
+  --font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", sans-serif;
+  --font-display: "Noto Serif SC", "Songti SC", "Noto Serif CJK SC", "Noto Sans SC",
+    serif;
+}
+
+html[lang='zh-Hans'] body {
+  line-height: 1.6;
+}
+
+html[lang='zh-Hans'] .eyebrow,
+html[lang='zh-Hans'] .home-panel .eyebrow,
+html[lang='zh-Hans'] .results-section-head .eyebrow {
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+html[lang='zh-Hans'] .home-title,
+html[lang='zh-Hans'] .question-title,
+html[lang='zh-Hans'] .results-section-title,
+html[lang='zh-Hans'] .map-title,
+html[lang='zh-Hans'] .results-nav-kicker,
+html[lang='zh-Hans'] .blade-name,
+html[lang='zh-Hans'] .spectrum-blade-name {
+  letter-spacing: 0;
+  line-height: 1.28;
+}
+
+html[lang='zh-Hans'] .home-title {
+  line-height: 1.2;
+  text-transform: none;
+}
+
+html[lang='zh-Hans'] .spectrum,
+html[lang='zh-Hans'] .buckets {
+  --tile-h: 3.7rem;
+}
+
+html[lang='zh-Hans'] .spectrum-tile-label,
+html[lang='zh-Hans'] .buckets .spectrum-tile-label {
+  line-height: 1.4;
+  max-height: 2.9em;
+}
+
+html[lang='zh-Hans'] .spectrum-rank-label,
+html[lang='zh-Hans'] .criterion-label,
+html[lang='zh-Hans'] .alignment-body,
+html[lang='zh-Hans'] .bucket-card-summary,
+html[lang='zh-Hans'] .microcopy {
+  line-height: 1.5;
+}
+
+html[lang='zh-Hans'] .blade-badge,
+html[lang='zh-Hans'] .bucket-row-badge {
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}

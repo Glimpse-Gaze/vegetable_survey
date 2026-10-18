@@ -1,9 +1,11 @@
-import { DEFAULT_LOCALE, isLocale } from './locales.js';
+import { DEFAULT_LOCALE, LOCALES, isLocale } from './locales.js';
 
 const STORAGE_KEY = 'veg-survey-locale';
+const LOCALE_IDS = LOCALES.map((locale) => locale.id).join('|');
+const LOCALE_PREFIX = new RegExp(`^/(${LOCALE_IDS})(?=/|$)`);
 
 export function localeFromPath(pathname) {
-  const match = String(pathname ?? '').match(/^\/(en|pl)(?=\/|$)/);
+  const match = String(pathname ?? '').match(LOCALE_PREFIX);
   return match ? match[1] : null;
 }
 
@@ -26,13 +28,13 @@ export function rememberLocale(locale) {
   }
 }
 
-/** Prefix a path with /en or /pl, keeping any query or hash. */
+/** Prefix a path with the locale id, keeping any query or hash. */
 export function withLocale(locale, path) {
   const id = isLocale(locale) ? locale : DEFAULT_LOCALE;
   const match = String(path ?? '/').match(/^([^?#]*)(.*)$/);
   const pathname = match?.[1] || '/';
   const tail = match?.[2] || '';
-  const stripped = pathname.replace(/^\/(en|pl)(?=\/|$)/, '') || '/';
+  const stripped = pathname.replace(LOCALE_PREFIX, '') || '/';
   const next = stripped === '/' ? `/${id}` : `/${id}${stripped}`;
   return `${next}${tail}`;
 }

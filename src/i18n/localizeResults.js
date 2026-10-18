@@ -6,6 +6,7 @@ import {
 import { commentsForLocale } from '../data/reasonResults.js';
 import { notesForLocale } from '../data/noteResults.js';
 import { spectrumCopy as spectrumCopyPl } from './lexicon/pl/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyZh } from './lexicon/zh/spectrumCopy.js';
 
 const BAND_KEYS = {
   least: 'q4.least',
@@ -15,6 +16,7 @@ const BAND_KEYS = {
 
 const SPECTRUM_COPY = {
   pl: spectrumCopyPl,
+  zh: spectrumCopyZh,
 };
 
 function withSpectrumCopy(item, locale) {
