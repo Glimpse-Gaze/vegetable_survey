@@ -52,7 +52,7 @@ export const en = {
     noBadAnswers:
       'There are no bad answers. Use your intuition and feel free to submit personal opinions.',
     languagePrompt:
-      'This survey is best in your mother tongue. Please choose one of the supported languages:',
+      'It’s recommended to take this survey in the language you know best. Please choose one of the supported languages:',
     backHint: 'Return to the main page',
   },
   privacy: {
@@ -257,7 +257,7 @@ export const en = {
     byPlace: 'Global opinions',
     mapTitle: 'Where people answered from',
     mapCopy:
-      'By default, the results show global votes, including those who have chosen not to disclose their birthplace. Place and language filters use real answers only, and only unlock once a region or language has at least 20 responses. If your country is missing, please encourage more people to vote!',
+      'By default, the results show global votes, including those who have chosen not to disclose their birthplace. Place and language filters become available only after a region or language receives at least 20 responses. If your country is missing, please encourage more people to vote!',
     mapStatus: 'Showing {place}{language} · {count} answers',
     mixDisclaimer:
       'Current global results mix real answers with artificially generated ones. Filtered views (if available) show real answers only. Please invite more people to vote, so we can display only human-made answers!',

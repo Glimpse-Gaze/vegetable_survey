@@ -42,7 +42,7 @@ Nuances that matter for reading results:
 
 ## Results & map
 
-Results are organised by question category. Respondents can move between boards, filter by place and language once enough live answers exist, and browse public notes and custom reasons in the UI locale they chose (English and Polish pools stay separate for free-text).
+Results are organised by question category. Respondents can move between boards, filter by place and language once enough live answers exist, and browse public notes and custom reasons in the UI locale they chose (each language keeps its own free-text pool).
 
 The **world map** uses an **equal-Earth** projection so regions keep comparable area. It is interactive (pan / inspect) and colours places by live density — filterable once a region clears the threshold, with a lighter “emerging” state while votes are still few.
 
@@ -53,7 +53,7 @@ src/
   components/Questionnaire/   # Survey steps, boards (buckets, spectrum), consent, thank-you
   components/Results/         # Result boards, map, notes, reasons, survey gate
   data/                       # Catalogues, mock seed standings, live blend / filter helpers
-  i18n/                       # Locales, messages, lexicons (en + pl)
+  i18n/                       # Locales, messages, lexicons
   pages/                      # Home + Results shell
   styles/                     # Questionnaire + results + shared page chrome
   utils/                      # Submit helpers, touch hold-drag, local “my answer” storage
@@ -69,7 +69,7 @@ Payloads are stored as anonymous JSON in Neon (`server/schema.sql`). Ranking cod
 - Vite + React 19
 - React Router
 - Neon Postgres (anonymous survey payloads, ranking codes, reason/note votes, issue reports)
-- English + Polish UI (lexicons for vegetables, places, languages, spectrum copy)
+- UI in English, Polish, Simplified Chinese, French, Italian, German, and Spanish (lexicons for vegetables, places, languages, spectrum copy)
 
 ## Main routes
 
@@ -79,7 +79,7 @@ Payloads are stored as anonymous JSON in Neon (`server/schema.sql`). Ranking cod
 | `/:locale/survey` | Consent + questionnaire + thank-you / ranking code |
 | `/:locale/results/:categoryId` | Interactive results for one question |
 
-Supported locales: `en`, `pl`.
+Supported locales: `en`, `pl`, `zh`, `fr`, `it`, `de`, `es`.
 
 ## Data & privacy
 

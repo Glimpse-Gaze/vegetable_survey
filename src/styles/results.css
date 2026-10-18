@@ -2475,6 +2475,7 @@
   }
 
   .results-section-title {
+    width: 100%;
     overflow-wrap: anywhere;
   }
 

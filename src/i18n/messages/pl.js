@@ -50,7 +50,7 @@ export const pl = {
     noBadAnswers:
       'Nie ma tu złych odpowiedzi. Użyj swojej intuicji i śmiało podziel się własnymi opiniami.',
     languagePrompt:
-      'Tę ankietę najlepiej wypełnić w języku ojczystym. Wybierz jeden ze wspieranych języków:',
+      'Tę ankietę najlepiej wypełnić w języku, który znasz najlepiej. Wybierz jeden ze wspieranych języków:',
     backHint: 'Wróć na stronę główną',
   },
   privacy: {
@@ -271,11 +271,11 @@ export const pl = {
     byPlace: 'Globalne opinie',
     mapTitle: 'Skąd odpowiadali ludzie',
     mapCopy:
-      'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Filtry miejsca i języka korzystają wyłącznie z prawdziwych odpowiedzi i odblokowują się dopiero przy co najmniej 20 odpowiedziach. Jeśli brakuje Twojego kraju, zaproś więcej osób do głosowania!',
+      'Domyślnie wyniki pokazują głosy z całego świata, w tym osób, które nie podały miejsca urodzenia. Filtry miejsca i języka odblokowują się dopiero przy co najmniej 20 odpowiedziach. Jeśli brakuje Twojego kraju, zaproś więcej osób do głosowania!',
     mapStatus: 'Wyświetlasz: {place}{language} · {count} odpowiedzi',
     mixDisclaimer:
       'Obecne wyniki globalne łączą prawdziwe odpowiedzi z wygenerowanymi sztucznie. Widoki z filtrami (jeśli są dostępne) pokazują wyłącznie ludzkie odpowiedzi. Zaproś więcej osób do głosowania, żebyśmy mogli pokazywać tylko prawdziwe wyniki!',
-    youVotedFor: 'Twój głos padł na',
+    youVotedFor: 'Twój głos to:',
     people: 'ludzi',
     speakers: 'osób mówiących w języku: {language}',
     amongSpeakers: 'wśród osób mówiących w języku: {language}{place}',

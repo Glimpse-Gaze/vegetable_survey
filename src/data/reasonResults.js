@@ -1,6 +1,10 @@
 import { criteria } from './criteria.js';
 import { REASON_COMMENTS_PL } from './reasonComments.pl.js';
 import { REASON_COMMENTS_ZH } from './reasonComments.zh.js';
+import { REASON_COMMENTS_FR } from './reasonComments.fr.js';
+import { REASON_COMMENTS_IT } from './reasonComments.it.js';
+import { REASON_COMMENTS_DE } from './reasonComments.de.js';
+import { REASON_COMMENTS_ES } from './reasonComments.es.js';
 
 export const COMMENT_DISPLAY_COUNT = 22;
 const REASON_RESPONDENTS = 700;
@@ -82,6 +86,10 @@ const REASON_COMMENTS_BY_LOCALE = {
   en: REASON_COMMENTS_EN,
   pl: REASON_COMMENTS_PL,
   zh: REASON_COMMENTS_ZH,
+  fr: REASON_COMMENTS_FR,
+  it: REASON_COMMENTS_IT,
+  de: REASON_COMMENTS_DE,
+  es: REASON_COMMENTS_ES,
 };
 
 export function commentsForLocale(locale) {
