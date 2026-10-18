@@ -20,7 +20,18 @@
   right: 0;
   bottom: max(16px, env(safe-area-inset-bottom));
   margin: 0;
-  padding: 0 16px;
+  padding: 0 4.5rem;
+}
+
+.home-version {
+  position: absolute;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 
 .locale-tools {
@@ -304,6 +315,11 @@
   line-height: 0.94;
   letter-spacing: -0.04em;
   text-transform: uppercase;
+}
+
+/* French capitals carry a circumflex that the tight leading stacks into the line above. */
+html[lang='fr'] .home-title {
+  line-height: 1.28;
 }
 
 .home-lede {

@@ -10,9 +10,31 @@ const KNOWN_BY_ISO3 = Object.fromEntries(
 );
 
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 4;
-const ZOOM_STEP = 0.45;
+// Enough to tap most of the Balkans on a phone. Smaller states stay in the dropdown.
+const MAX_ZOOM = 10;
+const ZOOM_FACTOR = 1.5;
 const PAN_THRESHOLD = 5;
+
+function nextZoom(zoom, direction) {
+  const raw = direction > 0 ? zoom * ZOOM_FACTOR : zoom / ZOOM_FACTOR;
+  const stepped = Math.round(raw * 100) / 100;
+  if (direction > 0 && stepped >= MAX_ZOOM - 0.05) return MAX_ZOOM;
+  if (direction < 0 && stepped <= MIN_ZOOM + 0.05) return MIN_ZOOM;
+  return clamp(stepped, MIN_ZOOM, MAX_ZOOM);
+}
+
+/** Keep the vote popup on screen. Touch places it above the finger. */
+function tipOrigin(clientX, clientY, above) {
+  const width = 220;
+  const height = 64;
+  const margin = 10;
+  const left = above ? clientX - width / 2 : clientX + 14;
+  const top = above ? clientY - height - 18 : clientY + 14;
+  return {
+    left: clamp(left, margin, Math.max(margin, window.innerWidth - width - margin)),
+    top: clamp(top, margin, Math.max(margin, window.innerHeight - height - margin)),
+  };
+}
 
 function countryIso3(group) {
   return [...group.classList].find(
@@ -85,6 +107,7 @@ export function WorldMap({
   const zoomRef = useRef(1);
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
+  const pickRef = useRef(() => {});
   const [tip, setTip] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [panning, setPanning] = useState(false);
@@ -182,10 +205,45 @@ export function WorldMap({
         emerging: Boolean(live && live.votes > 0 && live.votes < VOTE_THRESHOLD),
         hiddenLanguage: Boolean(known && !live && languageFilteredRef.current),
         votes: live?.votes ?? known?.votes ?? 0,
-        x: event.clientX,
-        y: event.clientY,
+        ...tipOrigin(event.clientX, event.clientY, false),
       };
     }
+
+    function showTouchTip(group, x, y) {
+      if (hoverTip) return;
+      if (!group) {
+        setTip(null);
+        return;
+      }
+      const next = tipFromPointer({
+        target: group,
+        currentTarget: group,
+        clientX: x,
+        clientY: y,
+      });
+      if (!next || next.live) {
+        setTip(null);
+        return;
+      }
+      setTip({ ...next, ...tipOrigin(x, y, true) });
+    }
+
+    function pickCountry(group, x, y) {
+      if (group) {
+        const iso3 = countryIso3(group);
+        const live = iso3
+          ? liveRef.current.find((country) => country.iso3 === iso3)
+          : null;
+        if (live && live.votes >= VOTE_THRESHOLD) {
+          if (!hoverTip) setTip(null);
+          selectLiveGroup(group);
+          return;
+        }
+      }
+      showTouchTip(group, x, y);
+    }
+
+    pickRef.current = pickCountry;
 
     function onEnter(event) {
       if (!hoverTip) return;
@@ -195,9 +253,10 @@ export function WorldMap({
 
     function onMove(event) {
       const el = tipEl.current;
-      if (el) {
-        el.style.left = `${event.clientX + 14}px`;
-        el.style.top = `${event.clientY + 14}px`;
+      if (el && hoverTip) {
+        const origin = tipOrigin(event.clientX, event.clientY, false);
+        el.style.left = `${origin.left}px`;
+        el.style.top = `${origin.top}px`;
       }
       if (!hoverTip) return;
       const next = tipFromPointer(event);
@@ -219,13 +278,17 @@ export function WorldMap({
     }
 
     function onLeave() {
+      if (!hoverTip) return;
       setTip(null);
     }
 
     function onClick(event) {
       if (zoomRef.current > 1) return;
-      const group = event.target.closest?.('.country > g');
-      if (group) selectLiveGroup(group);
+      pickCountry(
+        innermostCountryGroup(event.target),
+        event.clientX,
+        event.clientY,
+      );
     }
 
     for (const group of groups) {
@@ -290,6 +353,7 @@ export function WorldMap({
     viewRef.current = next;
     zoomRef.current = z;
     writeViewBox(svg, next);
+    setTip(null);
     setZoom(z);
   }
 
@@ -321,6 +385,7 @@ export function WorldMap({
       drag.moved = true;
       viewport.setPointerCapture(event.pointerId);
       setPanning(true);
+      setTip(null);
     }
     const box = viewport.getBoundingClientRect();
     const next = {
@@ -349,7 +414,13 @@ export function WorldMap({
       suppressClickRef.current = false;
     });
     if (event.type === 'pointercancel') return;
-    if (!moved) selectLiveGroup(groupFromPoint(event.clientX, event.clientY));
+    if (!moved) {
+      pickRef.current(
+        groupFromPoint(event.clientX, event.clientY),
+        event.clientX,
+        event.clientY,
+      );
+    }
   }
 
   return (
@@ -377,7 +448,7 @@ export function WorldMap({
             type="button"
             aria-label={t('results.mapTip.zoomIn')}
             disabled={zoom >= MAX_ZOOM}
-            onClick={() => applyZoom(zoom + ZOOM_STEP)}
+            onClick={() => applyZoom(nextZoom(zoom, 1))}
           >
             +
           </button>
@@ -385,7 +456,7 @@ export function WorldMap({
             type="button"
             aria-label={t('results.mapTip.zoomOut')}
             disabled={zoom <= MIN_ZOOM}
-            onClick={() => applyZoom(zoom - ZOOM_STEP)}
+            onClick={() => applyZoom(nextZoom(zoom, -1))}
           >
             −
           </button>
@@ -395,7 +466,7 @@ export function WorldMap({
         <div
           ref={tipEl}
           className="world-map-tip"
-          style={{ left: tip.x + 14, top: tip.y + 14 }}
+          style={{ left: tip.left, top: tip.top }}
         >
           <strong>
             {tip.iceWall ? t('results.mapTip.iceWall') : tip.name}

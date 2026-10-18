@@ -1,5 +1,9 @@
 import { OPEN_NOTES_PL } from './noteResults.pl.js';
 import { OPEN_NOTES_ZH } from './noteResults.zh.js';
+import { OPEN_NOTES_FR } from './noteResults.fr.js';
+import { OPEN_NOTES_IT } from './noteResults.it.js';
+import { OPEN_NOTES_DE } from './noteResults.de.js';
+import { OPEN_NOTES_ES } from './noteResults.es.js';
 
 export const NOTE_PAGE_SIZE = 20;
 
@@ -308,6 +312,10 @@ const OPEN_NOTES_BY_LOCALE = {
   en: OPEN_NOTES_EN,
   pl: OPEN_NOTES_PL,
   zh: OPEN_NOTES_ZH,
+  fr: OPEN_NOTES_FR,
+  it: OPEN_NOTES_IT,
+  de: OPEN_NOTES_DE,
+  es: OPEN_NOTES_ES,
 };
 
 export function notesForLocale(locale) {

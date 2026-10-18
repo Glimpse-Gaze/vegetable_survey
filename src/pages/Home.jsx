@@ -6,6 +6,7 @@ import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
 import { useI18n } from '../i18n/useI18n.js';
 import { withLocale } from '../i18n/paths.js';
 import { readMyResponseId } from '../utils/myResponse.js';
+import { version } from '../../package.json';
 
 export function Home() {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ export function Home() {
         </div>
       </section>
       <BrandFooter className="brand-footer--page" />
+      <p className="home-version">{version}</p>
       {askResults ? (
         <ConfirmDialog
           title={t('home.skipTitle')}
