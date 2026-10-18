@@ -5,7 +5,15 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import sharp from 'sharp';
+
+let sharp;
+try {
+  ({ default: sharp } = await import('sharp'));
+} catch (error) {
+  console.error('Cannot load sharp. From the project folder, run: npm install');
+  console.error(error?.message ?? error);
+  process.exit(1);
+}
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentDir = path.join(root, 'src', 'content');

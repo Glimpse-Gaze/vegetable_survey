@@ -12,8 +12,7 @@ export function SurveyNudge({ kind = 'compare', onThisMachine = false }) {
         {onThisMachine
           ? t('results.gate.completeHere')
           : t('results.gate.complete')}
-      </Link>
-      {kind === 'vote' ? t('results.gate.toVote') : t('results.gate.toCompare')}
+      </Link>{kind === 'vote' ? t('results.gate.toVote') : t('results.gate.toCompare')}
     </p>
   );
 }

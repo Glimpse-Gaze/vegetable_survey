@@ -41,6 +41,24 @@ export function I18nProvider({ children }) {
   useEffect(() => {
     const match = LOCALES.find((item) => item.id === locale);
     document.documentElement.lang = match?.htmlLang ?? DEFAULT_LOCALE;
+    const title = lookup(bundles[locale], 'home.title');
+    document.title = typeof title === 'string' ? title : 'The Great Vegetable Survey';
+  }, [locale]);
+
+  useEffect(() => {
+    const id = 'zh-hans-fonts';
+    if (locale !== 'zh') {
+      document.getElementById(id)?.remove();
+      return undefined;
+    }
+    if (document.getElementById(id)) return undefined;
+    const link = document.createElement('link');
+    link.id = id;
+    link.rel = 'stylesheet';
+    link.href =
+      'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap';
+    document.head.appendChild(link);
+    return undefined;
   }, [locale]);
 
   const value = useMemo(() => {

@@ -305,7 +305,8 @@
   border-radius: 999px;
   background: transparent;
   color: var(--green-deep);
-  font-family: var(--font-body);
+  /* Always the Latin "i". Chinese body type would redraw this one letter. */
+  font-family: "Segoe UI", system-ui, sans-serif;
   font-size: 0.78rem;
   font-style: italic;
   font-weight: 700;

@@ -4,6 +4,7 @@ import {
   layoutCommentRows,
   rankComments,
 } from '../../data/reasonResults.js';
+import { numberLocale as intlLocale } from '../../i18n/locales.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import {
   applyMyAnswerToRows,
@@ -21,7 +22,9 @@ const MAX_DISLIKES = 5;
 const PUFF_MS = 900;
 
 function formatVotes(n, t, numberLocale) {
-  return `${n.toLocaleString(numberLocale)} ${n === 1 ? t('results.vote') : t('results.votes')}`;
+  const count = n.toLocaleString(numberLocale);
+  const label = n === 1 ? t('results.vote') : t('results.votes');
+  return numberLocale.startsWith('zh') ? `${count}${label}` : `${count} ${label}`;
 }
 
 function formatShare(share) {
@@ -195,7 +198,7 @@ function rateGesture(t) {
 
 export function ReasonResults({ section, viewingOwn = true }) {
   const { t, locale } = useI18n();
-  const numberLocale = locale === 'pl' ? 'pl-PL' : 'en-GB';
+  const numberLocale = intlLocale(locale);
   const responseId = useMemo(() => readMyResponseId(), []);
   const canVote = Boolean(responseId);
   const myReason = useMemo(
@@ -483,8 +486,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
             <h2 className="bucket-card-title">{t('results.reasons.title')}</h2>
             {section.leader ? (
               <p className="bucket-card-summary">
-                {formatShare(section.leader.share)}
-                {t('results.reasons.marked')}
+                {`${formatShare(section.leader.share)}${t('results.reasons.marked')}`}
                 <strong>{section.leader.name}</strong>
               </p>
             ) : null}
