@@ -15,6 +15,7 @@
   gap: 2px;
   padding: 8px 18px 6px;
   background: transparent;
+  pointer-events: none;
 }
 
 .results-topbar.is-filtered {
@@ -30,6 +31,13 @@
   justify-content: flex-end;
   gap: 10px;
   width: 100%;
+}
+
+.results-topbar .results-now,
+.results-topbar .results-menu-btn,
+.results-topbar .results-region-status,
+.results-topbar .results-region-status button {
+  pointer-events: auto;
 }
 
 .results-now {
@@ -129,7 +137,7 @@
   width: min(20rem, 92vw);
   height: 100dvh;
   padding:
-    max(88px, calc(72px + env(safe-area-inset-top)))
+    8px
     max(22px, env(safe-area-inset-right))
     max(28px, env(safe-area-inset-bottom))
     22px;
@@ -141,6 +149,7 @@
   visibility: hidden;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-gutter: stable;
   box-sizing: border-box;
 }
 
@@ -152,9 +161,11 @@
 
 .results-nav-head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 12px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .results-nav-kicker {
@@ -166,10 +177,21 @@
   letter-spacing: -0.03em;
 }
 
+.results-nav-head .locale-switcher {
+  max-width: calc(100% - 52px);
+}
+
+.results-nav-head .locale-switcher[data-tooltip]::after {
+  right: auto;
+  left: 0;
+}
+
 .results-nav-head .locale-switcher select {
-  min-height: 36px;
-  padding: 0 10px;
+  max-width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
   font-size: 0.88rem;
+  box-sizing: border-box;
 }
 
 .results-nav-meta {
@@ -242,11 +264,18 @@
   max-width: 100%;
 }
 
-.results-menu-filters .map-select select {
+.results-menu-filters .overflow-select,
+.results-menu-filters .map-select select,
+.map-panel .overflow-select,
+.map-panel .map-select select {
   width: 100%;
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
+}
+
+.map-panel .map-select {
+  width: min(18rem, 100%);
 }
 
 .results-menu-status {
@@ -966,9 +995,10 @@
   text-transform: uppercase;
 }
 
-.map-select select {
+.map-select select,
+.overflow-select select {
   min-height: 48px;
-  padding: 0 12px;
+  padding: 0 2rem 0 12px;
   border: 1.5px solid var(--border);
   border-radius: 14px;
   background: var(--card);
@@ -978,6 +1008,65 @@
   font-weight: 650;
   letter-spacing: 0;
   text-transform: none;
+}
+
+.overflow-select {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.overflow-select select {
+  color: transparent;
+  box-sizing: border-box;
+}
+
+.overflow-select select option,
+.overflow-select select optgroup {
+  color: var(--ink);
+}
+
+.overflow-select-face {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 12px;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.overflow-select-marquee {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.overflow-select-marquee .marquee-track {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.overflow-select-marquee.is-marquee .marquee-track {
+  max-width: none;
+  animation: pill-marquee 7s linear infinite alternate;
+}
+
+.overflow-select:hover .overflow-select-marquee.is-marquee .marquee-track,
+.overflow-select:focus-within .overflow-select-marquee.is-marquee .marquee-track {
+  animation-play-state: paused;
 }
 
 .world-map {
@@ -2432,6 +2521,10 @@
     transition: none;
   }
 
+  .overflow-select-marquee.is-marquee .marquee-track {
+    animation: none;
+  }
+
   .blade.is-champion .blade-face,
   .blade.is-yours:not(.is-champion) .blade-face {
     animation: none;
@@ -2695,7 +2788,7 @@
   }
 
   .results-drawer {
-    padding-top: max(7.5rem, calc(6.5rem + env(safe-area-inset-top)));
+    padding-top: max(6px, env(safe-area-inset-top));
   }
 
   .results-menu-btn {

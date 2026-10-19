@@ -97,9 +97,9 @@ export const pl = {
   q3: {
     title: 'Które z tych rzeczy liczą się jako warzywa?',
     lead: 'Przyporządkuj każdy przykład do kategorii.',
-    fine: 'Przeciągnij przykłady albo najpierw kliknij kategorię, a potem przykład.',
+    fine: 'Przeciągnij przykłady albo kliknij kategorię, a potem przykład. Kliknij × przy ułożonym przykładzie, żeby go cofnąć.',
     coarse:
-      'Dotknij kategorii, potem przykładu (albo odwrotnie). Przytrzymaj przykład, żeby go przeciągnąć. Dotknij × przy ułożonym przykładzie, żeby go cofnąć.',
+      'Przeciągnij przykłady albo dotknij kategorii, a potem przykładu. Dotknij × przy ułożonym przykładzie, żeby go cofnąć.',
     continueHint: 'Posortuj co najmniej 15 przykładów',
     toSort:
       'Posortuj co najmniej 15 przykładów. Jeśli któregoś nie znasz, zostaw go tutaj.',
@@ -114,9 +114,9 @@ export const pl = {
     title: 'Jak bardzo warzywne wydają Ci się te przykłady?',
     lead:
       'Umieść każdy przykład na skali warzywności. Najmniej warzywne na górze, najbardziej warzywne na dole.',
-    fine: 'Przeciągnij i upuść albo kliknij pozycję, a potem przykład. Strzałkami przesuniesz ułożony przykład w górę lub w dół.',
+    fine: 'Przeciągnij przykłady albo kliknij pozycję, a potem przykład. Strzałkami przesuniesz ułożony przykład. Kliknij ×, żeby go cofnąć.',
     coarse:
-      'Dotknij pozycji, potem przykładu (albo odwrotnie). Przytrzymaj przykład, żeby go przeciągnąć. Strzałkami przesuniesz go w górę lub w dół, a × cofnie go na listę.',
+      'Przeciągnij przykłady albo dotknij pozycji, a potem przykładu. Strzałkami przesuniesz ułożony przykład. Dotknij ×, żeby go cofnąć.',
     continueHint: 'Ułóż wszystkie dziesięć przykładów',
     least: 'Najmniej warzywne',
     middle: 'Pośrodku',

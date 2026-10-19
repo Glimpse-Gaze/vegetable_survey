@@ -50,13 +50,24 @@ function emptySpectrumSlots() {
   return Array.from({ length: SPECTRUM_SLOTS }, () => 0);
 }
 
-const SURVEY_LOCALES = new Set(['en', 'pl', 'zh', 'fr', 'it', 'de', 'es']);
+const SURVEY_LOCALES = new Set([
+  'en',
+  'pl',
+  'zh',
+  'zh-hant',
+  'ko',
+  'th',
+  'fr',
+  'it',
+  'de',
+  'es',
+  'es-mx',
+  'pt-br',
+  'pt-pt',
+]);
 
 function surveyLocale(payload, text = '') {
-  const raw = String(payload?.locale ?? '')
-    .trim()
-    .toLowerCase()
-    .split('-')[0];
+  const raw = String(payload?.locale ?? '').trim().toLowerCase();
   // Keep the language the survey was taken in. An English reply written
   // during a German session still belongs with the German results.
   if (SURVEY_LOCALES.has(raw)) return raw;

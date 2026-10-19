@@ -97,9 +97,9 @@ export const it = {
   q3: {
     title: 'Quali di questi contano come verdure?',
     lead: 'Metti ogni esempio in un cestino.',
-    fine: 'Trascina gli esempi, oppure clicca un cestino e poi un esempio.',
+    fine: 'Trascina gli esempi, oppure clicca un cestino e poi un esempio. Clicca × su un esempio già messo per rimetterlo.',
     coarse:
-      'Tocca un cestino, poi un esempio (o il contrario). Tieni premuto un esempio per trascinarlo. Tocca × su un esempio già messo per rimetterlo.',
+      'Trascina gli esempi, oppure tocca un cestino e poi un esempio. Tocca × su un esempio già messo per rimetterlo.',
     continueHint: 'Sistema almeno 15 esempi',
     toSort:
       'Sistema almeno 15 di questi esempi. Se un nome non dice niente, lascialo qui.',
@@ -114,9 +114,9 @@ export const it = {
     title: 'Quanto sa di verdura ognuno di questi?',
     lead:
       'Metti ogni esempio sulla scala della verdura. I meno verdura in alto, i più verdura in basso.',
-    fine: 'Trascina, oppure clicca un posto e poi un esempio. Le frecce spostano un esempio già messo.',
+    fine: 'Trascina gli esempi, oppure clicca un posto e poi un esempio. Usa le frecce per spostare un esempio già messo. Clicca × per rimetterlo.',
     coarse:
-      'Tocca un posto, poi un esempio (o il contrario). Tieni premuto un esempio per trascinarlo. Le frecce lo spostano, × lo rimette nella lista.',
+      'Trascina gli esempi, oppure tocca un posto e poi un esempio. Usa le frecce per spostare un esempio già messo. Tocca × per rimetterlo.',
     continueHint: 'Sistema tutti e dieci',
     least: 'Meno verdura',
     middle: 'Nel mezzo',

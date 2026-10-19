@@ -97,9 +97,9 @@ export const es = {
   q3: {
     title: '¿Cuáles de estos cuentan como verduras?',
     lead: 'Mete cada ejemplo en un cajón.',
-    fine: 'Arrastra los ejemplos, o pulsa un cajón y luego un ejemplo.',
+    fine: 'Arrastra los ejemplos, o pulsa un cajón y luego un ejemplo. Pulsa × en un ejemplo ya colocado para devolverlo.',
     coarse:
-      'Toca un cajón y luego un ejemplo (o al revés). Mantén un ejemplo para arrastrarlo. Toca × en un ejemplo ya colocado para devolverlo.',
+      'Arrastra los ejemplos, o toca un cajón y luego un ejemplo. Toca × en un ejemplo ya colocado para devolverlo.',
     continueHint: 'Ordena al menos 15 ejemplos',
     toSort:
       'Ordena al menos 15 de estos ejemplos. Si un nombre no te dice nada, déjalo aquí.',
@@ -114,9 +114,9 @@ export const es = {
     title: '¿Cuánto sabe a verdura cada uno?',
     lead:
       'Coloca cada ejemplo en la escala de verdura. Lo menos verdura arriba, lo más verdura abajo.',
-    fine: 'Arrastra y suelta, o pulsa un puesto y luego un ejemplo. Las flechas mueven un ejemplo ya colocado.',
+    fine: 'Arrastra los ejemplos, o pulsa un puesto y luego un ejemplo. Usa las flechas para mover un ejemplo ya colocado. Pulsa × para devolverlo.',
     coarse:
-      'Toca un puesto y luego un ejemplo (o al revés). Mantén un ejemplo para arrastrarlo. Las flechas lo mueven, y × lo devuelve a la lista.',
+      'Arrastra los ejemplos, o toca un puesto y luego un ejemplo. Usa las flechas para mover un ejemplo ya colocado. Toca × para devolverlo.',
     continueHint: 'Coloca los diez ejemplos',
     least: 'Lo menos verdura',
     middle: 'En el medio',

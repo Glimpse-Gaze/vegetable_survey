@@ -1,0 +1,176 @@
+/* Traditional Chinese (Taiwan). Latin metrics stay; Han only under zh-Hant. */
+html[lang='zh-Hant'] {
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC",
+    sans-serif;
+  --font-display: "Noto Serif TC", "Songti TC", "Noto Serif CJK TC", "Noto Sans TC", serif;
+}
+
+html[lang='zh-Hant'] body {
+  line-height: 1.6;
+}
+
+html[lang='zh-Hant'] .eyebrow,
+html[lang='zh-Hant'] .home-panel .eyebrow,
+html[lang='zh-Hant'] .results-section-head .eyebrow {
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+html[lang='zh-Hant'] .home-title,
+html[lang='zh-Hant'] .question-title,
+html[lang='zh-Hant'] .results-section-title,
+html[lang='zh-Hant'] .map-title,
+html[lang='zh-Hant'] .results-nav-kicker,
+html[lang='zh-Hant'] .blade-name,
+html[lang='zh-Hant'] .spectrum-blade-name {
+  letter-spacing: 0;
+  line-height: 1.28;
+}
+
+html[lang='zh-Hant'] .home-title {
+  line-height: 1.2;
+  text-transform: none;
+}
+
+html[lang='zh-Hant'] .spectrum,
+html[lang='zh-Hant'] .buckets {
+  --tile-h: 3.7rem;
+}
+
+html[lang='zh-Hant'] .spectrum .spectrum-tile-label {
+  line-height: 1.4;
+  max-height: 2.9em;
+}
+
+html[lang='zh-Hant'] .buckets .spectrum-tile-label {
+  line-height: 1.4;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  max-height: none;
+  white-space: normal;
+}
+
+html[lang='zh-Hant'] .spectrum-rank-label,
+html[lang='zh-Hant'] .criterion-label,
+html[lang='zh-Hant'] .alignment-body,
+html[lang='zh-Hant'] .bucket-card-summary,
+html[lang='zh-Hant'] .microcopy {
+  line-height: 1.5;
+}
+
+html[lang='zh-Hant'] .continue-button,
+html[lang='zh-Hant'] .home-button,
+html[lang='zh-Hant'] .thanks-results-button {
+  font-size: 1.28rem;
+  letter-spacing: 0.06em;
+}
+
+/* Korean. The info-button “i” keeps Segoe UI from results.css. */
+html[lang='ko'] {
+  --font-body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  --font-display: "Noto Serif KR", "Noto Sans KR", serif;
+}
+
+html[lang='ko'] body,
+html[lang='ko'] .criterion-label,
+html[lang='ko'] .microcopy,
+html[lang='ko'] .alignment-body {
+  line-height: 1.65;
+}
+
+html[lang='ko'] .home-title,
+html[lang='ko'] .question-title,
+html[lang='ko'] .results-section-title,
+html[lang='ko'] .blade-name,
+html[lang='ko'] .spectrum-blade-name {
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+html[lang='ko'] .home-title {
+  text-transform: none;
+}
+
+html[lang='ko'] .spectrum,
+html[lang='ko'] .buckets {
+  --tile-h: 3.8rem;
+}
+
+html[lang='ko'] .spectrum .spectrum-tile-label {
+  line-height: 1.45;
+  max-height: 2.9em;
+}
+
+html[lang='ko'] .buckets .spectrum-tile-label {
+  line-height: 1.45;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  max-height: none;
+  white-space: normal;
+}
+
+/* Thai vowels sit above and below the base, so tiles and titles need more room. */
+html[lang='th'] {
+  --font-body: "Noto Sans Thai", "Leelawadee UI", "Tahoma", sans-serif;
+  --font-display: "Noto Serif Thai", "Noto Sans Thai", serif;
+}
+
+html[lang='th'] body,
+html[lang='th'] .criterion-label,
+html[lang='th'] .microcopy,
+html[lang='th'] .alignment-body,
+html[lang='th'] .bucket-card-summary {
+  line-height: 1.85;
+}
+
+html[lang='th'] .home-title,
+html[lang='th'] .question-title,
+html[lang='th'] .results-section-title,
+html[lang='th'] .map-title,
+html[lang='th'] .blade-name,
+html[lang='th'] .spectrum-blade-name {
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+
+html[lang='th'] .home-title {
+  text-transform: none;
+}
+
+html[lang='th'] .spectrum,
+html[lang='th'] .buckets {
+  --tile-h: 4.6rem;
+}
+
+html[lang='th'] .spectrum-tile,
+html[lang='th'] .buckets .spectrum-tile,
+html[lang='th'] .bucket-items .spectrum-tile {
+  min-height: 3.6rem;
+  height: auto;
+}
+
+html[lang='th'] .spectrum-tile-label,
+html[lang='th'] .buckets .spectrum-tile-label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  overflow: hidden;
+  line-height: 1.85;
+  max-height: none;
+  padding-top: 0.12em;
+  padding-bottom: 0.2em;
+}
+
+html[lang='th'] .buckets .spectrum-tile-label {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  white-space: normal;
+}
+
+html[lang='th'] .eyebrow,
+html[lang='th'] .home-panel .eyebrow {
+  letter-spacing: 0;
+  line-height: 1.7;
+}

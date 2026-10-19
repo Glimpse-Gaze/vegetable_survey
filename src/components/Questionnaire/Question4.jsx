@@ -25,9 +25,9 @@ function nextOpenSlot(slots, fromIndex) {
 
 export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
   const { t } = useI18n();
-  const { spectrumVegetables } = useSurveyCatalog();
-  const [paletteOrder] = useState(() =>
-    shuffleSpectrumVegetables(spectrumVegetables),
+  const { spectrumVegetables, spectrumById } = useSurveyCatalog();
+  const [paletteIds] = useState(() =>
+    shuffleSpectrumVegetables(spectrumVegetables).map((item) => item.id),
   );
   const [slots, setSlots] = useState(
     () => initialSpectrum ?? emptySpectrumSlots(),
@@ -36,7 +36,10 @@ export function Question4({ onContinue, onBack, onDraft, initialSpectrum }) {
   const [armedId, setArmedId] = useState(null);
   const remaining = slots.filter((id) => id == null).length;
   const canContinue = remaining === 0;
-  const palette = paletteOrder.filter((vegetable) => !slots.includes(vegetable.id));
+  const palette = paletteIds
+    .filter((id) => !slots.includes(id))
+    .map((id) => spectrumById.get(id))
+    .filter(Boolean);
 
   useEffect(() => {
     onDraft?.(slots);

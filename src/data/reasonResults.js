@@ -5,6 +5,12 @@ import { REASON_COMMENTS_FR } from './reasonComments.fr.js';
 import { REASON_COMMENTS_IT } from './reasonComments.it.js';
 import { REASON_COMMENTS_DE } from './reasonComments.de.js';
 import { REASON_COMMENTS_ES } from './reasonComments.es.js';
+import { REASON_COMMENTS_ZH_HANT } from './reasonComments.zh-hant.js';
+import { REASON_COMMENTS_KO } from './reasonComments.ko.js';
+import { REASON_COMMENTS_TH } from './reasonComments.th.js';
+import { REASON_COMMENTS_ES_MX } from './reasonComments.es-mx.js';
+import { REASON_COMMENTS_PT_BR } from './reasonComments.pt-br.js';
+import { REASON_COMMENTS_PT_PT } from './reasonComments.pt-pt.js';
 
 export const COMMENT_DISPLAY_COUNT = 22;
 const REASON_RESPONDENTS = 700;
@@ -90,6 +96,12 @@ const REASON_COMMENTS_BY_LOCALE = {
   it: REASON_COMMENTS_IT,
   de: REASON_COMMENTS_DE,
   es: REASON_COMMENTS_ES,
+  'zh-hant': REASON_COMMENTS_ZH_HANT,
+  ko: REASON_COMMENTS_KO,
+  th: REASON_COMMENTS_TH,
+  'es-mx': REASON_COMMENTS_ES_MX,
+  'pt-br': REASON_COMMENTS_PT_BR,
+  'pt-pt': REASON_COMMENTS_PT_PT,
 };
 
 export function commentsForLocale(locale) {

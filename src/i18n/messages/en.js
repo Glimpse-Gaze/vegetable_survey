@@ -83,9 +83,9 @@ export const en = {
   q3: {
     title: 'Which of these count as vegetables?',
     lead: 'Sort each item into a bucket.',
-    fine: 'Drag the items, or click a bucket and then an item.',
+    fine: 'Drag the items, or click a bucket and then an item. Click × on a sorted item to put it back.',
     coarse:
-      'Tap a bucket, then an item (or vice versa). Hold an item to drag it. Tap × on a sorted item to put it back.',
+      'Drag the items, or tap a bucket and then an item. Tap × on a sorted item to put it back.',
     continueHint: 'Sort at least 15 items',
     toSort:
       "Sort at least 15 of these items. If you don't know any, leave them here.",
@@ -100,9 +100,9 @@ export const en = {
     title: 'How vegetabley does each of these feel to you?',
     lead:
       'Place each item on the vegetableness spectrum. Least vegetabley items at the top, most vegetabley at the bottom.',
-    fine: 'Drag and drop, or click a slot and then an item. Use arrows to nudge a placed item up or down.',
+    fine: 'Drag the items, or click a slot and then an item. Use arrows to reposition the item. Click × on a sorted item to put it back.',
     coarse:
-      'Tap a rank, then an item (or vice versa). Hold an item to drag it. Use the arrows to move it, or × to put it back.',
+      'Drag the items, or tap a slot and then an item. Use the arrows to reposition the item. Tap × to put it back.',
     continueHint: 'Place all ten items',
     least: 'Least vegetabley',
     middle: 'In the middle',

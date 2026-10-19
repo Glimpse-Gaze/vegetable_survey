@@ -79,7 +79,7 @@ Payloads are stored as anonymous JSON in Neon (`server/schema.sql`). Ranking cod
 | `/:locale/survey` | Consent + questionnaire + thank-you / ranking code |
 | `/:locale/results/:categoryId` | Interactive results for one question |
 
-Supported locales: `en`, `pl`, `zh`, `fr`, `it`, `de`, `es`.
+Supported locales: `en`, `pl`, `zh`, `zh-hant`, `ko`, `th`, `fr`, `it`, `de`, `es`, `es-mx`, `pt-br`, `pt-pt`.
 
 ## Data & privacy
 

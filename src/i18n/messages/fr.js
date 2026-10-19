@@ -97,9 +97,9 @@ export const fr = {
   q3: {
     title: 'Lesquels comptent comme légumes ?',
     lead: 'Range chaque exemple dans un bac.',
-    fine: 'Glisse les exemples, ou clique un bac puis un exemple.',
+    fine: 'Glisse les exemples, ou clique un bac puis un exemple. Clique × sur un exemple rangé pour le remettre.',
     coarse:
-      'Touche un bac, puis un exemple (ou l’inverse). Maintiens un exemple pour le glisser. Touche × sur un exemple rangé pour le remettre.',
+      'Glisse les exemples, ou touche un bac puis un exemple. Touche × sur un exemple rangé pour le remettre.',
     continueHint: 'Range au moins 15 exemples',
     toSort:
       'Range au moins 15 de ces exemples. Si un nom ne dit rien, laisse-le ici.',
@@ -114,9 +114,9 @@ export const fr = {
     title: 'À quel point chacun fait légume ?',
     lead:
       'Place chaque exemple sur l’échelle du côté légume. Le moins légume en haut, le plus légume en bas.',
-    fine: 'Glisse-dépose, ou clique un rang puis un exemple. Les flèches décalent un exemple déjà placé.',
+    fine: 'Glisse les exemples, ou clique un rang puis un exemple. Les flèches décalent un exemple déjà placé. Clique × sur un exemple rangé pour le remettre.',
     coarse:
-      'Touche un rang, puis un exemple (ou l’inverse). Maintiens un exemple pour le glisser. Les flèches le déplacent, × le remet dans la liste.',
+      'Glisse les exemples, ou touche un rang puis un exemple. Les flèches décalent un exemple déjà placé. Touche × pour le remettre.',
     continueHint: 'Place les dix exemples',
     least: 'Le moins légume',
     middle: 'Au milieu',

@@ -1,4 +1,4 @@
-import { lazy, Suspense, startTransition, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { numberLocale as intlLocale } from '../i18n/locales.js';
 import { useI18n } from '../i18n/useI18n.js';
@@ -7,6 +7,7 @@ import { withLocale } from '../i18n/paths.js';
 import { useSurveyCatalog } from '../i18n/useSurveyCatalog.js';
 import { BrandFooter } from '../components/BrandFooter.jsx';
 import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
+import { MarqueeLabel } from '../components/Questionnaire/MarqueeLabel.jsx';
 import { ReportIssuesButton } from '../components/ReportIssues.jsx';
 import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import { ReasonResults } from '../components/Results/ReasonResults.jsx';
@@ -91,7 +92,8 @@ function edgeGain(position, max, direction) {
 function formatVotes(n, t, numberLocale) {
   const count = n.toLocaleString(numberLocale);
   const label = n === 1 ? t('results.vote') : t('results.votes');
-  return numberLocale.startsWith('zh') ? `${count}${label}` : `${count} ${label}`;
+  const tight = numberLocale.startsWith('zh') || numberLocale.startsWith('ko');
+  return tight ? `${count}${label}` : `${count} ${label}`;
 }
 
 function formatShare(share) {
@@ -665,13 +667,34 @@ function filterSummary(section, t) {
   return t('results.showing', { place, language, count });
 }
 
+function OverflowSelect({ value, children, ...rest }) {
+  const selectRef = useRef(null);
+  const [label, setLabel] = useState('');
+
+  useLayoutEffect(() => {
+    const next = selectRef.current?.selectedOptions?.[0]?.textContent ?? '';
+    setLabel((prev) => (prev === next ? prev : next));
+  });
+
+  return (
+    <div className="overflow-select">
+      <select ref={selectRef} value={value} {...rest}>
+        {children}
+      </select>
+      <span className="overflow-select-face" aria-hidden="true">
+        <MarqueeLabel text={label} className="overflow-select-marquee" />
+      </span>
+    </div>
+  );
+}
+
 function PlaceFilter({ regionId, groups, onRegion }) {
   const { t } = useI18n();
   const catalog = useSurveyCatalog();
   return (
     <label className="map-select">
       <span>{t('results.filterPlace')}</span>
-      <select value={regionId} onChange={(event) => onRegion(event.target.value)}>
+      <OverflowSelect value={regionId} onChange={(event) => onRegion(event.target.value)}>
         {groups.map((group) => (
           <optgroup
             key={group.label}
@@ -690,7 +713,7 @@ function PlaceFilter({ regionId, groups, onRegion }) {
             })}
           </optgroup>
         ))}
-      </select>
+      </OverflowSelect>
     </label>
   );
 }
@@ -701,14 +724,14 @@ function LanguageFilter({ languageId, languageOptions, onLanguage, className = '
   return (
     <label className={className}>
       <span>{t('results.filterLanguage')}</span>
-      <select value={languageId} onChange={(event) => onLanguage(event.target.value)}>
+      <OverflowSelect value={languageId} onChange={(event) => onLanguage(event.target.value)}>
         <option value={ALL_LANGUAGES_ID}>{t('results.allLanguages')}</option>
         {languageOptions.map((language) => (
           <option key={language.id} value={language.id}>
             {catalog.languagesById.get(language.id)?.name ?? language.name}
           </option>
         ))}
-      </select>
+      </OverflowSelect>
     </label>
   );
 }
@@ -789,7 +812,7 @@ export function Results() {
   const { t, locale } = useI18n();
   const catalog = useSurveyCatalog();
   const numberLocale = intlLocale(locale);
-  const cjk = locale === 'zh';
+  const cjk = locale === 'zh' || locale === 'zh-hant';
   const gap = cjk ? '' : ' ';
   const stop = cjk ? '。' : '.';
   const { categoryId } = useParams();
@@ -1098,8 +1121,8 @@ export function Results() {
         inert={menuOpen ? undefined : true}
       >
         <div className="results-nav-head">
-          <p className="results-nav-kicker">{t('results.categories.label')}</p>
           <LocaleSwitcher className="locale-switcher--inline" />
+          <p className="results-nav-kicker">{t('results.categories.label')}</p>
         </div>
         <p className="results-nav-meta">
           {t('results.categories.mockMeta', {

@@ -5,7 +5,8 @@ import { useI18n } from '../../i18n/useI18n.js';
 function formatVotes(n, t, numberLocale) {
   const count = n.toLocaleString(numberLocale);
   const label = n === 1 ? t('results.vote') : t('results.votes');
-  return numberLocale.startsWith('zh') ? `${count}${label}` : `${count} ${label}`;
+  const tight = numberLocale.startsWith('zh') || numberLocale.startsWith('ko');
+  return tight ? `${count}${label}` : `${count} ${label}`;
 }
 
 function formatShare(share) {

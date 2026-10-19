@@ -2,6 +2,10 @@ import { normalizeQuery } from './normalization.js';
 
 function collatorLocale(locale) {
   if (locale === 'zh') return 'zh-CN';
+  if (locale === 'zh-hant') return 'zh-TW';
+  if (locale === 'es-mx') return 'es-MX';
+  if (locale === 'pt-br') return 'pt-BR';
+  if (locale === 'pt-pt') return 'pt-PT';
   return locale || 'en';
 }
 
@@ -23,7 +27,9 @@ export function findCanonicalMatch(query, vegetables) {
 }
 
 function minimumQueryLength(query) {
-  return /\p{Script=Han}/u.test(String(query ?? '')) ? 1 : 2;
+  return /\p{Script=Han}|\p{Script=Hangul}|\p{Script=Thai}/u.test(String(query ?? ''))
+    ? 1
+    : 2;
 }
 
 export function getSuggestions(query, vegetables, limit = 6, locale = 'en') {

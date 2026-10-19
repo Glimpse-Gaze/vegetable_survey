@@ -8,6 +8,7 @@ import { withLocale } from './i18n/paths.js';
 import './styles/questionnaire.css';
 import './styles/pages.css';
 import './styles/zh.css';
+import './styles/scripts.css';
 
 const Questionnaire = lazy(() =>
   import('./components/Questionnaire/Questionnaire.jsx').then((mod) => ({

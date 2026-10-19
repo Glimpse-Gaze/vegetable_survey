@@ -97,9 +97,9 @@ export const de = {
   q3: {
     title: 'Was davon zählt als Gemüse?',
     lead: 'Sortier jedes Beispiel in einen Korb.',
-    fine: 'Zieh die Beispiele, oder klick erst einen Korb und dann ein Beispiel.',
+    fine: 'Zieh die Beispiele, oder klick erst einen Korb und dann ein Beispiel. Klick × bei einem einsortierten Beispiel, um es zurückzulegen.',
     coarse:
-      'Tippe einen Korb, dann ein Beispiel (oder umgekehrt). Halt ein Beispiel gedrückt, um es zu ziehen. Tippe × bei einem einsortierten Beispiel, um es zurückzulegen.',
+      'Zieh die Beispiele, oder tippe erst einen Korb und dann ein Beispiel. Tippe × bei einem einsortierten Beispiel, um es zurückzulegen.',
     continueHint: 'Sortier mindestens 15 Beispiele',
     toSort:
       'Sortier mindestens 15 dieser Beispiele. Wenn ein Name nichts sagt, lass ihn hier.',
@@ -114,9 +114,9 @@ export const de = {
     title: 'Wie gemüsig fühlt sich jedes davon an?',
     lead:
       'Setz jedes Beispiel auf die Gemüsigkeitsskala. Das wenigste Gemüse oben, das meiste unten.',
-    fine: 'Ziehen und ablegen, oder erst einen Platz und dann ein Beispiel klicken. Pfeile schieben ein gesetztes Beispiel hoch oder runter.',
+    fine: 'Zieh die Beispiele, oder klick erst einen Platz und dann ein Beispiel. Mit den Pfeilen schiebst du ein gesetztes Beispiel. Klick ×, um es zurückzulegen.',
     coarse:
-      'Tippe einen Rang, dann ein Beispiel (oder umgekehrt). Halt ein Beispiel gedrückt, um es zu ziehen. Die Pfeile verschieben es, × legt es zurück.',
+      'Zieh die Beispiele, oder tippe erst einen Platz und dann ein Beispiel. Mit den Pfeilen schiebst du ein gesetztes Beispiel. Tippe ×, um es zurückzulegen.',
     continueHint: 'Setz alle zehn Beispiele',
     least: 'Am wenigsten gemüsig',
     middle: 'In der Mitte',

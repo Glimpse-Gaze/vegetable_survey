@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { criteria, MAX_CUSTOM_CRITERION, shuffleCriteria } from '../../data/criteria.js';
 import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import { CriteriaSelector } from './CriteriaSelector.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
@@ -9,6 +10,7 @@ const MAX_CRITERIA = 5;
 
 export function Question2({
   rawAnswer,
+  canonicalId = null,
   onContinue,
   onLockedBack,
   initialCriteria = [],
@@ -16,6 +18,9 @@ export function Question2({
   initialCustomPublic = false,
 }) {
   const { t } = useI18n();
+  const { vegetablesById } = useSurveyCatalog();
+  const shownAnswer =
+    (canonicalId && vegetablesById.get(canonicalId)?.name) || rawAnswer;
   const [orderedCriteria] = useState(() => shuffleCriteria(criteria));
   const labeledCriteria = orderedCriteria.map((item) => ({
     ...item,
@@ -57,7 +62,7 @@ export function Question2({
 
   return (
     <QuestionContainer questionNumber={2}>
-      <h1 className="question-title">{t('q2.title', { answer: rawAnswer })}</h1>
+      <h1 className="question-title">{t('q2.title', { answer: shownAnswer })}</h1>
       <p className="microcopy">{t('q2.micro')}</p>
 
       <form className="question-form" onSubmit={handleSubmit}>

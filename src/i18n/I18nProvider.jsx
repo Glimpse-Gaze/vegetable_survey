@@ -46,17 +46,33 @@ export function I18nProvider({ children }) {
   }, [locale]);
 
   useEffect(() => {
-    const id = 'zh-hans-fonts';
-    if (locale !== 'zh') {
-      document.getElementById(id)?.remove();
-      return undefined;
+    const sheets = {
+      zh: {
+        id: 'zh-hans-fonts',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap',
+      },
+      'zh-hant': {
+        id: 'zh-hant-fonts',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap',
+      },
+      ko: {
+        id: 'ko-fonts',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap',
+      },
+      th: {
+        id: 'th-fonts',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Noto+Serif+Thai:wght@600;700&display=swap',
+      },
+    };
+    const active = sheets[locale];
+    for (const sheet of Object.values(sheets)) {
+      if (sheet !== active) document.getElementById(sheet.id)?.remove();
     }
-    if (document.getElementById(id)) return undefined;
+    if (!active || document.getElementById(active.id)) return undefined;
     const link = document.createElement('link');
-    link.id = id;
+    link.id = active.id;
     link.rel = 'stylesheet';
-    link.href =
-      'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap';
+    link.href = active.href;
     document.head.appendChild(link);
     return undefined;
   }, [locale]);
