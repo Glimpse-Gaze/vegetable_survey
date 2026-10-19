@@ -58,7 +58,7 @@ export const DEV_SPEEDRUN = {
     selectionMethod: 'autocomplete',
   },
   openDescription: {
-    text: "It's something that's dense and have to be cooked to be consumed. It grows underground and can last a long time in a pantry.",
+    text: "It’s something that’s dense and have to be cooked to be consumed. It grows underground and can last a long time in a pantry.",
     publicDisplay: true,
   },
   background: {

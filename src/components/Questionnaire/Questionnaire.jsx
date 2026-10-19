@@ -385,6 +385,7 @@ export function Questionnaire() {
         {step === STEPS.QUESTION_2 ? (
           <Question2
             rawAnswer={response.initialAssociation?.rawAnswer ?? ''}
+            canonicalId={response.initialAssociation?.canonicalId ?? null}
             initialCriteria={response.initialCriteria}
             initialCustomCriterion={response.customCriterion}
             initialCustomPublic={response.customCriterionPublic}

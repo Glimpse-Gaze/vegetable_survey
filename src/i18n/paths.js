@@ -1,7 +1,9 @@
 import { DEFAULT_LOCALE, LOCALES, isLocale } from './locales.js';
 
 const STORAGE_KEY = 'veg-survey-locale';
-const LOCALE_IDS = LOCALES.map((locale) => locale.id).join('|');
+const LOCALE_IDS = LOCALES.map((locale) => locale.id)
+  .sort((a, b) => b.length - a.length)
+  .join('|');
 const LOCALE_PREFIX = new RegExp(`^/(${LOCALE_IDS})(?=/|$)`);
 
 export function localeFromPath(pathname) {

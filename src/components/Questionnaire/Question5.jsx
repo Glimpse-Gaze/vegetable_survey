@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useI18n } from '../../i18n/useI18n.js';
 import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import { findCanonicalMatch, getSuggestions } from '../../utils/autocomplete.js';
@@ -11,17 +11,20 @@ export function Question5({ onContinue, onBack, initialMostVegetable }) {
   const { vegetables } = useSurveyCatalog();
   const [value, setValue] = useState(initialMostVegetable?.rawAnswer ?? '');
   const [picked, setPicked] = useState(() => {
-    if (
-      initialMostVegetable?.selectionMethod === 'autocomplete' &&
-      initialMostVegetable.canonicalId
-    ) {
-      return {
-        id: initialMostVegetable.canonicalId,
-        name: initialMostVegetable.rawAnswer,
-      };
-    }
-    return null;
+    if (!initialMostVegetable?.canonicalId) return null;
+    return {
+      id: initialMostVegetable.canonicalId,
+      name: initialMostVegetable.rawAnswer,
+    };
   });
+
+  useEffect(() => {
+    if (!picked?.id) return;
+    const name = vegetables.find((item) => item.id === picked.id)?.name;
+    if (!name || name === picked.name) return;
+    setValue(name);
+    setPicked({ id: picked.id, name });
+  }, [vegetables, picked?.id, picked?.name]);
   const suggestions = getSuggestions(value, vegetables, 6, locale);
   const canContinue = value.trim().length > 0;
 

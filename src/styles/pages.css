@@ -4,21 +4,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 28px;
-  /* Clear the fixed locale switcher above the brand block. */
+  justify-content: flex-start;
+  gap: 32px;
+  /* Clear the fixed locale switcher. The brand block stays in the flow. */
   padding:
     max(88px, calc(env(safe-area-inset-top) + 56px))
     max(20px, env(safe-area-inset-right))
-    max(96px, calc(env(safe-area-inset-bottom) + 72px))
+    max(24px, calc(env(safe-area-inset-bottom) + 12px))
     max(20px, env(safe-area-inset-left));
 }
 
 .home-shell .brand-footer--page {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: max(16px, env(safe-area-inset-bottom));
+  position: static;
+  flex-shrink: 0;
   margin: 0;
   padding: 0 4.5rem;
 }
@@ -142,12 +140,17 @@
     transform: translateY(50%) translateX(4px);
   }
 
-  .locale-switcher:hover[data-tooltip]::after,
-  .locale-switcher:focus-within[data-tooltip]::after,
+  .locale-switcher:hover[data-tooltip]:not(.is-tip-quiet)::after,
   .report-issues-btn.is-fab:hover[data-tooltip]::after,
   .report-issues-btn.is-fab:focus-visible[data-tooltip]::after {
     opacity: 1;
     transform: none;
+  }
+
+  .locale-switcher.is-tip-quiet[data-tooltip]::after {
+    opacity: 0;
+    transform: translateY(4px);
+    transition: none;
   }
 
   .report-issues-btn.is-fab:hover[data-tooltip]::after,
@@ -252,6 +255,8 @@
 }
 
 .locale-switcher select {
+  field-sizing: content;
+  width: auto;
   min-height: 40px;
   padding: 0 12px;
   border: 1.5px solid transparent;
@@ -283,7 +288,8 @@
 }
 
 .locale-switcher--inline {
-  position: static;
+  position: relative;
+  z-index: 2;
   flex: 0 0 auto;
 }
 
@@ -297,6 +303,8 @@
   position: relative;
   z-index: 1;
   width: min(40rem, 100%);
+  margin-top: auto;
+  margin-bottom: auto;
   text-align: center;
   animation: rise 320ms ease;
 }
@@ -320,6 +328,13 @@
 /* French capitals carry a circumflex that the tight leading stacks into the line above. */
 html[lang='fr'] .home-title {
   line-height: 1.28;
+}
+
+/* Acute and umlaut capitals need a little more air than the Latin default. */
+html[lang='de'] .home-title,
+html[lang='pt-BR'] .home-title,
+html[lang='pt-PT'] .home-title {
+  line-height: 1.16;
 }
 
 .home-lede {

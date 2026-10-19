@@ -39,10 +39,17 @@ html[lang='zh-Hans'] .buckets {
   --tile-h: 3.7rem;
 }
 
-html[lang='zh-Hans'] .spectrum-tile-label,
-html[lang='zh-Hans'] .buckets .spectrum-tile-label {
+html[lang='zh-Hans'] .spectrum .spectrum-tile-label {
   line-height: 1.4;
   max-height: 2.9em;
+}
+
+html[lang='zh-Hans'] .buckets .spectrum-tile-label {
+  line-height: 1.4;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  max-height: none;
+  white-space: normal;
 }
 
 html[lang='zh-Hans'] .spectrum-rank-label,

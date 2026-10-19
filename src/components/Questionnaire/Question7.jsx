@@ -43,7 +43,7 @@ export function Question7({
   continueHint,
 }) {
   const { t, locale } = useI18n();
-  const { countries, languages } = useSurveyCatalog();
+  const { countries, countriesById, languages, languagesById } = useSurveyCatalog();
   const discloseLabel = t('q7.preferNot');
   const grewUp = initialBackground?.grewUp;
   const languagesState = initialBackground?.languages;
@@ -76,6 +76,31 @@ export function Question7({
     return (source ?? []).filter((entry) => entry.canonicalId !== DISCLOSE_ID);
   });
   const [doubt, setDoubt] = useState(false);
+
+  useEffect(() => {
+    setPlaceValue((current) => {
+      const id = placePicked?.id;
+      if (!id || id === DISCLOSE_ID) return current;
+      return countriesById.get(id)?.name || current;
+    });
+    setPlacePicked((current) => {
+      if (!current?.id || current.id === DISCLOSE_ID) return current;
+      const name = countriesById.get(current.id)?.name;
+      if (!name || name === current.name) return current;
+      return { id: current.id, name };
+    });
+    setLanguageItems((current) => {
+      let changed = false;
+      const next = current.map((entry) => {
+        if (!entry.canonicalId || entry.canonicalId === DISCLOSE_ID) return entry;
+        const name = languagesById.get(entry.canonicalId)?.name;
+        if (!name || name === entry.rawAnswer) return entry;
+        changed = true;
+        return { ...entry, rawAnswer: name };
+      });
+      return changed ? next : current;
+    });
+  }, [countriesById, languagesById, placePicked?.id]);
 
   const placeSuggestions = getLookupSuggestions(placeValue, countries, {
     featuredIds: featuredCountryIds,

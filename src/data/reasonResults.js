@@ -5,6 +5,12 @@ import { REASON_COMMENTS_FR } from './reasonComments.fr.js';
 import { REASON_COMMENTS_IT } from './reasonComments.it.js';
 import { REASON_COMMENTS_DE } from './reasonComments.de.js';
 import { REASON_COMMENTS_ES } from './reasonComments.es.js';
+import { REASON_COMMENTS_ZH_HANT } from './reasonComments.zh-hant.js';
+import { REASON_COMMENTS_KO } from './reasonComments.ko.js';
+import { REASON_COMMENTS_TH } from './reasonComments.th.js';
+import { REASON_COMMENTS_ES_MX } from './reasonComments.es-mx.js';
+import { REASON_COMMENTS_PT_BR } from './reasonComments.pt-br.js';
+import { REASON_COMMENTS_PT_PT } from './reasonComments.pt-pt.js';
 
 export const COMMENT_DISPLAY_COUNT = 22;
 const REASON_RESPONDENTS = 700;
@@ -29,12 +35,12 @@ const REASON_VOTES = {
 export const REASON_COMMENTS_EN = [
   { id: 'c01', text: 'If you can put it in a stew', boosts: 14 },
   { id: 'c02', text: 'My grandmother would call it one', boosts: 11 },
-  { id: 'c03', text: "It's not dessert", boosts: 9 },
+  { id: 'c03', text: "It’s not dessert", boosts: 9 },
   { id: 'c04', text: 'You serve it next to meat', boosts: 8 },
   { id: 'c05', text: 'Needs salt, oil, and heat', boosts: 7 },
   { id: 'c06', text: 'Sits with the cabbages at the market', boosts: 7 },
   { id: 'c07', text: 'You have to cook it first', boosts: 6 },
-  { id: 'c08', text: "It's savoury and a bit bitter", boosts: 6 },
+  { id: 'c08', text: "It’s savoury and a bit bitter", boosts: 6 },
   { id: 'c09', text: 'Grows in a garden bed, not on a tree', boosts: 5 },
   { id: 'c10', text: 'Something you hide in soup for children', boosts: 5 },
   { id: 'c11', text: 'Leaves, roots, or stems – never seeds', boosts: 4 },
@@ -44,14 +50,14 @@ export const REASON_COMMENTS_EN = [
   { id: 'c15', text: 'You buy it by the kilo, not the piece', boosts: 3 },
   { id: 'c16', text: 'Goes with potatoes more than with cake', boosts: 2 },
   { id: 'c17', text: 'A side dish that could be the whole dinner', boosts: 2 },
-  { id: 'c18', text: "If it's pickled, it's probably a vegetable", boosts: 2 },
+  { id: 'c18', text: "If it’s pickled, it’s probably a vegetable", boosts: 2 },
   { id: 'c19', text: 'You chop it on a wooden board', boosts: 2 },
   { id: 'c20', text: 'It belongs in a roasting tin', boosts: 2 },
   { id: 'c21', text: 'Something you forget in the crisper drawer', boosts: 1 },
   { id: 'c22', text: 'The bit of the meal that is good for you', boosts: 1 },
   { id: 'c23', text: 'It has no packaging personality', boosts: 1 },
   { id: 'c24', text: 'You eat it with a fork, not your hands', boosts: 1 },
-  { id: 'c25', text: "It's what remains after you take away the meat", boosts: 1 },
+  { id: 'c25', text: "It’s what remains after you take away the meat", boosts: 1 },
   { id: 'c26', text: 'Sold loose, covered in dirt', boosts: 1 },
   { id: 'c27', text: 'A thing you salt because it is watery', boosts: 1 },
   { id: 'c28', text: 'You would grow it if you had a garden', boosts: 1 },
@@ -90,6 +96,12 @@ const REASON_COMMENTS_BY_LOCALE = {
   it: REASON_COMMENTS_IT,
   de: REASON_COMMENTS_DE,
   es: REASON_COMMENTS_ES,
+  'zh-hant': REASON_COMMENTS_ZH_HANT,
+  ko: REASON_COMMENTS_KO,
+  th: REASON_COMMENTS_TH,
+  'es-mx': REASON_COMMENTS_ES_MX,
+  'pt-br': REASON_COMMENTS_PT_BR,
+  'pt-pt': REASON_COMMENTS_PT_PT,
 };
 
 export function commentsForLocale(locale) {

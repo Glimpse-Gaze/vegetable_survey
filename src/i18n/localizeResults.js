@@ -11,6 +11,12 @@ import { spectrumCopy as spectrumCopyFr } from './lexicon/fr/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyIt } from './lexicon/it/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyDe } from './lexicon/de/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyEs } from './lexicon/es/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyZhHant } from './lexicon/zh-hant/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyKo } from './lexicon/ko/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyTh } from './lexicon/th/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyEsMx } from './lexicon/es-mx/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyPtBr } from './lexicon/pt-br/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyPtPt } from './lexicon/pt-pt/spectrumCopy.js';
 
 const BAND_KEYS = {
   least: 'q4.least',
@@ -25,6 +31,12 @@ const SPECTRUM_COPY = {
   it: spectrumCopyIt,
   de: spectrumCopyDe,
   es: spectrumCopyEs,
+  'zh-hant': spectrumCopyZhHant,
+  ko: spectrumCopyKo,
+  th: spectrumCopyTh,
+  'es-mx': spectrumCopyEsMx,
+  'pt-br': spectrumCopyPtBr,
+  'pt-pt': spectrumCopyPtPt,
 };
 
 function withSpectrumCopy(item, locale) {

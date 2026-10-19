@@ -2,6 +2,7 @@ import { startTransition, useEffect, useRef, useState } from 'react';
 import mapMarkup from '../../assets/map/World_Equal.svg?raw';
 import { LIVE_COUNTRIES, VOTE_THRESHOLD } from '../../data/resultsMock.js';
 import { countryIdFromMapTitle } from '../../i18n/countryNameIndex.js';
+import { MAP_PLACE_IDS, mapPlaceName } from '../../i18n/mapPlaceNames.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 
@@ -104,7 +105,7 @@ export function WorldMap({
   liveCountries = LIVE_COUNTRIES,
   languageFiltered = false,
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const catalog = useSurveyCatalog();
   const hostRef = useRef(null);
   const viewportRef = useRef(null);
@@ -115,6 +116,8 @@ export function WorldMap({
   const liveRef = useRef(liveCountries);
   const languageFilteredRef = useRef(languageFiltered);
   const countriesRef = useRef(catalog.countriesById);
+  const localeRef = useRef(locale);
+  localeRef.current = locale;
   const baseRef = useRef(null);
   const viewRef = useRef(null);
   const zoomRef = useRef(1);
@@ -137,11 +140,13 @@ export function WorldMap({
   useEffect(() => {
     setTip((prev) => {
       if (!prev?.countryId) return prev;
-      const localized = countriesRef.current.get(prev.countryId)?.name;
+      const localized =
+        countriesRef.current.get(prev.countryId)?.name
+        ?? mapPlaceName(locale, prev.countryId);
       if (!localized || localized === prev.name) return prev;
       return { ...prev, name: localized };
     });
-  }, [catalog.countriesById]);
+  }, [catalog.countriesById, locale]);
 
   useEffect(() => {
     zoomRef.current = zoom;
@@ -209,10 +214,12 @@ export function WorldMap({
       const countryId =
         (raw && ISO_COUNTRY_ID[raw])
         ?? known?.id
+        ?? (raw && MAP_PLACE_IDS[raw])
         ?? countryIdFromMapTitle(title)
         ?? null;
       const localized = countryId
         ? countriesRef.current.get(countryId)?.name
+          ?? mapPlaceName(localeRef.current, countryId)
         : null;
       return {
         name: localized || known?.name || title,

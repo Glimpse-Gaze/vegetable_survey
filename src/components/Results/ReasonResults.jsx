@@ -12,6 +12,7 @@ import {
 } from '../../utils/myCustomReason.js';
 import { readMyResponseId } from '../../utils/myResponse.js';
 import { SurveyNudge } from './SurveyGate.jsx';
+import { formatVotes } from '../../utils/formatVotes.js';
 
 const MY_VOTES_KEY = 'veg-survey-reason-votes';
 const TAP_MS = 280;
@@ -20,12 +21,6 @@ const HOLD_MOVE_PX = 10;
 const MAX_LIKES = 5;
 const MAX_DISLIKES = 5;
 const PUFF_MS = 900;
-
-function formatVotes(n, t, numberLocale) {
-  const count = n.toLocaleString(numberLocale);
-  const label = n === 1 ? t('results.vote') : t('results.votes');
-  return numberLocale.startsWith('zh') ? `${count}${label}` : `${count} ${label}`;
-}
 
 function formatShare(share) {
   const pct = Math.min(100, Math.max(0, (share ?? 0) * 100));
@@ -512,7 +507,7 @@ export function ReasonResults({ section, viewingOwn = true }) {
                     ) : null}
                     </div>
                     <p className="bucket-row-meta">
-                      {formatVotes(item.votes, t, numberLocale)} · {formatShare(item.share)}
+                      {formatVotes(item.votes, t, numberLocale, locale)} · {formatShare(item.share)}
                     </p>
                   <div className="bucket-row-meter" aria-hidden="true">
                     <span style={{ width: `${item.share * 100}%` }} />

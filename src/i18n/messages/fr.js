@@ -97,9 +97,9 @@ export const fr = {
   q3: {
     title: 'Lesquels comptent comme légumes ?',
     lead: 'Range chaque exemple dans un bac.',
-    fine: 'Glisse les exemples, ou clique un bac puis un exemple.',
+    fine: 'Glisse les exemples, ou clique un bac puis un exemple. Clique × sur un exemple rangé pour le remettre.',
     coarse:
-      'Touche un bac, puis un exemple (ou l’inverse). Maintiens un exemple pour le glisser. Touche × sur un exemple rangé pour le remettre.',
+      'Glisse les exemples, ou touche un bac puis un exemple. Touche × sur un exemple rangé pour le remettre.',
     continueHint: 'Range au moins 15 exemples',
     toSort:
       'Range au moins 15 de ces exemples. Si un nom ne dit rien, laisse-le ici.',
@@ -114,9 +114,9 @@ export const fr = {
     title: 'À quel point chacun fait légume ?',
     lead:
       'Place chaque exemple sur l’échelle du côté légume. Le moins légume en haut, le plus légume en bas.',
-    fine: 'Glisse-dépose, ou clique un rang puis un exemple. Les flèches décalent un exemple déjà placé.',
+    fine: 'Glisse les exemples, ou clique un rang puis un exemple. Les flèches décalent un exemple déjà placé. Clique × sur un exemple rangé pour le remettre.',
     coarse:
-      'Touche un rang, puis un exemple (ou l’inverse). Maintiens un exemple pour le glisser. Les flèches le déplacent, × le remet dans la liste.',
+      'Glisse les exemples, ou touche un rang puis un exemple. Les flèches décalent un exemple déjà placé. Touche × pour le remettre.',
     continueHint: 'Place les dix exemples',
     least: 'Le moins légume',
     middle: 'Au milieu',
@@ -218,7 +218,7 @@ export const fr = {
         title: 'Premiers réflexes',
         prompt: 'Quel légume vient en premier à l’esprit ?',
         designNote:
-          'Cette question regarde le premier réflexe. Elle cherche les associations courantes du mot « légume » : les plantes les plus mangées, ou une partie précise de la plante.',
+          'Cette question cherche les associations spontanées et courantes du mot « légume ». Les réponses peuvent refléter des habitudes personnelles ou des normes culturelles, comme les légumes les plus mangés ou les plus vus dans la région. Les associations psycholinguistiques sont aussi testées, puisque l’étymologie du mot « légume » porte des connotations très différentes selon les langues.',
       },
       'why-vegetabley': {
         eyebrow: 'Question 2',
@@ -232,21 +232,21 @@ export const fr = {
         title: 'Lesquels comptent comme légumes ?',
         prompt: 'Pas un légume, entre les deux, ou clairement un légume ?',
         designNote:
-          'Cette question regarde l’idée culturelle du légume, en mêlant des plantes familières à d’autres moins évidentes. Elle teste les critères utilisés : façon de la manger, goût, couleur, statut botanique. C’est en général la question qui prend le plus de temps.',
+          'Cette question regarde l’idée culturelle du légume, en mêlant des plantes familières à d’autres moins évidentes. Elle teste les critères utilisés : façon de la manger, goût, couleur, statut botanique. C’est en général la question où l’on reste le plus longtemps.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Question 4',
         title: 'Échelle du côté légume',
         prompt: 'Des plantes les moins légumes aux plus légumes.',
         designNote:
-          'J’ai choisi ces dix plantes parce qu’elles représentent des familles botaniques différentes, ou des parties très différentes d’une même famille : racines, feuilles, fleurs, fruits ou grains. Le classement sert à voir si le statut botanique, la morphologie ou l’origine géographique change quelque chose au côté légume.',
+          'J’ai choisi ces dix plantes comestibles parce qu’elles représentent des familles botaniques différentes, ou des parties très différentes d’une même famille. Le classement mêle racines, feuilles, fleurs, fruits et grains. Il s’agit de voir si le statut botanique, la morphologie ou l’origine géographique change quelque chose au côté légume.',
       },
       'most-vegetable': {
         eyebrow: 'Question 5',
         title: 'Le légume le plus légume',
         prompt: 'Qu’est-ce qui fait le plus légume ?',
         designNote:
-          'Cette question vient du podcast The Rest Is Science. Elle arrive tard, une fois l’idée de légume déjà mise à l’épreuve, pour pouvoir la comparer au premier réflexe.',
+          'Cette question vient du podcast « The Rest Is Science ». Elle arrive tard, une fois l’idée de légume déjà mise à l’épreuve. On peut ainsi la comparer au premier réflexe. Fait amusant : certaines personnes répondent aux deux questions avec le même légume !',
       },
       'vegetabley-words': {
         eyebrow: 'Question 6',
@@ -317,12 +317,12 @@ export const fr = {
         in_between: 'Entre les deux',
         definitely_vegetable: 'Clairement un légume',
       },
-      agreeNot: ' des personnes pensent que « ',
+      agreeNot: ' des personnes ne comptent pas « ',
       put: ' des personnes placent « ',
-      agreeIs: ' des personnes pensent que « ',
-      notVeg: ' » n’est pas un légume',
+      agreeIs: ' des personnes comptent « ',
+      notVeg: ' » comme un légume',
       inBetween: ' » quelque part au milieu',
-      isVeg: ' » est un légume',
+      isVeg: ' » comme un légume',
       lookupLabel: 'Voir le détail pour',
       chooseItem: 'Choisir un exemple',
       howSorted: 'Comment les gens ont rangé',

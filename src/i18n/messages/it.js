@@ -97,9 +97,9 @@ export const it = {
   q3: {
     title: 'Quali di questi contano come verdure?',
     lead: 'Metti ogni esempio in un cestino.',
-    fine: 'Trascina gli esempi, oppure clicca un cestino e poi un esempio.',
+    fine: 'Trascina gli esempi, oppure clicca un cestino e poi un esempio. Clicca × su un esempio già messo per rimetterlo.',
     coarse:
-      'Tocca un cestino, poi un esempio (o il contrario). Tieni premuto un esempio per trascinarlo. Tocca × su un esempio già messo per rimetterlo.',
+      'Trascina gli esempi, oppure tocca un cestino e poi un esempio. Tocca × su un esempio già messo per rimetterlo.',
     continueHint: 'Sistema almeno 15 esempi',
     toSort:
       'Sistema almeno 15 di questi esempi. Se un nome non dice niente, lascialo qui.',
@@ -114,9 +114,9 @@ export const it = {
     title: 'Quanto sa di verdura ognuno di questi?',
     lead:
       'Metti ogni esempio sulla scala della verdura. I meno verdura in alto, i più verdura in basso.',
-    fine: 'Trascina, oppure clicca un posto e poi un esempio. Le frecce spostano un esempio già messo.',
+    fine: 'Trascina gli esempi, oppure clicca un posto e poi un esempio. Usa le frecce per spostare un esempio già messo. Clicca × per rimetterlo.',
     coarse:
-      'Tocca un posto, poi un esempio (o il contrario). Tieni premuto un esempio per trascinarlo. Le frecce lo spostano, × lo rimette nella lista.',
+      'Trascina gli esempi, oppure tocca un posto e poi un esempio. Usa le frecce per spostare un esempio già messo. Tocca × per rimetterlo.',
     continueHint: 'Sistema tutti e dieci',
     least: 'Meno verdura',
     middle: 'Nel mezzo',
@@ -218,7 +218,7 @@ export const it = {
         title: 'Primi impulsi',
         prompt: 'Quale verdura viene in mente per prima?',
         designNote:
-          'Questa domanda guarda il primo impulso. Cerca le associazioni comuni della parola «verdura»: le piante più mangiate, o una parte precisa della pianta.',
+          'Questa domanda cerca le associazioni spontanee e comuni della parola «verdura». Le risposte possono riflettere abitudini personali o norme culturali, come le verdure più mangiate o più viste nella regione. Si mettono alla prova anche le associazioni psicolinguistiche, perché l’etimologia della parola «verdura» porta connotazioni molto diverse da una lingua all’altra.',
       },
       'why-vegetabley': {
         eyebrow: 'Domanda 2',
@@ -232,21 +232,21 @@ export const it = {
         title: 'Quali di questi contano come verdure?',
         prompt: 'Non verdura, nel mezzo, o decisamente verdura?',
         designNote:
-          'Questa domanda guarda l’idea culturale di verdura, mescolando piante familiari ad altre meno ovvie. Mette alla prova i criteri usati: come si mangia, il gusto, il colore, lo stato botanico. Di solito è la domanda che prende più tempo.',
+          'Questa domanda guarda l’idea culturale di verdura, mescolando piante familiari ad altre meno ovvie. Mette alla prova i criteri usati: come si mangia, il gusto, il colore, lo stato botanico. Di solito è la domanda su cui ci si ferma più a lungo.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Domanda 4',
         title: 'Scala della verdura',
         prompt: 'Dalle piante meno verdura alle più verdura.',
         designNote:
-          'Ho scelto queste dieci piante perché rappresentano famiglie botaniche diverse, o parti molto diverse della stessa famiglia: radici, foglie, fiori, frutti o semi. La classifica serve a vedere se lo stato botanico, la morfologia o l’origine geografica cambiano qualcosa nel sapore di verdura.',
+          'Ho scelto queste dieci piante commestibili perché rappresentano famiglie botaniche diverse, o parti molto diverse della stessa famiglia. La classifica mescola radici, foglie, fiori, frutti e semi. Serve a vedere se lo stato botanico, la morfologia o l’origine geografica cambiano qualcosa nel sapore di verdura.',
       },
       'most-vegetable': {
         eyebrow: 'Domanda 5',
         title: 'La verdura più verdura',
         prompt: 'Che cosa sa di più di verdura?',
         designNote:
-          'Questa domanda viene dal podcast The Rest Is Science. Arriva tardi, quando l’idea di verdura è già stata messa alla prova, così si può confrontare con il primo impulso.',
+          'Questa domanda viene dal podcast «The Rest Is Science». Arriva tardi, quando l’idea di verdura è già stata messa alla prova. Così si può confrontare con il primo impulso. La cosa curiosa: alcune persone rispondono a entrambe le domande con la stessa verdura!',
       },
       'vegetabley-words': {
         eyebrow: 'Domanda 6',
@@ -315,12 +315,12 @@ export const it = {
         in_between: 'Nel mezzo',
         definitely_vegetable: 'Decisamente verdura',
       },
-      agreeNot: ' delle persone pensa che « ',
+      agreeNot: ' delle persone non conta « ',
       put: ' delle persone mette « ',
-      agreeIs: ' delle persone pensa che « ',
-      notVeg: ' » non sia una verdura',
+      agreeIs: ' delle persone conta « ',
+      notVeg: ' » come verdura',
       inBetween: ' » a metà strada',
-      isVeg: ' » sia una verdura',
+      isVeg: ' » come verdura',
       lookupLabel: 'Vedi il dettaglio di',
       chooseItem: 'Scegli un esempio',
       howSorted: 'Come ha sistemato la gente',

@@ -265,13 +265,24 @@ export function blendSpectrumSection(section, liveSpectrum, bandForRank) {
   };
 }
 
-const TEXT_LOCALES = new Set(['en', 'pl', 'zh', 'fr', 'it', 'de', 'es']);
+const TEXT_LOCALES = new Set([
+  'en',
+  'pl',
+  'zh',
+  'zh-hant',
+  'ko',
+  'th',
+  'fr',
+  'it',
+  'de',
+  'es',
+  'es-mx',
+  'pt-br',
+  'pt-pt',
+]);
 
 function knownTextLocale(value) {
-  const raw = String(value ?? '')
-    .trim()
-    .toLowerCase()
-    .split('-')[0];
+  const raw = String(value ?? '').trim().toLowerCase();
   return TEXT_LOCALES.has(raw) ? raw : '';
 }
 

@@ -34,12 +34,13 @@ function useChinesePhonetics(enabled) {
 
 export function useSurveyCatalog() {
   const { locale } = useI18n();
-  const attachPhonetics = useChinesePhonetics(locale === 'zh');
+  const chinese = locale === 'zh' || locale === 'zh-hant';
+  const attachPhonetics = useChinesePhonetics(chinese);
 
   return useMemo(() => {
     const lexicon = lexicons[locale] ?? {};
     const withPhonetics = (items) =>
-      locale === 'zh' && attachPhonetics ? attachPhonetics(items) : items;
+      chinese && attachPhonetics ? attachPhonetics(items) : items;
     const localizedBuckets = withPhonetics(applyLexicon(bucketItems, lexicon.vegetables));
     const localizedSpectrum = withPhonetics(applyLexicon(spectrumVegetables, lexicon.vegetables));
 
@@ -59,5 +60,5 @@ export function useSurveyCatalog() {
       bucketById: new Map(localizedBuckets.map((item) => [item.id, item])),
       spectrumById: new Map(localizedSpectrum.map((item) => [item.id, item])),
     };
-  }, [locale, attachPhonetics]);
+  }, [locale, chinese, attachPhonetics]);
 }

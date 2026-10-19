@@ -13,9 +13,9 @@ import { QuestionNav } from './QuestionNav.jsx';
 
 export function Question3({ onContinue, onBack, initialBuckets }) {
   const { t } = useI18n();
-  const { bucketItems } = useSurveyCatalog();
-  const [paletteOrder] = useState(() =>
-    shuffleSpectrumVegetables(bucketItems),
+  const { bucketItems, bucketById } = useSurveyCatalog();
+  const [paletteIds] = useState(() =>
+    shuffleSpectrumVegetables(bucketItems).map((item) => item.id),
   );
   const [buckets, setBuckets] = useState(() =>
     initialBuckets?.not_vegetable ? initialBuckets : emptyBuckets(),
@@ -23,7 +23,10 @@ export function Question3({ onContinue, onBack, initialBuckets }) {
   const [activeBucket, setActiveBucket] = useState(null);
   const [armedId, setArmedId] = useState(null);
   const placed = placedBucketIds(buckets);
-  const palette = paletteOrder.filter((item) => !placed.includes(item.id));
+  const palette = paletteIds
+    .filter((id) => !placed.includes(id))
+    .map((id) => bucketById.get(id))
+    .filter(Boolean);
   const canContinue = isCompleteBuckets(buckets);
 
   useEffect(() => {
