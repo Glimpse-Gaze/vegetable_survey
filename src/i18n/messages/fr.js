@@ -218,7 +218,7 @@ export const fr = {
         title: 'Premiers réflexes',
         prompt: 'Quel légume vient en premier à l’esprit ?',
         designNote:
-          'Cette question regarde le premier réflexe. Elle cherche les associations courantes du mot « légume » : les plantes les plus mangées, ou une partie précise de la plante.',
+          'Cette question cherche les associations spontanées et courantes du mot « légume ». Les réponses peuvent refléter des habitudes personnelles ou des normes culturelles, comme les légumes les plus mangés ou les plus vus dans la région. Les associations psycholinguistiques sont aussi testées, puisque l’étymologie du mot « légume » porte des connotations très différentes selon les langues.',
       },
       'why-vegetabley': {
         eyebrow: 'Question 2',
@@ -232,21 +232,21 @@ export const fr = {
         title: 'Lesquels comptent comme légumes ?',
         prompt: 'Pas un légume, entre les deux, ou clairement un légume ?',
         designNote:
-          'Cette question regarde l’idée culturelle du légume, en mêlant des plantes familières à d’autres moins évidentes. Elle teste les critères utilisés : façon de la manger, goût, couleur, statut botanique. C’est en général la question qui prend le plus de temps.',
+          'Cette question regarde l’idée culturelle du légume, en mêlant des plantes familières à d’autres moins évidentes. Elle teste les critères utilisés : façon de la manger, goût, couleur, statut botanique. C’est en général la question où l’on reste le plus longtemps.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Question 4',
         title: 'Échelle du côté légume',
         prompt: 'Des plantes les moins légumes aux plus légumes.',
         designNote:
-          'J’ai choisi ces dix plantes parce qu’elles représentent des familles botaniques différentes, ou des parties très différentes d’une même famille : racines, feuilles, fleurs, fruits ou grains. Le classement sert à voir si le statut botanique, la morphologie ou l’origine géographique change quelque chose au côté légume.',
+          'J’ai choisi ces dix plantes comestibles parce qu’elles représentent des familles botaniques différentes, ou des parties très différentes d’une même famille. Le classement mêle racines, feuilles, fleurs, fruits et grains. Il s’agit de voir si le statut botanique, la morphologie ou l’origine géographique change quelque chose au côté légume.',
       },
       'most-vegetable': {
         eyebrow: 'Question 5',
         title: 'Le légume le plus légume',
         prompt: 'Qu’est-ce qui fait le plus légume ?',
         designNote:
-          'Cette question vient du podcast The Rest Is Science. Elle arrive tard, une fois l’idée de légume déjà mise à l’épreuve, pour pouvoir la comparer au premier réflexe.',
+          'Cette question vient du podcast « The Rest Is Science ». Elle arrive tard, une fois l’idée de légume déjà mise à l’épreuve. On peut ainsi la comparer au premier réflexe. Fait amusant : certaines personnes répondent aux deux questions avec le même légume !',
       },
       'vegetabley-words': {
         eyebrow: 'Question 6',
@@ -317,12 +317,12 @@ export const fr = {
         in_between: 'Entre les deux',
         definitely_vegetable: 'Clairement un légume',
       },
-      agreeNot: ' des personnes pensent que « ',
+      agreeNot: ' des personnes ne comptent pas « ',
       put: ' des personnes placent « ',
-      agreeIs: ' des personnes pensent que « ',
-      notVeg: ' » n’est pas un légume',
+      agreeIs: ' des personnes comptent « ',
+      notVeg: ' » comme un légume',
       inBetween: ' » quelque part au milieu',
-      isVeg: ' » est un légume',
+      isVeg: ' » comme un légume',
       lookupLabel: 'Voir le détail pour',
       chooseItem: 'Choisir un exemple',
       howSorted: 'Comment les gens ont rangé',

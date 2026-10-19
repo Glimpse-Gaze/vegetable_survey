@@ -17,7 +17,7 @@ export const OPEN_NOTES_EN = [
   {
     id: 'n01',
     boosts: 22,
-    text: "It's something that's dense and have to be cooked to be consumed. It grows underground and can last a long time in a pantry.",
+    text: "It’s something that’s dense and have to be cooked to be consumed. It grows underground and can last a long time in a pantry.",
   },
   {
     id: 'n02',

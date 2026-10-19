@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { numberLocale as intlLocale } from '../../i18n/locales.js';
 import { useI18n } from '../../i18n/useI18n.js';
-
-function formatVotes(n, t, numberLocale) {
-  const count = n.toLocaleString(numberLocale);
-  const label = n === 1 ? t('results.vote') : t('results.votes');
-  const tight = numberLocale.startsWith('zh') || numberLocale.startsWith('ko');
-  return tight ? `${count}${label}` : `${count} ${label}`;
-}
+import { formatVotes } from '../../utils/formatVotes.js';
 
 function formatShare(share) {
   const pct = Math.min(100, Math.max(0, (share ?? 0) * 100));
@@ -35,7 +29,9 @@ export function BucketColumns({ section }) {
                   {`${formatShare(column.leader.share)}${
                     column.id === 'in_between'
                       ? t('results.buckets.put')
-                      : t('results.buckets.agreeIs')
+                      : column.id === 'not_vegetable'
+                        ? t('results.buckets.agreeNot')
+                        : t('results.buckets.agreeIs')
                   }`}
                   <strong>{column.leader.name}</strong>
                   {column.id === 'not_vegetable'
@@ -67,7 +63,7 @@ export function BucketColumns({ section }) {
                       ) : null}
                     </div>
                     <p className="bucket-row-meta">
-                      {formatVotes(item.votes, t, numberLocale)} · {formatShare(item.share)}
+                      {formatVotes(item.votes, t, numberLocale, locale)} · {formatShare(item.share)}
                     </p>
                     <div className="bucket-row-meter" aria-hidden="true">
                       <span style={{ width: `${item.share * 100}%` }} />
@@ -134,7 +130,7 @@ export function BucketColumns({ section }) {
                       .join(' ') || undefined}
                   >
                     <th scope="row">{row.title}</th>
-                    <td className="is-votes">{formatVotes(row.votes, t, numberLocale)}</td>
+                    <td className="is-votes">{formatVotes(row.votes, t, numberLocale, locale)}</td>
                     <td className="is-bar">
                       <span className="bucket-lookup-meter" aria-hidden="true">
                         <span style={{ width: `${row.share * 100}%` }} />

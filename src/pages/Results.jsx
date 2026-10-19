@@ -4,6 +4,7 @@ import { numberLocale as intlLocale } from '../i18n/locales.js';
 import { useI18n } from '../i18n/useI18n.js';
 import { localizeResultsSection } from '../i18n/localizeResults.js';
 import { withLocale } from '../i18n/paths.js';
+import { formatVotes } from '../utils/formatVotes.js';
 import { useSurveyCatalog } from '../i18n/useSurveyCatalog.js';
 import { BrandFooter } from '../components/BrandFooter.jsx';
 import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
@@ -87,13 +88,6 @@ function edgeGain(position, max, direction) {
       ? 1
       : EDGE_FLOOR + (1 - EDGE_FLOOR) * (toEnd / EDGE_PX) ** 2;
   return Math.min(leave, approach);
-}
-
-function formatVotes(n, t, numberLocale) {
-  const count = n.toLocaleString(numberLocale);
-  const label = n === 1 ? t('results.vote') : t('results.votes');
-  const tight = numberLocale.startsWith('zh') || numberLocale.startsWith('ko');
-  return tight ? `${count}${label}` : `${count} ${label}`;
 }
 
 function formatShare(share) {
@@ -238,7 +232,7 @@ function Blade({ item, isYours, variant }) {
           </div>
           <p className="blade-name">{item.name}</p>
           <p className="blade-meta">
-            {formatVotes(item.votes, t, numberLocale)} · {formatShare(item.share)}
+            {formatVotes(item.votes, t, numberLocale, locale)} · {formatShare(item.share)}
           </p>
         </div>
         <div className="blade-meter" aria-hidden="true">

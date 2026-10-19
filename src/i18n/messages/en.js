@@ -48,7 +48,7 @@ export const en = {
   welcome: {
     eyebrow: 'Welcome',
     intro:
-      "This is a short survey examining what people consider to be a vegetable. It's designed to be a fun way to learn about people's thoughts and opinions. It takes about seven minutes to complete it.",
+      "This is a short survey examining what people consider to be a vegetable. It’s designed to be a fun way to learn about people's thoughts and opinions. It takes about seven minutes to complete it.",
     noBadAnswers:
       'There are no bad answers. Use your intuition and feel free to submit personal opinions.',
     languagePrompt:
@@ -88,7 +88,7 @@ export const en = {
       'Drag the items, or tap a bucket and then an item. Tap × on a sorted item to put it back.',
     continueHint: 'Sort at least 15 items',
     toSort:
-      "Sort at least 15 of these items. If you don't know any, leave them here.",
+      "Sort at least 15 of these items. If you don’t know any, leave them here.",
     returnItem: 'Return {name} to the list',
   },
   buckets: {
@@ -127,7 +127,7 @@ export const en = {
     placeholder: 'Type whatever comes to mind...',
     publicConsent: 'I agree to display this answer publicly.',
     skipTitle: 'Skip this one?',
-    skipMessage: "Are you sure you don't want to share your thought process?",
+    skipMessage: "Are you sure you don’t want to share your thought process?",
   },
   q7: {
     title: 'Would you mind sharing your background?',
@@ -138,7 +138,7 @@ export const en = {
     language: 'What is your native language?',
     languagePlaceholder: 'Type a native language...',
     preferNot: 'I prefer not to disclose',
-    doubt: "I don't believe you.",
+    doubt: "I don’t believe you.",
     removeLanguage: 'Remove {name}',
     saving: 'Saving your answers…',
   },
@@ -174,7 +174,7 @@ export const en = {
   },
   leave: {
     title: 'Leave the survey?',
-    message: "Are you sure you want to return? Your answers won't be saved.",
+    message: "Are you sure you want to return? Your answers won’t be saved.",
   },
   codeFill: {
     label: 'Open a ranking code',
@@ -188,6 +188,7 @@ export const en = {
     yourAnswer: 'Your answer',
     yourAnswerPeriod: 'Your answer. ',
     vote: 'vote',
+    votesFew: 'votes',
     votes: 'votes',
     top5: 'Top 5',
     categories: {
@@ -204,7 +205,7 @@ export const en = {
         title: 'First instincts',
         prompt: "Which vegetable comes to people's mind first?",
         designNote:
-          'This question checks people’s first instincts. It looks for the common associations of the word “vegetable”: such as the most frequently eaten plants or their specific parts.',
+          'This question checks for the unprompted, common associations with the word “vegetable”. The answers can reflect personal habits or cultural norms, like veggies most frequently eaten or seen in the region. The psycholinguistic associations are also tested here, since the etymology of the word "vegetable" carries vastly different connotations in different languages.',
       },
       'why-vegetabley': {
         eyebrow: 'Question 2',
@@ -218,21 +219,21 @@ export const en = {
         title: 'Which of these count as vegetables?',
         prompt: 'Not a vegetable, in-between, or definitely a vegetable?',
         designNote:
-          'This question looks at the cultural idea of a vegetable, mixing familiar consumable plants with some less obvious ones. It is designed to test the criteria that people are using: how the given plant is consumed, its flavour, colour, or botanical status. People tend to spend the most time on this question.',
+          'This question looks at the cultural idea of a vegetable, mixing familiar consumable plants with some less obvious ones. It is designed to test the criteria that people are using: how the given plant is consumed, its flavour, colour, or botanical status. People tend to spend the longest on this question.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Question 4',
         title: 'Vegetableness spectrum',
         prompt: 'From the least to the most vegetabley plants.',
         designNote:
-          'I selected these ten plants as they represent different botanical families, or very different parts of the same family: roots, leaves, flowers, fruits or grains. The ranking is there to see whether the botanical status, morphology, or geographic origin has any bearing on how vegetabley something feels.',
+          'I selected these ten consumable plants as they represent different botanical families, or very different parts of the same family. The ranking mixes roots, leaves, flowers, fruits and grains. This is to test whether the botanical status, morphology, or geographic origin has any bearing on how vegetabley something feels.',
       },
       'most-vegetable': {
         eyebrow: 'Question 5',
         title: 'The most vegetable vegetable',
         prompt: 'What feels the most vegetabley?',
         designNote:
-          'This question was inspired by the podcast The Rest Is Science. It comes late in the survey, after people have already stress-tested their idea of a vegetable, so it can be compared with their first instincts.',
+          'This question was inspired by the podcast “The Rest Is Science”. It comes late in the survey, after people have already stress-tested their idea of a vegetable. This allows comparison with their initial instincts. Interestingly, some users answer both questions with the same vegetable!',
       },
       'vegetabley-words': {
         eyebrow: 'Question 6',
@@ -301,12 +302,12 @@ export const en = {
         in_between: 'Something in-between',
         definitely_vegetable: 'Definite vegetable',
       },
-      agreeNot: ' of people agree that ',
+      agreeNot: ' of people don’t count ',
       put: ' of people put ',
-      agreeIs: ' of people agree that ',
-      notVeg: ' is not a vegetable',
+      agreeIs: ' of people count ',
+      notVeg: ' as a vegetable',
       inBetween: ' somewhere in-between',
-      isVeg: ' is a vegetable',
+      isVeg: ' as a vegetable',
       lookupLabel: 'See detailed results for',
       chooseItem: 'Choose an item',
       howSorted: 'How people sorted',

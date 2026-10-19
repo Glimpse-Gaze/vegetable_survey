@@ -38,25 +38,24 @@ function Spread({ item }) {
               style={{ '--share': share / maxShare }}
               title={`#${slot}: ${Math.round(share * 100)}%`}
             >
-              <span className="spectrum-spread-bar" />
               {slot === item.userSlot ? (
                 <span className="spectrum-blade-badge">{t('results.yourVote')}</span>
               ) : null}
+              <span className="spectrum-spread-bar" />
             </span>
           );
         })}
       </div>
+      <div className="spectrum-spread-pcts">
+        {item.slotShares.map((share, index) => (
+          <span key={index + 1} className="spectrum-spread-pct">
+            {Math.round(share * 100)}%
+          </span>
+        ))}
+      </div>
       <div className="spectrum-spread-ends">
-        {item.slotShares.map((_, index) => {
-          const slot = index + 1;
-
-          return (
-            <span key={slot} className="spectrum-spread-end">
-              {slot === 1 ? t('results.spectrum.least') : null}
-              {slot === 10 ? t('results.spectrum.most') : null}
-            </span>
-          );
-        })}
+        <span>{t('results.spectrum.least')}</span>
+        <span>{t('results.spectrum.most')}</span>
       </div>
     </div>
   );

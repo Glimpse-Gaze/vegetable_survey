@@ -202,6 +202,7 @@ export const pl = {
     yourAnswer: 'Twoja odpowiedź',
     yourAnswerPeriod: 'Twoja odpowiedź. ',
     vote: 'głos',
+    votesFew: 'głosy',
     votes: 'głosów',
     top5: 'Top 5',
     categories: {
@@ -218,7 +219,7 @@ export const pl = {
         title: 'Pierwsze skojarzenia',
         prompt: 'Jakie warzywo przychodzi ludziom na myśl jako pierwsze?',
         designNote:
-        'To pytanie sprawdza pierwsze skojarzenia. Szuka popularnych powiązań ze słowem „warzywo”: mogą to być najczęściej jadane rośliny albo ich konkretna część. Polacy, idąc tropem etymologicznym, często myślą o „warzeniu”.',
+          'To pytanie sprawdza niewymuszone, typowe skojarzenia ze słowem „warzywo”. Odpowiedzi mogą odzwierciedlać nawyki albo normy kulturowe, na przykład warzywa najczęściej jadane lub widywane w danym regionie. Sprawdzane są tu też skojarzenia psycholingwistyczne, bo etymologia słowa „warzywo” niesie w różnych językach zupełnie inne znaczenia. Polacy, idąc tropem etymologicznym, często myślą o „warzeniu”.',
       },
       'why-vegetabley': {
         eyebrow: 'Pytanie 2',
@@ -232,21 +233,21 @@ export const pl = {
         title: 'Które z tych rzeczy liczą się jako warzywa?',
         prompt: 'Nie warzywo, coś pomiędzy, czy zdecydowanie warzywo?',
         designNote:
-          'To pytanie bada kulturowe rozumienie warzywa, mieszając znajome jadalne rośliny z kilkoma mniej oczywistymi. Zostało ono opracowane w celu sprawdzenia kryteriów, jakimi kierują się ludzie: sposobu spożywania danej rośliny, jej walorów smakowych, barwy czy też przynależności botanicznej. Ludzie zwykle spędzają najwięcej czasu na tym pytaniu.',
+          'To pytanie bada kulturowe rozumienie warzywa, mieszając znajome jadalne rośliny z kilkoma mniej oczywistymi. Zostało ono opracowane w celu sprawdzenia kryteriów, jakimi kierują się ludzie: sposobu spożywania danej rośliny, jej walorów smakowych, barwy czy też przynależności botanicznej. Ludzie zwykle zostają przy tym pytaniu najdłużej.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Pytanie 4',
         title: 'Skala warzywności',
         prompt: 'Od najmniej do najbardziej warzywnych roślin.',
         designNote:
-          'Wybrałem te dziesięć roślin, ponieważ reprezentują różne rodziny botaniczne albo skrajnie różne części tej samej rodziny:  korzenie, liście, kwiaty, owoce lub ziarna. Ranking ma na celu zbadać czy status botaniczny, morfologia albo pochodzenie geograficzne wpływają na to, jak bardzo coś wydaje się warzywem.',
+          'Wybrałem te dziesięć jadalnych roślin, ponieważ reprezentują różne rodziny botaniczne albo skrajnie różne części tej samej rodziny. Ranking miesza korzenie, liście, kwiaty, owoce i ziarna. Chodzi o to, żeby sprawdzić, czy status botaniczny, morfologia albo pochodzenie geograficzne wpływają na to, jak bardzo coś wydaje się warzywem.',
       },
       'most-vegetable': {
         eyebrow: 'Pytanie 5',
         title: 'Najbardziej warzywne warzywo',
         prompt: 'Co wydaje się najbardziej warzywne?',
         designNote:
-          'To pytanie zainspirował podcast The Rest Is Science. Pojawia się późno w ankiecie, gdy ankietowani przetestowali już swoją definicję warzywa, wyniki można więc porównać z pierwszymi skojarzeniami.',
+          'To pytanie zainspirował podcast „The Rest Is Science”. Pojawia się późno w ankiecie, gdy ankietowani przetestowali już swoją definicję warzywa. Dzięki temu wyniki można porównać z pierwszymi skojarzeniami. Co ciekawe, niektórzy na oba pytania odpowiadają tym samym warzywem!',
       },
       'vegetabley-words': {
         eyebrow: 'Pytanie 6',
@@ -284,8 +285,8 @@ export const pl = {
     amongSpeakersIn: 'wśród osób mówiących w języku: {language} w: {place}',
     worldwide: 'na świecie',
     inPlace: 'w: {place}',
-    onlyShare: 'Tylko {share} z {people} głosowało tak jak Ty',
-    shareVoted: '{share} z {people} głosowało tak jak Ty',
+    onlyShare: 'Tylko {share} {people} głosowało tak jak Ty',
+    shareVoted: '{share} {people} głosowało tak jak Ty',
     it: '',
     itIs: 'Jest',
     leading: 'na prowadzeniu {place}',
@@ -318,9 +319,9 @@ export const pl = {
       agreeNot: ' osób uważa, że ',
       put: ' osób umieściło ',
       agreeIs: ' osób uważa, że ',
-      notVeg: ' nie jest warzywem',
+      notVeg: ' to nie warzywo',
       inBetween: ' gdzieś pomiędzy',
-      isVeg: ' jest warzywem',
+      isVeg: ' to warzywo',
       lookupLabel: 'Zobacz szczegółowe wyniki:',
       chooseItem: 'Wybierz przykład',
       howSorted: 'Jak ludzie posortowali',

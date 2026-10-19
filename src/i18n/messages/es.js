@@ -218,7 +218,7 @@ export const es = {
         title: 'Primeros impulsos',
         prompt: '¿Qué verdura viene primero a la mente?',
         designNote:
-          'Esta pregunta mira el primer impulso. Busca las asociaciones habituales de la palabra «verdura»: las plantas que más se comen, o una parte concreta de la planta.',
+          'Esta pregunta busca las asociaciones espontáneas y habituales de la palabra «verdura». Las respuestas pueden reflejar hábitos personales o normas culturales, como las verduras que más se comen o se ven en la región. También se ponen a prueba las asociaciones psicolingüísticas, porque la etimología de la palabra «verdura» arrastra connotaciones muy distintas según la lengua.',
       },
       'why-vegetabley': {
         eyebrow: 'Pregunta 2',
@@ -232,21 +232,21 @@ export const es = {
         title: '¿Cuáles de estos cuentan como verduras?',
         prompt: '¿No es verdura, a medio camino, o claramente verdura?',
         designNote:
-          'Esta pregunta mira la idea cultural de verdura, mezclando plantas familiares con otras menos obvias. Pone a prueba los criterios: cómo se come, el sabor, el color, el estatus botánico. Suele ser la pregunta que más tiempo lleva.',
+          'Esta pregunta mira la idea cultural de verdura, mezclando plantas familiares con otras menos obvias. Pone a prueba los criterios: cómo se come, el sabor, el color, el estatus botánico. Suele ser la pregunta en la que la gente se queda más rato.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Pregunta 4',
         title: 'Escala de verdura',
         prompt: 'De las plantas menos verdura a las más verdura.',
         designNote:
-          'Elegí estas diez plantas porque representan familias botánicas distintas, o partes muy distintas de la misma familia: raíces, hojas, flores, frutos o granos. El ranking sirve para ver si el estatus botánico, la forma o el origen geográfico cambian algo en lo verdura que se siente.',
+          'Elegí estas diez plantas comestibles porque representan familias botánicas distintas, o partes muy distintas de la misma familia. El ranking mezcla raíces, hojas, flores, frutos y granos. Sirve para ver si el estatus botánico, la forma o el origen geográfico cambian algo en lo verdura que se siente.',
       },
       'most-vegetable': {
         eyebrow: 'Pregunta 5',
         title: 'La verdura más verdura',
         prompt: '¿Qué sabe más a verdura?',
         designNote:
-          'Esta pregunta viene del pódcast The Rest Is Science. Llega tarde, cuando la idea de verdura ya se ha puesto a prueba, para poder compararla con el primer impulso.',
+          'Esta pregunta viene del pódcast «The Rest Is Science». Llega tarde, cuando la idea de verdura ya se ha puesto a prueba. Así se puede comparar con el primer impulso. Curiosamente, algunas personas responden a las dos preguntas con la misma verdura.',
       },
       'vegetabley-words': {
         eyebrow: 'Pregunta 6',
@@ -315,12 +315,12 @@ export const es = {
         in_between: 'A medio camino',
         definitely_vegetable: 'Claramente verdura',
       },
-      agreeNot: ' de las personas cree que « ',
+      agreeNot: ' de las personas no cuenta « ',
       put: ' de las personas coloca « ',
-      agreeIs: ' de las personas cree que « ',
-      notVeg: ' » no es una verdura',
+      agreeIs: ' de las personas cuenta « ',
+      notVeg: ' » como verdura',
       inBetween: ' » en un punto medio',
-      isVeg: ' » es una verdura',
+      isVeg: ' » como verdura',
       lookupLabel: 'Ver el detalle de',
       chooseItem: 'Elegir un ejemplo',
       howSorted: 'Cómo lo ordenó la gente',

@@ -218,7 +218,7 @@ export const de = {
         title: 'Erste Impulse',
         prompt: 'Welches Gemüse kommt den Leuten zuerst in den Sinn?',
         designNote:
-          'Diese Frage schaut auf den ersten Impuls. Sie sucht die üblichen Verbindungen zum Wort „Gemüse“: die am häufigsten gegessenen Pflanzen oder einen bestimmten Teil davon.',
+          'Diese Frage sucht die unaufgeforderten, üblichen Verbindungen zum Wort „Gemüse“. Die Antworten können persönliche Gewohnheiten oder kulturelle Normen spiegeln, etwa das Gemüse, das in der Region am häufigsten gegessen oder gesehen wird. Getestet werden auch psycholinguistische Assoziationen, weil die Etymologie des Wortes „Gemüse“ in verschiedenen Sprachen ganz unterschiedliche Bedeutungen trägt.',
       },
       'why-vegetabley': {
         eyebrow: 'Frage 2',
@@ -239,14 +239,14 @@ export const de = {
         title: 'Gemüsigkeitsskala',
         prompt: 'Von den am wenigsten bis zu den am meisten gemüsigen Pflanzen.',
         designNote:
-          'Ich habe diese zehn Pflanzen ausgesucht, weil sie verschiedene botanische Familien vertreten, oder sehr verschiedene Teile derselben Familie: Wurzeln, Blätter, Blüten, Früchte oder Körner. Die Rangliste soll zeigen, ob botanischer Status, Gestalt oder geografische Herkunft etwas daran ändert, wie gemüsig sich etwas anfühlt.',
+          'Ich habe diese zehn essbaren Pflanzen ausgesucht, weil sie verschiedene botanische Familien vertreten, oder sehr verschiedene Teile derselben Familie. Die Rangliste mischt Wurzeln, Blätter, Blüten, Früchte und Körner. Damit lässt sich prüfen, ob botanischer Status, Gestalt oder geografische Herkunft etwas daran ändert, wie gemüsig sich etwas anfühlt.',
       },
       'most-vegetable': {
         eyebrow: 'Frage 5',
         title: 'Das gemüsigste Gemüse',
         prompt: 'Was fühlt sich am gemüsigsten an?',
         designNote:
-          'Diese Frage kommt vom Podcast The Rest Is Science. Sie steht spät in der Umfrage, nachdem die Idee von Gemüse schon auf die Probe gestellt wurde, und lässt sich mit dem ersten Impuls vergleichen.',
+          'Diese Frage kommt vom Podcast „The Rest Is Science“. Sie steht spät in der Umfrage, nachdem die Idee von Gemüse schon auf die Probe gestellt wurde. So lässt sie sich mit dem ersten Impuls vergleichen. Interessanterweise antworten manche auf beide Fragen mit demselben Gemüse!',
       },
       'vegetabley-words': {
         eyebrow: 'Frage 6',
@@ -315,12 +315,12 @@ export const de = {
         in_between: 'Dazwischen',
         definitely_vegetable: 'Eindeutig Gemüse',
       },
-      agreeNot: ' der Personen finden: „',
+      agreeNot: ' der Personen zählen „',
       put: ' der Personen legen „',
-      agreeIs: ' der Personen finden: „',
-      notVeg: '“ ist kein Gemüse',
+      agreeIs: ' der Personen zählen „',
+      notVeg: '“ nicht als Gemüse',
       inBetween: '“ in die Mitte',
-      isVeg: '“ ist Gemüse',
+      isVeg: '“ als Gemüse',
       lookupLabel: 'Details ansehen für',
       chooseItem: 'Ein Beispiel wählen',
       howSorted: 'Wie die Leute sortiert haben',

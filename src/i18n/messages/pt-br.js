@@ -218,7 +218,7 @@ export const ptBr = {
         title: 'Primeiros impulsos',
         prompt: 'Qual legume vem primeiro à cabeça?',
         designNote:
-          'Esta pergunta olha o primeiro impulso. Procura as associações comuns da palavra “legume”: as plantas que mais aparecem na mesa, ou um pedaço específico da planta.',
+          'Esta pergunta procura as associações espontâneas e comuns da palavra “legume”. As respostas podem refletir hábitos pessoais ou normas culturais, como os legumes que mais se comem ou se veem na região. As associações psicolinguísticas também entram no teste, já que a etimologia da palavra “legume” carrega conotações bem diferentes de uma língua para outra.',
       },
       'why-vegetabley': {
         eyebrow: 'Pergunta 2',
@@ -232,21 +232,21 @@ export const ptBr = {
         title: 'Quais destes contam como legumes?',
         prompt: 'Não é legume, no meio do caminho, ou com certeza é legume?',
         designNote:
-          'Esta pergunta olha a ideia cultural de legume, misturando plantas familiares com outras menos óbvias. Testa os critérios que as pessoas estão usando: como se come, o sabor, a cor, o status botânico. Costuma ser a pergunta em que o povo passa mais tempo.',
+          'Esta pergunta olha a ideia cultural de legume, misturando plantas familiares com outras menos óbvias. Testa os critérios que as pessoas estão usando: como se come, o sabor, a cor, o status botânico. Costuma ser a pergunta em que o povo fica mais tempo.',
       },
       'vegetabley-spectrum': {
         eyebrow: 'Pergunta 4',
         title: 'Escala de legume',
         prompt: 'Das plantas menos legume às mais legume.',
         designNote:
-          'Eu escolhi estas dez plantas porque elas representam famílias botânicas diferentes, ou pedaços bem diferentes da mesma família: raízes, folhas, flores, frutos ou grãos. A ordem serve pra ver se o status botânico, a forma ou a origem geográfica muda alguma coisa no quanto aquilo parece legume.',
+          'Eu escolhi estas dez plantas comestíveis porque elas representam famílias botânicas diferentes, ou pedaços bem diferentes da mesma família. A ordem mistura raízes, folhas, flores, frutos e grãos. Serve pra ver se o status botânico, a forma ou a origem geográfica muda alguma coisa no quanto aquilo parece legume.',
       },
       'most-vegetable': {
         eyebrow: 'Pergunta 5',
         title: 'O legume mais legume',
         prompt: 'O que parece mais legume?',
         designNote:
-          'Esta pergunta veio do podcast The Rest Is Science. Ela chega tarde, quando a ideia de legume já foi posta à prova, pra poder comparar com o primeiro impulso.',
+          'Esta pergunta veio do podcast “The Rest Is Science”. Ela chega tarde, quando a ideia de legume já foi posta à prova. Dá pra comparar com o primeiro impulso. O curioso é que algumas pessoas respondem às duas perguntas com o mesmo legume!',
       },
       'vegetabley-words': {
         eyebrow: 'Pergunta 6',
@@ -315,12 +315,12 @@ export const ptBr = {
         in_between: 'No meio do caminho',
         definitely_vegetable: 'Legume de verdade',
       },
-      agreeNot: ' das pessoas acham que « ',
+      agreeNot: ' das pessoas não contam « ',
       put: ' das pessoas colocam « ',
-      agreeIs: ' das pessoas acham que « ',
-      notVeg: ' » não é legume',
+      agreeIs: ' das pessoas contam « ',
+      notVeg: ' » como legume',
       inBetween: ' » no meio do caminho',
-      isVeg: ' » é legume',
+      isVeg: ' » como legume',
       lookupLabel: 'Ver o detalhe de',
       chooseItem: 'Escolher um item',
       howSorted: 'Como as pessoas separaram',
