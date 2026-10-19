@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n/useI18n.js';
 import { withLocale } from '../../i18n/paths.js';
-import { isResponseId, resultsSharePath } from '../../utils/myResponse.js';
+import { isResponseId, resultsSharePath, resultsShareUrl } from '../../utils/myResponse.js';
 
 export function SurveyNudge({ kind = 'compare', onThisMachine = false }) {
   const { t, locale } = useI18n();
@@ -28,6 +28,7 @@ export function ResponseCodeCard({
   const [draft, setDraft] = useState('');
   const [filledFrom, setFilledFrom] = useState('');
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [openedFor, setOpenedFor] = useState('');
   const [formError, setFormError] = useState('');
   const [checking, setChecking] = useState(false);
@@ -47,6 +48,17 @@ export function ResponseCodeCard({
       await navigator.clipboard.writeText(code);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // ignore
+    }
+  }
+
+  async function copyLink() {
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(resultsShareUrl(locale, code));
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 1600);
     } catch {
       // ignore
     }
@@ -109,12 +121,30 @@ export function ResponseCodeCard({
           >
             {copied ? t('results.gate.copied') : t('results.gate.copy')}
           </button>
+          <button
+            className={
+              linkCopied ? 'response-code-copy is-copied' : 'response-code-copy'
+            }
+            type="button"
+            onClick={copyLink}
+          >
+            {linkCopied ? t('results.gate.linkCopied') : t('results.gate.shareLink')}
+          </button>
         </p>
       ) : null}
       {viewingOther && code && !invalid ? (
         <p className="response-code-line">
           {t('results.gate.viewing')}{' '}
           <code className="response-code">{code}</code>
+          <button
+            className={
+              linkCopied ? 'response-code-copy is-copied' : 'response-code-copy'
+            }
+            type="button"
+            onClick={copyLink}
+          >
+            {linkCopied ? t('results.gate.linkCopied') : t('results.gate.shareLink')}
+          </button>
         </p>
       ) : null}
       {code && !viewingOther ? (

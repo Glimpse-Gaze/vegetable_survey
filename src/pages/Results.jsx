@@ -713,6 +713,77 @@ function LanguageFilter({ languageId, languageOptions, onLanguage, className = '
   );
 }
 
+function ResultsSkeleton({ layout }) {
+  const showMap = layout === 'blades' || layout === 'spectrum';
+  return (
+    <div className="results-skeleton" aria-busy="true" aria-hidden="true">
+      {layout === 'reasons' ? (
+        <div className="skel-reasons">
+          <div className="skel-card">
+            <span className="skel skel-line is-kicker" />
+            <span className="skel skel-line is-title" />
+            <span className="skel skel-line" />
+            <span className="skel skel-row" />
+            <span className="skel skel-row" />
+            <span className="skel skel-row" />
+            <span className="skel skel-row" />
+            <span className="skel skel-row" />
+          </div>
+        </div>
+      ) : layout === 'buckets' ? (
+        <div className="skel-buckets">
+          {[0, 1, 2].map((column) => (
+            <div key={column} className="skel-card">
+              <span className="skel skel-line is-title" />
+              <span className="skel skel-row" />
+              <span className="skel skel-row" />
+              <span className="skel skel-row" />
+              <span className="skel skel-row" />
+              <span className="skel skel-row" />
+            </div>
+          ))}
+        </div>
+      ) : layout === 'notes' ? (
+        <div className="skel-notes">
+          {Array.from({ length: 10 }, (_, index) => (
+            <span key={index} className="skel skel-note" />
+          ))}
+        </div>
+      ) : layout === 'spectrum' ? (
+        <div className="skel-spectrum">
+          {Array.from({ length: 6 }, (_, index) => (
+            <span key={index} className="skel skel-spectrum-row" />
+          ))}
+        </div>
+      ) : (
+        <div className="skel-rail">
+          <span className="skel skel-blade is-lead" />
+          <span className="skel skel-blade" />
+          <span className="skel skel-blade" />
+        </div>
+      )}
+      {showMap ? (
+        <div className="skel-map">
+          <div className="skel-map-head">
+            <div className="skel-map-copy">
+              <span className="skel skel-line is-kicker" />
+              <span className="skel skel-line is-title" />
+              <span className="skel skel-line" />
+              <span className="skel skel-line" />
+              <span className="skel skel-line is-short" />
+            </div>
+            <span className="skel skel-filter" />
+          </div>
+          <span className="skel skel-map-face" />
+          <span className="skel skel-language" />
+          <span className="skel skel-line is-meta" />
+          <span className="skel skel-mix" />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function Results() {
   const navigate = useNavigate();
   const { t, locale } = useI18n();
@@ -729,6 +800,7 @@ export function Results() {
   const [sharedAnswers, setSharedAnswers] = useState(null);
   const [codeInvalid, setCodeInvalid] = useState(false);
   const [liveSummary, setLiveSummary] = useState(emptyLiveSummary);
+  const [liveReady, setLiveReady] = useState(false);
   const codeParam = searchParams.get('code');
   const myResponseId = useMemo(() => readMyResponseId(), []);
   const myAnswers = useMemo(() => readMyAnswers(), []);
@@ -748,6 +820,9 @@ export function Results() {
       })
       .catch(() => {
         // keep mock-only view
+      })
+      .finally(() => {
+        if (!cancelled) setLiveReady(true);
       });
     return () => {
       cancelled = true;
@@ -1080,7 +1155,8 @@ export function Results() {
             <p className="results-section-prompt">{section.prompt}</p>
           </header>
 
-          {category.layout === 'buckets' ? (
+          {liveReady ? (
+          category.layout === 'buckets' ? (
             <BucketColumns section={section} />
           ) : category.layout === 'reasons' ? (
             <ReasonResults section={section} viewingOwn={!viewingOther} />
@@ -1101,9 +1177,12 @@ export function Results() {
                 pauseAutoplay={menuOpen}
               />
             </div>
+          )
+          ) : (
+            <ResultsSkeleton layout={category.layout} />
           )}
 
-          {alignment ? (
+          {liveReady && alignment ? (
             <div className="alignment-wrap">
               <div className="alignment-card">
                 {alignment.kicker ? (
@@ -1129,7 +1208,7 @@ export function Results() {
             </div>
           ) : null}
 
-          {showMap ? (
+          {liveReady && showMap ? (
           <div className="map-panel">
             <div className="map-panel-head">
               <div>

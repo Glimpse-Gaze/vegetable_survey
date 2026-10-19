@@ -17,6 +17,7 @@ import pakChoi from '../content/Pok_choi.jpg';
 import potato from '../content/Potato.jpg';
 import pumpkin from '../content/Pumpkin.jpg';
 import rapeseed from '../content/Rapeseed.jpg';
+import spinach from '../content/Spinach.jpg';
 import sweetPotato from '../content/Sweet_Potato.jpg';
 import tomato from '../content/Tomato.jpg';
 import turnip from '../content/Turnips.jpg';
@@ -51,6 +52,7 @@ export const VEGETABLE_ART = {
   potato,
   pumpkin,
   rapeseed,
+  spinach,
   sweet_potato: sweetPotato,
   tomato,
   turnip,

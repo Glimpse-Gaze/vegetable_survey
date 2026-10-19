@@ -24,9 +24,8 @@ function nextZoom(zoom, direction) {
 }
 
 /** Keep the vote popup on screen. Touch places it above the finger. */
-function tipOrigin(clientX, clientY, above) {
+function tipOrigin(clientX, clientY, above, height = 86) {
   const width = 220;
-  const height = 64;
   const margin = 10;
   const left = above ? clientX - width / 2 : clientX + 14;
   const top = above ? clientY - height - 18 : clientY + 14;
@@ -36,10 +35,24 @@ function tipOrigin(clientX, clientY, above) {
   };
 }
 
-function countryIso3(group) {
+/** Territories drawn on the map, counted as the country they belong to. */
+const ISO_AS_COUNTRY = {
+  PRI: 'USA',
+};
+
+const ISO_COUNTRY_ID = {
+  PRI: 'united_states',
+};
+
+function rawCountryIso3(group) {
   return [...group.classList].find(
     (token) => token.length === 3 && token === token.toUpperCase(),
   );
+}
+
+function countryIso3(group) {
+  const raw = rawCountryIso3(group);
+  return raw ? (ISO_AS_COUNTRY[raw] ?? raw) : raw;
 }
 
 /** Innermost map group with an ISO3 class (e.g. Greenland inside Denmark). */
@@ -187,13 +200,17 @@ export function WorldMap({
         innermostCountryGroup(event.target) ?? event.currentTarget;
       const title = group?.getAttribute('data-name');
       if (!title) return null;
-      const iso3 = countryIso3(group);
+      const raw = rawCountryIso3(group);
+      const iso3 = raw ? (ISO_AS_COUNTRY[raw] ?? raw) : raw;
       const known = iso3 ? KNOWN_BY_ISO3[iso3] : null;
       const live = iso3
         ? liveRef.current.find((country) => country.iso3 === iso3)
         : null;
       const countryId =
-        known?.id ?? countryIdFromMapTitle(title) ?? null;
+        (raw && ISO_COUNTRY_ID[raw])
+        ?? known?.id
+        ?? countryIdFromMapTitle(title)
+        ?? null;
       const localized = countryId
         ? countriesRef.current.get(countryId)?.name
         : null;
@@ -489,6 +506,9 @@ export function WorldMap({
               {t('results.mapTip.few', { threshold: VOTE_THRESHOLD })}
             </span>
           )}
+          {tip.countryId === 'russia' || tip.countryId === 'israel' ? (
+            <span className="world-map-tip-appeal">{t('results.mapTip.stopTheWar')}</span>
+          ) : null}
         </div>
       ) : null}
     </div>

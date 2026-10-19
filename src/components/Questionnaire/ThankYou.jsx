@@ -4,6 +4,7 @@ import { BrandFooter } from '../BrandFooter.jsx';
 import { numberLocale as intlLocale } from '../../i18n/locales.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import { withLocale } from '../../i18n/paths.js';
+import { resultsShareUrl } from '../../utils/myResponse.js';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { submitDeveloperMessage } from '../../utils/submitResponse.js';
 
@@ -16,6 +17,7 @@ export function ThankYou({ responseId }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [error, setError] = useState('');
   const resultsTo = withLocale(
     locale,
@@ -30,6 +32,17 @@ export function ThankYou({ responseId }) {
       await navigator.clipboard.writeText(responseId);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // ignore
+    }
+  }
+
+  async function copyLink() {
+    if (!responseId) return;
+    try {
+      await navigator.clipboard.writeText(resultsShareUrl(locale, responseId));
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 1600);
     } catch {
       // ignore
     }
@@ -82,6 +95,17 @@ export function ThankYou({ responseId }) {
               onClick={copyCode}
             >
               {copied ? t('thanks.copied') : t('thanks.copy')}
+            </button>
+            <button
+              className={
+                linkCopied
+                  ? 'response-code-copy is-copied'
+                  : 'response-code-copy'
+              }
+              type="button"
+              onClick={copyLink}
+            >
+              {linkCopied ? t('thanks.linkCopied') : t('thanks.shareLink')}
             </button>
           </p>
         </section>

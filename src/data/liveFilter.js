@@ -439,11 +439,22 @@ export function buildLiveSection(category, regionId, languageId, ballots, helper
   };
 }
 
+/** Places drawn separately on the map, tallied with the country they belong to. */
+const MAP_PLACE_ALIASES = {
+  puerto_rico: 'united_states',
+};
+
 /** Map countries from live tallies only (mock regions are not filter seeds). */
 export function mapCountriesFromLiveTallies(placeTallies = {}) {
-  const countriesOnMap = [];
+  const folded = new Map();
   for (const [placeId, count] of Object.entries(placeTallies)) {
     if (!count || isContinentId(placeId)) continue;
+    const id = MAP_PLACE_ALIASES[placeId] ?? placeId;
+    folded.set(id, (folded.get(id) ?? 0) + count);
+  }
+
+  const countriesOnMap = [];
+  for (const [placeId, count] of folded) {
     const iso3 = iso3ForCountry(placeId);
     if (!iso3) continue;
     countriesOnMap.push({

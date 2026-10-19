@@ -265,11 +265,21 @@ export function blendSpectrumSection(section, liveSpectrum, bandForRank) {
   };
 }
 
-function normalizeTextLocale(value, text = '') {
+const TEXT_LOCALES = new Set(['en', 'pl', 'zh', 'fr', 'it', 'de', 'es']);
+
+function knownTextLocale(value) {
   const raw = String(value ?? '')
     .trim()
-    .toLowerCase();
-  if (raw === 'pl' || raw === 'en') return raw;
+    .toLowerCase()
+    .split('-')[0];
+  return TEXT_LOCALES.has(raw) ? raw : '';
+}
+
+function normalizeTextLocale(value, text = '') {
+  const known = knownTextLocale(value);
+  // A stored survey language wins, even when the reply itself is written
+  // in another language (a German session can still contain English).
+  if (known) return known;
   // Unicode escapes: raw Polish letters in /…/ break Rolldown when bundling vite.config.
   if (
     /[\u0105\u0107\u0119\u0142\u0144\u00f3\u015b\u017a\u017c\u0104\u0106\u0118\u0141\u0143\u00d3\u015a\u0179\u017b]/.test(
@@ -278,6 +288,7 @@ function normalizeTextLocale(value, text = '') {
   ) {
     return 'pl';
   }
+  if (/[\u4e00-\u9fff]/.test(text)) return 'zh';
   return 'en';
 }
 
@@ -346,10 +357,15 @@ export function blendNoteSection(section, liveNotes, locale = 'en') {
   return { ...section, notePool: next };
 }
 
-export function blendReasonCriteria(section, liveCriteria) {
+export function blendReasonCriteria(section, liveCriteria, liveCount = 0) {
   if (!liveCriteria || !Object.keys(liveCriteria).length) return section;
   const respondents = Math.max(1, section.responseCount || MIX_DISPLAY_TARGET);
   const boost = liveBoostFor(respondents);
+  const sample = Math.max(0, Number(liveCount) || 0);
+  // Each live ballot counts as `boost` mock ballots. Grow the denominator
+  // with that sample so a popular criterion is a share of people, not a
+  // count that then gets clamped to 100% on its own.
+  const denom = respondents + sample * boost;
   const votes = Object.fromEntries(
     (section.items ?? []).map((item) => [item.id, item.votes]),
   );
@@ -362,13 +378,12 @@ export function blendReasonCriteria(section, liveCriteria) {
     .slice(0, 5)
     .map(([id, count], index) => {
       const prior = section.items.find((item) => item.id === id);
-      // One mark per person per criterion — never show more votes than respondents.
-      const cappedVotes = Math.min(count, respondents);
+      const share = shareOf(count, denom);
       return {
         id,
         name: prior?.name ?? id,
-        votes: Math.round(cappedVotes),
-        share: shareOf(cappedVotes, respondents),
+        votes: Math.round(share * respondents),
+        share,
         rank: index + 1,
         isYours: prior?.isYours ?? false,
       };
@@ -390,7 +405,7 @@ export function applyLiveBlend(section, categoryId, live, helpers = {}) {
   } else if (categoryId === 'most-vegetable') {
     next = blendBladeSection(next, live.mostVegetable, helpers);
   } else if (categoryId === 'why-vegetabley') {
-    next = blendReasonCriteria(next, live.criteria);
+    next = blendReasonCriteria(next, live.criteria, live.liveCount);
     next = blendReasonSection(next, live.customReasons, locale);
   } else if (categoryId === 'sort-buckets') {
     next = blendBucketSection(next, live.buckets);

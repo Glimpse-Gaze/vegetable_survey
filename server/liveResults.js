@@ -50,9 +50,16 @@ function emptySpectrumSlots() {
   return Array.from({ length: SPECTRUM_SLOTS }, () => 0);
 }
 
+const SURVEY_LOCALES = new Set(['en', 'pl', 'zh', 'fr', 'it', 'de', 'es']);
+
 function surveyLocale(payload, text = '') {
-  const raw = String(payload?.locale ?? '').trim().toLowerCase();
-  if (raw === 'pl' || raw === 'en') return raw;
+  const raw = String(payload?.locale ?? '')
+    .trim()
+    .toLowerCase()
+    .split('-')[0];
+  // Keep the language the survey was taken in. An English reply written
+  // during a German session still belongs with the German results.
+  if (SURVEY_LOCALES.has(raw)) return raw;
   // Older rows may lack locale; Polish diacritics are a strong signal.
   // Use escapes so Vite/Rolldown can parse this file while bundling vite.config.
   if (
@@ -62,6 +69,7 @@ function surveyLocale(payload, text = '') {
   ) {
     return 'pl';
   }
+  if (/[\u4e00-\u9fff]/.test(text)) return 'zh';
   return 'en';
 }
 

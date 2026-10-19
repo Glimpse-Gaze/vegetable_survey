@@ -1,3 +1,5 @@
+import { withLocale } from '../i18n/paths.js';
+
 const RESPONSE_ID_KEY = 'veg-survey-response-id';
 const ANSWERS_KEY = 'veg-survey-my-answers';
 const UUID =
@@ -61,4 +63,14 @@ export function resultsSharePath(categoryId, code) {
   const base = `/results/${categoryId}`;
   if (!isResponseId(code)) return base;
   return `${base}?code=${encodeURIComponent(code)}`;
+}
+
+/** Absolute URL for the first-instincts board, in the viewer's language. */
+export function resultsShareUrl(locale, code) {
+  const path = withLocale(
+    locale,
+    `/results/first-instincts?code=${encodeURIComponent(code)}`,
+  );
+  if (typeof window === 'undefined' || !window.location?.origin) return path;
+  return `${window.location.origin}${path}`;
 }

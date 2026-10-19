@@ -266,6 +266,178 @@
   scroll-margin-top: 12px;
 }
 
+.skel {
+  display: block;
+  background: #ddd6c8;
+  animation: skel-pulse 1.6s ease-in-out infinite;
+}
+
+.skel-rail {
+  display: flex;
+  align-items: flex-end;
+  gap: 19px;
+  overflow: hidden;
+  padding: 4px 32px 38px;
+}
+
+.skel-blade {
+  flex: 0 0 24.15rem;
+  width: 24.15rem;
+  height: 15.18rem;
+  border-radius: 22px;
+}
+
+.skel-blade.is-lead {
+  flex-basis: 26.57rem;
+  width: 26.57rem;
+  height: calc(16.7rem + 38px);
+}
+
+.skel-reasons,
+.skel-buckets,
+.skel-notes,
+.skel-spectrum {
+  width: min(84rem, calc(100% - 48px));
+  margin: 12px auto 0;
+}
+
+.skel-reasons {
+  width: min(32rem, calc(100% - 48px));
+}
+
+.skel-card {
+  display: grid;
+  gap: 10px;
+  padding: 18px 18px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.skel-buckets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 26rem));
+  justify-content: center;
+  gap: 18px;
+}
+
+.skel-line {
+  height: 14px;
+  width: 100%;
+  border-radius: 999px;
+}
+
+.skel-line.is-kicker {
+  width: 28%;
+  height: 11px;
+}
+
+.skel-line.is-title {
+  width: 62%;
+  height: 26px;
+}
+
+.skel-line.is-short {
+  width: 74%;
+}
+
+.skel-line.is-meta {
+  width: 46%;
+  height: 16px;
+  margin-top: 12px;
+}
+
+.skel-row {
+  height: 42px;
+  border-radius: 12px;
+}
+
+.skel-card .skel-row:nth-of-type(4) { width: 96%; }
+.skel-card .skel-row:nth-of-type(5) { width: 88%; }
+.skel-card .skel-row:nth-of-type(6) { width: 80%; }
+.skel-card .skel-row:nth-of-type(7) { width: 72%; }
+
+.skel-notes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px 14px;
+}
+
+.skel-note {
+  height: 12.6rem;
+  border-radius: 2px;
+}
+
+.skel-spectrum {
+  display: grid;
+  gap: 12px;
+}
+
+.skel-spectrum-row {
+  height: 4.6rem;
+  border-radius: 16px;
+}
+
+.skel-map {
+  width: min(72rem, calc(100% - 48px));
+  margin: 14px auto 0;
+}
+
+.skel-map-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 132px;
+  margin-bottom: 16px;
+}
+
+.skel-map-copy {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+.skel-filter {
+  flex: 0 0 180px;
+  width: 180px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.skel-map-face {
+  width: 100%;
+  aspect-ratio: 360 / 175.218;
+  border-radius: 16px;
+}
+
+.skel-language {
+  width: min(22rem, 100%);
+  height: 71px;
+  margin-top: 16px;
+  border-radius: 12px;
+}
+
+.skel-mix {
+  width: min(40rem, 100%);
+  height: 55px;
+  margin-top: 8px;
+  border-radius: 10px;
+}
+
+@keyframes skel-pulse {
+  0%,
+  100% { background-color: #e4ddd0; }
+  50% { background-color: #d0c7b6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel {
+    animation: none;
+  }
+}
+
 .results-section + .results-section {
   border-top: 1.5px solid var(--border);
   padding-top: 40px;
@@ -921,6 +1093,10 @@
 
 .world-map-tip strong {
   font-size: 0.9rem;
+}
+
+.world-map-tip-appeal {
+  font-weight: 700;
 }
 
 .map-language {
@@ -2347,9 +2523,35 @@
     margin-right: 16px;
   }
 
-  .map-panel-head {
+  .map-panel-head,
+  .skel-map-head {
     flex-direction: column;
     align-items: stretch;
+    min-height: 243px;
+  }
+
+  .skel-map,
+  .skel-reasons,
+  .skel-buckets,
+  .skel-notes,
+  .skel-spectrum {
+    width: calc(100% - 32px);
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .skel-buckets {
+    grid-template-columns: minmax(0, 22rem);
+    justify-content: center;
+  }
+
+  .skel-filter {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .skel-notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .map-copy {
@@ -2530,6 +2732,27 @@
     flex-basis: min(20.88rem, calc(90vw - 2.79rem));
     width: min(20.88rem, calc(90vw - 2.79rem));
     --blade-face-height: 14.04rem;
+  }
+
+  .skel-blade,
+  .skel-blade.is-lead {
+    flex-basis: min(19.5rem, calc(100vw - 6.25rem));
+    width: min(19.5rem, calc(100vw - 6.25rem));
+    height: 13rem;
+  }
+
+  .skel-blade.is-lead {
+    flex-basis: min(20.88rem, calc(90vw - 2.79rem));
+    width: min(20.88rem, calc(90vw - 2.79rem));
+    height: calc(14.04rem + 38px);
+  }
+
+  .skel-map-head {
+    min-height: 283px;
+  }
+
+  .skel-mix {
+    height: 74px;
   }
 
   .blade-name {
