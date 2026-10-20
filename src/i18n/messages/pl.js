@@ -42,6 +42,9 @@ export const pl = {
     skipMessage:
       'Wyniki dają większą frajdę, kiedy najpierw wypełnisz ankietę.',
     skipContinue: 'Kontynuuj',
+    spoilerTitle: 'Zanim przejdziesz dalej',
+    spoilerMessage:
+      'Zaraz zobaczysz wyniki Wielkiej ankiety warzywnej. Przejdź dalej tylko jeśli masz tę ankietę za sobą.',
   },
   welcome: {
     eyebrow: 'Witaj',

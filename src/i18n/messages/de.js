@@ -42,6 +42,9 @@ export const de = {
     skipMessage:
       'Die Ergebnisse machen mehr Spaß, wenn die Umfrage zuerst ausgefüllt ist.',
     skipContinue: 'Weiter',
+    spoilerTitle: 'Bevor du überspringst',
+    spoilerMessage:
+      'Du siehst gleich die Ergebnisse der großen Gemüseumfrage. Bitte geh nur weiter, wenn du sie selbst ausgefüllt hast.',
   },
   welcome: {
     eyebrow: 'Willkommen',

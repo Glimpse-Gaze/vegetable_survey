@@ -41,6 +41,8 @@ export const ko = {
     skipTitle: '넘어가기 전에',
     skipMessage: '설문을 먼저 채우면 결과가 더 재미있어요.',
     skipContinue: '계속',
+    spoilerTitle: '넘어가기 전에',
+    spoilerMessage: '곧 위대한 채소 조사의 결과를 보게 돼요. 직접 설문을 채운 경우에만 넘어가 주세요.',
   },
   welcome: {
     eyebrow: '환영해요',

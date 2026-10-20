@@ -42,6 +42,9 @@ export const ptPt = {
     skipMessage:
       'Os resultados sabem melhor se preencheres o inquérito primeiro.',
     skipContinue: 'Continuar',
+    spoilerTitle: 'Antes de saltares à frente',
+    spoilerMessage:
+      'Estás prestes a ver os resultados do Grande Inquérito aos Legumes. Segue só se foste tu a preenchê-lo.',
   },
   welcome: {
     eyebrow: 'Olá',

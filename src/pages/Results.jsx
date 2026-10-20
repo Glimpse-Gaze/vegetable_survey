@@ -7,6 +7,7 @@ import { withLocale } from '../i18n/paths.js';
 import { formatVotes } from '../utils/formatVotes.js';
 import { useSurveyCatalog } from '../i18n/useSurveyCatalog.js';
 import { BrandFooter } from '../components/BrandFooter.jsx';
+import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
 import { MarqueeLabel } from '../components/Questionnaire/MarqueeLabel.jsx';
 import { ReportIssuesButton } from '../components/ReportIssues.jsx';
@@ -16,6 +17,8 @@ import { SpectrumList } from '../components/Results/SpectrumList.jsx';
 import { NoteResults } from '../components/Results/NoteResults.jsx';
 import { ResponseCodeCard, SurveyNudge } from '../components/Results/SurveyGate.jsx';
 import {
+  acknowledgeResults,
+  hasAcknowledgedResults,
   isResponseId,
   readMyAnswers,
   readMyResponseId,
@@ -821,6 +824,9 @@ export function Results() {
   const codeParam = searchParams.get('code');
   const myResponseId = useMemo(() => readMyResponseId(), []);
   const myAnswers = useMemo(() => readMyAnswers(), []);
+  const [gateOpen, setGateOpen] = useState(
+    () => !readMyResponseId() && !hasAcknowledgedResults(),
+  );
   const viewingOther = isResponseId(codeParam) && codeParam !== myResponseId;
   const userAnswers = viewingOther ? sharedAnswers : myAnswers;
   const category = getCategory(categoryId);
@@ -1039,6 +1045,13 @@ export function Results() {
     });
   }
 
+  const showResults = liveReady && !gateOpen;
+
+  function proceedToResults() {
+    acknowledgeResults();
+    setGateOpen(false);
+  }
+
   return (
     <div className={menuOpen ? 'results-page is-menu-open' : 'results-page'}>
       <header className={
@@ -1172,7 +1185,7 @@ export function Results() {
             <p className="results-section-prompt">{section.prompt}</p>
           </header>
 
-          {liveReady ? (
+          {showResults ? (
           category.layout === 'buckets' ? (
             <BucketColumns section={section} />
           ) : category.layout === 'reasons' ? (
@@ -1199,7 +1212,7 @@ export function Results() {
             <ResultsSkeleton layout={category.layout} />
           )}
 
-          {liveReady && alignment ? (
+          {showResults && alignment ? (
             <div className="alignment-wrap">
               <div className="alignment-card">
                 {alignment.kicker ? (
@@ -1225,7 +1238,7 @@ export function Results() {
             </div>
           ) : null}
 
-          {liveReady && showMap ? (
+          {showResults && showMap ? (
           <div className="map-panel">
             <div className="map-panel-head">
               <div>
@@ -1333,6 +1346,16 @@ export function Results() {
         </section>
       </main>
       <ReportIssuesButton variant="fab" />
+      {gateOpen ? (
+        <ConfirmDialog
+          title={t('home.spoilerTitle')}
+          message={t('home.spoilerMessage')}
+          confirmLabel={t('home.takeSurvey')}
+          cancelLabel={t('home.seeResults')}
+          onConfirm={() => navigate(withLocale(locale, '/survey'))}
+          onCancel={proceedToResults}
+        />
+      ) : null}
     </div>
   );
 }

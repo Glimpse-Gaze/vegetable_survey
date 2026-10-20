@@ -41,6 +41,8 @@ export const zhHant = {
     skipTitle: '先別急著略過',
     skipMessage: '自己先答一遍，再看結果會有意思得多。',
     skipContinue: '繼續',
+    spoilerTitle: '先別急著略過',
+    spoilerMessage: '你馬上就要看到「偉大的蔬菜調查」的結果了。請只在自己做過這份調查後再往下看。',
   },
   welcome: {
     eyebrow: '歡迎',

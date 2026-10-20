@@ -42,6 +42,9 @@ export const fr = {
     skipMessage:
       'Les résultats sont plus drôles après avoir rempli l’enquête.',
     skipContinue: 'Continuer',
+    spoilerTitle: 'Avant de passer',
+    spoilerMessage:
+      'Tu vas voir les résultats de La grande enquête sur les légumes. Poursuis seulement si tu l’as remplie toi-même.',
   },
   welcome: {
     eyebrow: 'Bienvenue',

@@ -42,6 +42,9 @@ export const ptBr = {
     skipMessage:
       'Os resultados são mais divertidos se você responder a pesquisa primeiro.',
     skipContinue: 'Continuar',
+    spoilerTitle: 'Antes de pular',
+    spoilerMessage:
+      'Você está prestes a ver os resultados da Grande Pesquisa do Legume. Siga só se foi você quem respondeu.',
   },
   welcome: {
     eyebrow: 'Olá',

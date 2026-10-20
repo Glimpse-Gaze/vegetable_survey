@@ -41,6 +41,8 @@ export const th = {
     skipTitle: 'ก่อนจะข้ามไป',
     skipMessage: 'ผลจะสนุกกว่า ถ้าทำแบบสำรวจก่อนครับ/ค่ะ',
     skipContinue: 'ต่อไป',
+    spoilerTitle: 'ก่อนจะข้ามไป',
+    spoilerMessage: 'กำลังจะเห็นผลของแบบสำรวจผักครั้งใหญ่ ไปต่อได้ถ้าทำแบบสำรวจด้วยตัวเองแล้ว',
   },
   welcome: {
     eyebrow: 'ยินดีต้อนรับ',

@@ -10,6 +10,7 @@ import celery from '../content/Celery.jpg';
 import greenBean from '../content/Green_Bean.jpg';
 import corn from '../content/Corn.jpg';
 import cucumber from '../content/Cucumber.jpg';
+import eggplant from '../content/Eggplant.jpg';
 import kale from '../content/Kale.jpg';
 import lettuce from '../content/Lettuce.jpg';
 import onion from '../content/Onion.jpg';
@@ -44,6 +45,7 @@ export const VEGETABLE_ART = {
   green_bean: greenBean,
   corn,
   cucumber,
+  eggplant,
   kale,
   lettuce,
   marrow: zucchini,
