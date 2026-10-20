@@ -2,6 +2,7 @@ import { withLocale } from '../i18n/paths.js';
 
 const RESPONSE_ID_KEY = 'veg-survey-response-id';
 const ANSWERS_KEY = 'veg-survey-my-answers';
+const RESULTS_ACK_KEY = 'veg-survey-results-ack';
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHORT_CODE = /^[0-9A-Za-z]{12}$/;
@@ -36,6 +37,22 @@ export function writeMyResponse(id, payload) {
     localStorage.setItem(ANSWERS_KEY, JSON.stringify(snapshotAnswers(payload)));
   } catch {
     // private mode
+  }
+}
+
+export function hasAcknowledgedResults() {
+  try {
+    return localStorage.getItem(RESULTS_ACK_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function acknowledgeResults() {
+  try {
+    localStorage.setItem(RESULTS_ACK_KEY, '1');
+  } catch {
+    // private mode: this visit can still continue in memory
   }
 }
 

@@ -42,6 +42,9 @@ export const esMx = {
     skipMessage:
       'Los resultados son más divertidos si primero contestas la encuesta.',
     skipContinue: 'Seguir',
+    spoilerTitle: 'Antes de saltar',
+    spoilerMessage:
+      'Estás a punto de ver los resultados de La gran encuesta de la verdura. Sigue solo si la contestaste tú.',
   },
   welcome: {
     eyebrow: 'Hola',

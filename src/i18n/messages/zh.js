@@ -41,6 +41,8 @@ export const zh = {
     skipTitle: '先别急着跳过',
     skipMessage: '自己先答一遍，再看结果会有意思得多。',
     skipContinue: '继续',
+    spoilerTitle: '先别急着跳过',
+    spoilerMessage: '你马上就要看到「伟大的蔬菜调查」的结果了。请只在自己做过这份调查后再往下看。',
   },
   welcome: {
     eyebrow: '欢迎',

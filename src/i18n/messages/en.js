@@ -44,6 +44,9 @@ export const en = {
     skipMessage:
       'Results are more fun when you fill in the survey first.',
     skipContinue: 'Continue',
+    spoilerTitle: 'Before you skip ahead',
+    spoilerMessage:
+      'You’re about to see the results of The Great Vegetable Survey. Please proceed only if you have filled the survey yourself.',
   },
   welcome: {
     eyebrow: 'Welcome',

@@ -42,6 +42,9 @@ export const it = {
     skipMessage:
       'I risultati sono più divertenti se prima compili l’indagine.',
     skipContinue: 'Continua',
+    spoilerTitle: 'Prima di saltare',
+    spoilerMessage:
+      'Stai per vedere i risultati della grande indagine sulla verdura. Vai avanti solo se l’hai compilata tu.',
   },
   welcome: {
     eyebrow: 'Ciao',

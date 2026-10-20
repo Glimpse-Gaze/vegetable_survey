@@ -5,7 +5,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
 import { useI18n } from '../i18n/useI18n.js';
 import { withLocale } from '../i18n/paths.js';
-import { readMyResponseId } from '../utils/myResponse.js';
+import { acknowledgeResults, readMyResponseId } from '../utils/myResponse.js';
 import { version } from '../../package.json';
 
 export function Home() {
@@ -56,7 +56,10 @@ export function Home() {
           message={t('home.skipMessage')}
           confirmLabel={t('home.skipContinue')}
           cancelLabel={t('dialog.cancel')}
-          onConfirm={() => navigate(resultsPath)}
+          onConfirm={() => {
+            acknowledgeResults();
+            navigate(resultsPath);
+          }}
           onCancel={() => setAskResults(false)}
         />
       ) : null}
