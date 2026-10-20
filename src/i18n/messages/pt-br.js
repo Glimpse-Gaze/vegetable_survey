@@ -34,8 +34,12 @@ export const ptBr = {
     changeLanguage: 'Mudar o idioma',
     eyebrow: 'Um estudo de ideia popular',
     title: 'A Grande Pesquisa do Legume',
-    question: 'O que as pessoas contam como legume?',
-    lede: 'Responde a pesquisa, ou vai direto pros resultados interativos.',
+    question: 'O que conta como legume?',
+    blurb:
+      'A gente come legumes todo dia, mas... o que faz de algo, de fato, um legume? A resposta pode não ser tão óbvia quanto você pensa. Esta pesquisa curta explora como as pessoas classificam os legumes e por que as nossas definições mudam de pessoa para pessoa e de cultura para cultura.',
+    lede: 'Compartilha a sua opinião, compara as respostas com quem você conhece e vê como as pessoas ao redor do mundo pensam!',
+    description:
+      'O que conta como legume? Uma pesquisa curta sobre como as pessoas classificam os legumes e por que essas definições mudam. Compartilha a sua opinião e vê como o mundo pensa.',
     takeSurvey: 'Fazer a pesquisa',
     seeResults: 'Ver os resultados',
     skipTitle: 'Antes de pular',
