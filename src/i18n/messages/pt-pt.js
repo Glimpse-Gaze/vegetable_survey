@@ -34,8 +34,12 @@ export const ptPt = {
     changeLanguage: 'Mudar de língua',
     eyebrow: 'Um estudo de conceito popular',
     title: 'O Grande Inquérito aos Legumes',
-    question: 'O que é que as pessoas contam como legume?',
-    lede: 'Responde ao inquérito, ou salta já para os resultados interactivos.',
+    question: 'O que é que conta como legume?',
+    blurb:
+      'Toda a gente come legumes todos os dias, mas... o que é que faz mesmo de alguma coisa um legume? A resposta pode não ser tão óbvia como pensas. Este inquérito curto explora como as pessoas classificam os legumes e porque é que as nossas definições mudam de pessoa para pessoa e de cultura para cultura.',
+    lede: 'Partilha a tua opinião, compara as respostas com quem conheces e vê como pensam as pessoas à volta do mundo!',
+    description:
+      'O que é que conta como legume? Um inquérito curto sobre como as pessoas classificam os legumes e porque é que essas definições mudam. Partilha a tua opinião e vê como o mundo pensa.',
     takeSurvey: 'Fazer o inquérito',
     seeResults: 'Ver os resultados',
     skipTitle: 'Antes de saltares à frente',

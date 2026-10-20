@@ -34,8 +34,12 @@ export const fr = {
     changeLanguage: 'Changer de langue',
     eyebrow: 'Une étude d’idée populaire',
     title: 'La grande enquête sur les légumes',
-    question: 'Qu’est-ce que les gens comptent comme légume ?',
-    lede: 'Réponds à l’enquête, ou passe directement aux résultats interactifs.',
+    question: 'Qu’est-ce qui compte comme légume ?',
+    blurb:
+      'Tout le monde mange des légumes tous les jours, mais... qu’est-ce qui fait vraiment d’une chose un légume ? La réponse n’est peut-être pas aussi évidente que tu le crois. Cette courte enquête regarde comment les gens classent les légumes, et pourquoi nos définitions diffèrent d’une personne à l’autre et d’une culture à l’autre.',
+    lede: 'Partage ton avis, compare les réponses avec des proches, et vois comment les gens pensent à travers le monde !',
+    description:
+      'Qu’est-ce qui compte comme légume ? Une courte enquête sur la façon dont les gens classent les légumes, et pourquoi ces définitions diffèrent. Partage ton avis et vois comment le monde pense.',
     takeSurvey: 'Répondre à l’enquête',
     seeResults: 'Voir les résultats',
     skipTitle: 'Avant de passer',
