@@ -75,7 +75,7 @@ export const pl = {
     title: 'Wielka ankieta warzywna',
     question: 'Co liczy się jako warzywo?',
     blurb:
-      'Wszyscy jemy warzywa na co dzień, ale... co tak naprawdę sprawia, że coś jest warzywem? Odpowiedź nie jest tak prosta, jak Ci się wydaje. Ta krótka ankieta sprawdza, jak ludzie klasyfikują warzywa i dlaczego nasze definicje różnią się między osobami i kulturami.',
+      'Wszyscy jemy warzywa na co dzień, ale... co tak naprawdę sprawia, że coś jest warzywem? Odpowiedź nie jest tak prosta, jak ci się wydaje. Ta krótka ankieta sprawdza, jak ludzie klasyfikują warzywa i dlaczego nasze definicje różnią się między osobami i kulturami.',
     lede: 'Podziel się swoim zdaniem, porównaj odpowiedzi ze znajomymi i zobacz, jak myślą ludzie na świecie!',
     description:
       'Co liczy się jako warzywo? Krótka ankieta o tym, jak ludzie klasyfikują warzywa i dlaczego te definicje się różnią. Podziel się zdaniem i zobacz, jak myśli świat.',
