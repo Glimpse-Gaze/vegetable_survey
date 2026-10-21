@@ -1180,17 +1180,33 @@
 }
 
 .world-map-tip {
-  position: fixed;
-  z-index: 50;
+  position: absolute;
+  z-index: 5;
   display: grid;
   gap: 2px;
   min-width: 10rem;
+  max-width: calc(100% - 12px);
   padding: 8px 10px;
   border-radius: 10px;
   background: var(--ink);
   color: #f6f1e6;
   font-size: 0.82rem;
   pointer-events: none;
+}
+
+.world-map-tip.is-touch {
+  animation: world-map-tip-out 5.4s linear forwards;
+}
+
+@keyframes world-map-tip-out {
+  0%,
+  92% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 .world-map-tip strong {

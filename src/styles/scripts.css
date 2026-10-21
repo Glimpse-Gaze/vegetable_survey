@@ -174,3 +174,11 @@ html[lang='th'] .home-panel .eyebrow {
   letter-spacing: 0;
   line-height: 1.7;
 }
+
+html[lang='th'] .bucket-lookup-table thead th,
+html[lang='ko'] .bucket-lookup-table thead th {
+  font-size: 1rem;
+  letter-spacing: 0;
+  line-height: 1.45;
+  text-transform: none;
+}
