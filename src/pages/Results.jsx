@@ -1,4 +1,4 @@
-import { lazy, Suspense, startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, startTransition, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { numberLocale as intlLocale } from '../i18n/locales.js';
 import { useI18n } from '../i18n/useI18n.js';
@@ -15,9 +15,9 @@ import { BucketColumns } from '../components/Results/BucketColumns.jsx';
 import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
 import { NoteResults } from '../components/Results/NoteResults.jsx';
-import { ResponseCodeCard, SurveyNudge } from '../components/Results/SurveyGate.jsx';
+import { SurveyNudge } from '../components/Results/SurveyGate.jsx';
 import { ResultShareCards } from '../components/Results/ResultShareCards.jsx';
-import { ShareBar } from '../components/ShareBar.jsx';
+import { ShareOptions } from '../components/Results/ShareOptions.jsx';
 import {
   acknowledgeResults,
   hasAcknowledgedResults,
@@ -829,7 +829,15 @@ export function Results() {
   const [gateOpen, setGateOpen] = useState(
     () => !readMyResponseId() && !hasAcknowledgedResults(),
   );
+  const [shareMenu, setShareMenu] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const closeShareMenu = useCallback(() => setShareMenu(false), []);
+  const closeGallery = useCallback(() => setGalleryOpen(false), []);
   const viewingOther = isResponseId(codeParam) && codeParam !== myResponseId;
+
+  useEffect(() => {
+    if (codeInvalid) setShareMenu(true);
+  }, [codeInvalid]);
   const userAnswers = viewingOther ? sharedAnswers : myAnswers;
   const category = getCategory(categoryId);
 
@@ -1333,20 +1341,40 @@ export function Results() {
             </div>
           )}
 
-          {myResponseId ? <ResultShareCards answers={myAnswers} /> : null}
+          {myResponseId ? (
+            <ResultShareCards
+              answers={myAnswers}
+              mode="dialog"
+              galleryOpen={galleryOpen}
+              onGalleryClose={closeGallery}
+            />
+          ) : null}
           <div className="results-survey-foot">
             {myResponseId ? null : (
               <SurveyNudge kind="vote" onThisMachine={viewingOther} />
             )}
-            <div className="results-share-row">
-              <ResponseCodeCard
-                code={viewingOther ? codeParam : myResponseId}
-                categoryId={category.id}
-                viewingOther={viewingOther}
-                invalid={codeInvalid}
-              />
-              <ShareBar labelled />
-            </div>
+            <button
+              className="share-options-pill"
+              type="button"
+              aria-haspopup="dialog"
+              aria-expanded={shareMenu}
+              onClick={() => setShareMenu(true)}
+            >
+              {t('results.share.options')}
+            </button>
+            <ShareOptions
+              open={shareMenu}
+              onClose={closeShareMenu}
+              answers={myResponseId ? myAnswers : null}
+              code={viewingOther ? codeParam : myResponseId}
+              categoryId={category.id}
+              viewingOther={viewingOther}
+              invalid={codeInvalid}
+              onPictures={() => {
+                setShareMenu(false);
+                setGalleryOpen(true);
+              }}
+            />
           </div>
           <BrandFooter className="brand-footer--results" />
         </section>

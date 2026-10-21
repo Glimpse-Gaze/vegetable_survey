@@ -32,25 +32,31 @@ function copyFor(card, t) {
       middle: card.sense === 'less' ? t('cards.spectrumLessMiddle') : t('cards.spectrumMiddle'),
       after: card.sense === 'less' ? t('cards.spectrumLessAfter') : t('cards.spectrumAfter'),
       cta: t('cards.spectrumCta'),
+      spectrumShare: t('cards.spectrumShare'),
     };
   }
   return {
     ...shared,
     before: card.tone === 'most' ? t('cards.mostBefore') : t('cards.instinctBefore'),
-    cta: t('cards.instinctCta'),
+    cta: card.tone === 'most' ? t('cards.mostCta') : t('cards.instinctCta'),
   };
 }
 
+function sentence(text) {
+  const trimmed = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!trimmed || /[.!?…。？！]$/.test(trimmed)) return trimmed;
+  return `${trimmed}.`;
+}
+
 function captionFor(card, copy) {
-  let line;
-  if (card.layout === 'between') {
-    line = `${copy.before} ${card.name} ${copy.after}`;
-  } else if (card.layout === 'spectrum') {
-    line = [card.top, copy.middle, card.bottom, copy.after].filter(Boolean).join(' ');
-  } else {
-    line = `${copy.before} ${card.name}`;
+  if (card.layout === 'spectrum') {
+    return `${copy.spectrumShare} ${copy.url}`;
   }
-  return copy.cta ? `${line} ${copy.cta}` : line;
+  const body = card.layout === 'between'
+    ? `${copy.before} ${card.name} ${copy.after}`
+    : `${copy.before} ${card.name}`;
+  const line = copy.cta ? `${sentence(body)} ${copy.cta}` : sentence(body);
+  return `${line}\n${copy.url}`;
 }
 
 function cardHasPhoto(card) {
@@ -246,7 +252,7 @@ function CardDraft({ card, treatment = null, tint = null }) {
   );
 }
 
-function CardGallery({ cards, onClose }) {
+function CardGallery({ cards, onClose, heading }) {
   const { t } = useI18n();
   const [solid, setSolid] = useState(null);
   const [wash, setWash] = useState(false);
@@ -276,7 +282,7 @@ function CardGallery({ cards, onClose }) {
         onClick={(event) => event.stopPropagation()}
       >
         <div className="result-cards-dialog-head">
-          <h2 id="result-cards-more-title">{t('cards.more')}</h2>
+          <h2 id="result-cards-more-title">{heading || t('cards.more')}</h2>
           <button type="button" className="result-cards-close" onClick={onClose}>
             {t('cards.close')}
           </button>
@@ -289,19 +295,19 @@ function CardGallery({ cards, onClose }) {
               onChange={(event) => {
                 const next = event.target.checked;
                 setWash(next);
-                if (next) {
-                  setSolid(null);
-                  setWashColor('green');
-                }
+                if (next && solid) setWashColor(solid);
               }}
             />
             {t('cards.tintLabel')}
           </label>
           <button
             type="button"
-            className={solid ? 'result-card-tint' : 'result-card-tint is-selected'}
-            aria-pressed={!solid}
-            onClick={() => setSolid(null)}
+            className={!wash && !solid ? 'result-card-tint is-selected' : 'result-card-tint'}
+            aria-pressed={!wash && !solid}
+            onClick={() => {
+              setWash(false);
+              setSolid(null);
+            }}
           >
             {t('cards.photo')}
           </button>
@@ -335,7 +341,22 @@ function CardGallery({ cards, onClose }) {
   );
 }
 
-export function ResultShareCards({ answers }) {
+export function AnswerCardStrip({ cards }) {
+  if (!cards?.length) return null;
+  return (
+    <div className="share-options-preview">
+      {cards.map((card) => <CardDraft key={card.id} card={card} />)}
+    </div>
+  );
+}
+
+export function ResultShareCards({
+  answers,
+  mode = 'section',
+  galleryOpen = false,
+  onGalleryClose,
+  onAvailable,
+}) {
   const { t } = useI18n();
   const catalog = useSurveyCatalog();
   const { featured, gallery } = useMemo(
@@ -344,7 +365,23 @@ export function ResultShareCards({ answers }) {
   );
   const [open, setOpen] = useState(false);
   const closeGallery = useCallback(() => setOpen(false), []);
-  if (!featured.length && !gallery.length) return null;
+  const available = featured.length > 0 || gallery.length > 0;
+
+  useEffect(() => {
+    onAvailable?.(available);
+  }, [available, onAvailable]);
+
+  if (!available) return null;
+  if (mode === 'dialog') {
+    if (!galleryOpen) return null;
+    return (
+      <CardGallery
+        cards={gallery}
+        heading={t('cards.title')}
+        onClose={onGalleryClose}
+      />
+    );
+  }
 
   return (
     <section className="result-cards" aria-label={t('cards.title')}>

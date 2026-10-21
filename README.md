@@ -16,7 +16,9 @@ The long game is to gather enough **regional and ethnolinguistic signal** (optio
 
 - **Take the survey** (~7 minutes) — seven questions that deliberately use different interaction formats.
 - **Explore interactive results** — rankings, bucket columns, spectrum bands, open notes, custom reasons, and a world map of where answers come from.
-- **Compare your ranking** — after submitting, you get a private ranking code you can reopen or share.
+- **Invite someone to take the survey** — Facebook, X, WhatsApp, Reddit, and a copy-link button on the home page.
+- **Share your answers as pictures** — after this device has a completed response, thank-you and the results page can turn those answers into cards you can save or send.
+- **Compare your results** — a private code and link reopen this response later, or let someone else open the same results. It is not an invitation to fill the survey.
 - **Rate public notes** — like or sink other people’s written criteria once you have completed the survey on that device.
 - **Report issues** — send feedback to the developer without leaving the app.
 
@@ -37,6 +39,7 @@ After a short welcome and privacy consent, respondents move through seven questi
 Nuances that matter for reading results:
 
 - Bucket and spectrum items are fixed catalogues (shuffled per session); open questions and custom reasons are free text.
+- Free-text vegetable answers match the catalogue without diacritics when that folding points to one name (`baklazan` → Bakłażan), in every survey language. Two names that collapse to the same spelling are not assigned to each other.
 - Public display of free-text answers always needs an explicit checkbox.
 - Live tallies for place/language filters use **real ballots only** and unlock only after a vote threshold (currently 20). Global boards may still show a transparent mix of seed + live data until the sample grows.
 
@@ -44,39 +47,61 @@ Nuances that matter for reading results:
 
 Results are organised by question category. Respondents can move between boards, filter by place and language once enough live answers exist, and browse public notes and custom reasons in the UI locale they chose (each language keeps its own free-text pool).
 
-The **world map** uses an **equal-Earth** projection so regions keep comparable area. It is interactive (pan / inspect) and colours places by live density — filterable once a region clears the threshold, with a lighter “emerging” state while votes are still few.
+The **world map** uses an **equal-Earth** projection so regions keep comparable area. It is interactive (pan / inspect) and colours places by live density — filterable once a region clears the threshold, with a lighter “emerging” state while votes are still few. On a phone, tapping a country that is not yet filterable shows a short tip next to the tap.
+
+## Sharing
+
+Three share paths stay separate. An invitation asks someone to take the survey. An answer card shows how this device answered. A results code reopens those results. They are not interchangeable.
+
+**Invite.** Scriptless links (no tracking script) for Facebook, X, WhatsApp, Reddit, plus copy link. They sit on the home page under “See the results”, on the thank-you screen, and inside **Sharing options** on the results page. Every one points at the public homepage, `https://vegetable.glimpsegaze.com`. The sentence in the composer follows the UI language. Facebook’s link preview stays English: crawlers only read the static tags in `index.html` (Open Graph and a Twitter summary card, no preview image).
+
+**Answer cards.** Shown only when this browser has a completed response in local storage. On thank-you they sit in the page. On results they are behind the Sharing options control, with three featured cards and a gallery for the rest. Each card is the survey title and URL at the top, the answer in the middle, and the eye mark plus a short prompt at the bottom. Saving downloads a PNG that uses the same type as the page.
+
+The cards are:
+
+- First instinct — “When I think of vegetables, I think…” plus the name, and “How about you?” (other languages use an “and you?” line).
+- A bucket judgement — “I think … is not fully a vegetable” or “is not a vegetable”, and “Disagree?”. This card is skipped when both the in-between and not-a-vegetable buckets are empty.
+- A spectrum comparison — two photos, split in half, with the “more of a vegetable than” sentence between the names, and “Be the judge”.
+- The most vegetable vegetable, in the gallery — “The most vegetable vegetable?” plus the name, and “And yours?”.
+
+The text sent with the picture repeats that sentence, then `vegetable.glimpsegaze.com` on its own line, so the address can travel with the image. The spectrum card is the exception: languages put the two names in different places in the sentence, so its share text is only “Fill The Great Vegetable Survey:” plus the URL. The picture itself is unchanged.
+
+A tint control in the gallery can wash a photo or fill a card that has no photo. The colour already selected stays selected when Tint is turned on. Tint starts on green only when no colour is selected yet.
+
+**Compare results.** The code and link display this response’s results again later. Feel free to pass them on. On the results page the code opens inside Sharing options, above the invite buttons and the answer cards. On thank-you the order is answer cards, then the invite buttons, then the code.
 
 ## Project structure
 
 ```
 src/
   components/Questionnaire/   # Survey steps, boards (buckets, spectrum), consent, thank-you
-  components/Results/         # Result boards, map, notes, reasons, survey gate
+  components/Results/         # Result boards, map, notes, reasons, survey gate, answer cards, sharing options
+  components/ShareBar.jsx     # Invite buttons (homepage, thank-you, sharing options)
   data/                       # Catalogues, mock seed standings, live blend / filter helpers
   i18n/                       # Locales, messages, lexicons
   pages/                      # Home + Results shell
   styles/                     # Questionnaire + results + shared page chrome
-  utils/                      # Submit helpers, touch hold-drag, local “my answer” storage
+  utils/                      # Submit helpers, share links, result-card images, touch hold-drag, local “my answer” storage
 server/                       # Neon access: responses, live aggregates, votes, rate limits
 api/                          # Vercel-style API entry points
 scripts/                      # Content image compression (also hooked into Vite)
 ```
 
-Payloads are stored as anonymous JSON in Neon (`server/schema.sql`). Ranking codes, reason/note votes, and issue reports live alongside them.
+Payloads are stored as anonymous JSON in Neon (`server/schema.sql`). Results codes, reason/note votes, and issue reports live alongside them.
 
 ## Stack
 
 - Vite + React 19
 - React Router
-- Neon Postgres (anonymous survey payloads, ranking codes, reason/note votes, issue reports)
-- UI in English, Polish, Simplified Chinese, French, Italian, German, and Spanish (lexicons for vegetables, places, languages, spectrum copy)
+- Neon Postgres (anonymous survey payloads, results codes, reason/note votes, issue reports)
+- UI and catalogues in 13 locales: English, Polish, Simplified and Traditional Chinese, Korean, Thai, French, Italian, German, Spanish (Spain and Mexico), and Portuguese (Brazil and Portugal). A missing string or name falls back to English. Stored answers keep stable English ids (`carrot`, `poland`). Simplified and Traditional Chinese also match pinyin and zhuyin.
 
 ## Main routes
 
 | Path | Purpose |
 | --- | --- |
 | `/` | Home — start the survey or jump to results |
-| `/:locale/survey` | Consent + questionnaire + thank-you / ranking code |
+| `/:locale/survey` | Consent + questionnaire + thank-you, answer cards, and results code |
 | `/:locale/results/:categoryId` | Interactive results for one question |
 
 Supported locales: `en`, `pl`, `zh`, `zh-hant`, `ko`, `th`, `fr`, `it`, `de`, `es`, `es-mx`, `pt-br`, `pt-pt`.

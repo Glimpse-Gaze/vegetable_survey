@@ -17,7 +17,7 @@ export function SurveyNudge({ kind = 'compare', onThisMachine = false }) {
   );
 }
 
-export function OwnRankingCode({ code }) {
+export function OwnRankingCode({ code, hideTitle = false }) {
   const { t, locale } = useI18n();
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -46,7 +46,9 @@ export function OwnRankingCode({ code }) {
 
   return (
     <div className="response-code-own">
-      <p className="response-code-title">{t('results.gate.rankingsTitle')}</p>
+      {hideTitle ? null : (
+        <p className="response-code-title">{t('results.gate.rankingsTitle')}</p>
+      )}
       <p className="response-code-kicker">{t('results.gate.yourCode')}</p>
       <button
         className={copied ? 'response-code is-copied' : 'response-code'}
@@ -73,18 +75,17 @@ export function ResponseCodeCard({
   categoryId,
   viewingOther = false,
   invalid = false,
+  onClose,
+  hideTitle = false,
 }) {
   const navigate = useNavigate();
   const { t, locale } = useI18n();
   const [draft, setDraft] = useState('');
   const [filledFrom, setFilledFrom] = useState('');
   const [linkCopied, setLinkCopied] = useState(false);
-  const [openedFor, setOpenedFor] = useState('');
   const [formError, setFormError] = useState('');
   const [checking, setChecking] = useState(false);
   const error = formError || (invalid ? t('results.gate.incorrect') : '');
-  const opened = openedFor === categoryId;
-  const showForm = opened || invalid || !code;
 
   if (invalid && filledFrom !== code) {
     setFilledFrom(code ?? '');
@@ -108,7 +109,6 @@ export function ResponseCodeCard({
     if (!next || checking) return;
     if (!isResponseId(next)) {
       setFormError(t('results.gate.incorrect'));
-      setOpenedFor(categoryId);
       return;
     }
     setChecking(true);
@@ -116,12 +116,10 @@ export function ResponseCodeCard({
       const result = await fetch(`/api/responses?id=${encodeURIComponent(next)}`);
       if (!result.ok) {
         setFormError(t('results.gate.incorrect'));
-        setOpenedFor(categoryId);
         return;
       }
     } catch {
       setFormError(t('results.gate.incorrect'));
-      setOpenedFor(categoryId);
       return;
     } finally {
       setChecking(false);
@@ -129,24 +127,18 @@ export function ResponseCodeCard({
     setFormError('');
     navigate(withLocale(locale, resultsSharePath(categoryId, next)));
     setDraft('');
-    setOpenedFor('');
-  }
-
-  if (!showForm) {
-    return (
-      <button
-        className="response-code-pill"
-        type="button"
-        onClick={() => setOpenedFor(categoryId)}
-      >
-        {t('results.gate.rankingsTitle')}
-      </button>
-    );
   }
 
   return (
     <div className="response-code-card is-rankings">
-      {code && !viewingOther ? <OwnRankingCode code={code} /> : null}
+      {onClose ? (
+        <div className="response-code-dismiss-row">
+          <button type="button" className="response-code-dismiss" onClick={onClose}>
+            {t('cards.close')}
+          </button>
+        </div>
+      ) : null}
+      {code && !viewingOther ? <OwnRankingCode code={code} hideTitle={hideTitle} /> : null}
       {viewingOther && code && !invalid ? (
         <p className="response-code-line">
           {t('results.gate.viewing')}{' '}
