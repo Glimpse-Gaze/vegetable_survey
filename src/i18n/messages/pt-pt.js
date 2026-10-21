@@ -37,7 +37,7 @@ export const ptPt = {
     instinctCta: 'E tu?',
     mostCta: 'E o teu?',
     betweenCta: 'Discordas?',
-    spectrumCta: 'Decide tu',
+    spectrumCta: 'Decide tu!',
     spectrumShare: 'Preenche o Grande Inquérito aos Legumes:',
     instinctQuip: 'Acho que…',
     notAfter: 'não é um legume',
@@ -221,7 +221,7 @@ export const ptPt = {
     commentsBody:
       'Nota opcional para o programador. É só opinião de utilizador: não aparece em público e não entra na investigação.',
     commentsLabel: 'Comentários para o programador',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: 'Uma falha, uma ideia, uma má tradução?',
     sent: 'Já saiu. Obrigado.',
     send: 'Enviar nota',
     sending: 'A enviar…',
@@ -287,7 +287,7 @@ export const ptPt = {
         title: 'Escala do lado legume',
         prompt: 'Das plantas menos legume às mais legume.',
         designNote:
-          'Escolhi estas dez plantas comestíveis porque representam famílias botânicas diferentes, ou partes muito diferentes da mesma família. A ordenação mistura raízes, folhas, flores, frutos e grãos. Serve para ver se o estatuto botânico, a morfologia ou a origem geográfica pesa no aspecto de uma coisa saber a legume.',
+          'Escolhi estas dez plantas comestíveis porque representam famílias botânicas diferentes, ou partes muito diferentes da mesma família. A ordenação mistura raízes, folhas, flores, frutos e grãos. Serve para ver se o estatuto botânico, a morfologia ou a origem geográfica pesa no aspecto de uma coisa saber a legume.\n\nAs plantas são ordenadas pela posição média, ponderada pelos votos que cada posição recebeu; a média pode ser fracionária.',
       },
       'most-vegetable': {
         eyebrow: 'Pergunta 5',

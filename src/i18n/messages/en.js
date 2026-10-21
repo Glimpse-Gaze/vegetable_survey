@@ -39,7 +39,7 @@ export const en = {
     instinctCta: 'How about you?',
     mostCta: 'And yours?',
     betweenCta: 'Disagree?',
-    spectrumCta: 'Be the judge',
+    spectrumCta: 'Be the judge!',
     spectrumShare: 'Fill The Great Vegetable Survey:',
     instinctQuip: 'I think that…',
     notAfter: 'is not a vegetable',
@@ -274,7 +274,7 @@ export const en = {
         title: 'Vegetableness spectrum',
         prompt: 'From the least to the most vegetabley plants.',
         designNote:
-          'I selected these ten consumable plants as they represent different botanical families, or very different parts of the same family. The ranking mixes roots, leaves, flowers, fruits and grains. This is to test whether the botanical status, morphology, or geographic origin has any bearing on how vegetabley something feels.',
+          'I selected these ten consumable plants as they represent different botanical families, or very different parts of the same family. The ranking mixes roots, leaves, flowers, fruits and grains. This is to test whether the botanical status, morphology, or geographic origin has any bearing on how vegetabley something feels.\n\nPlants are ranked by their average slot, weighted by the votes each slot received; the average may be fractional.',
       },
       'most-vegetable': {
         eyebrow: 'Question 5',

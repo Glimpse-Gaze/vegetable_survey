@@ -560,6 +560,7 @@
   line-height: 1.45;
   text-align: left;
   text-transform: none;
+  white-space: pre-line;
   box-shadow: var(--shadow);
 }
 
@@ -1419,6 +1420,38 @@
   height: 100%;
   overflow: visible;
   border-radius: 3px 3px 0 0;
+  cursor: pointer;
+}
+
+.spectrum-spread-tip {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .spectrum-spread-col:hover .spectrum-spread-tip,
+  .spectrum-spread-col:focus-visible .spectrum-spread-tip {
+    opacity: 1;
+  }
+}
+
+.spectrum-spread-col.is-tapped .spectrum-spread-tip {
+  opacity: 1;
 }
 
 .spectrum-spread-pcts {

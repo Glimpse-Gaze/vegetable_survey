@@ -8,13 +8,33 @@ function formatMean(mean) {
 
 function Spread({ item }) {
   const { t } = useI18n();
+  const [tapped, setTapped] = useState(null);
+  const rootRef = useRef(null);
   const maxShare = Math.max(...item.slotShares, 0.0001);
   const label = item.slotShares
-    .map((share, index) => `${index + 1}: ${Math.round(share * 100)}%`)
+    .map((share, index) => {
+      const count = Math.round(item.slotCounts?.[index] ?? share);
+      return `#${index + 1}: ${count}`;
+    })
     .join(', ');
 
+  useEffect(() => {
+    if (tapped == null) return undefined;
+    function onPointer(event) {
+      if (!rootRef.current?.contains(event.target)) setTapped(null);
+    }
+    document.addEventListener('pointerdown', onPointer);
+    return () => document.removeEventListener('pointerdown', onPointer);
+  }, [tapped]);
+
+  function toggleTap(slot) {
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (fine) return;
+    setTapped((current) => (current === slot ? null : slot));
+  }
+
   return (
-    <div className="spectrum-spread">
+    <div className="spectrum-spread" ref={rootRef}>
       <div
         className="spectrum-spread-chart"
         role="img"
@@ -25,6 +45,7 @@ function Spread({ item }) {
       >
         {item.slotShares.map((share, index) => {
           const slot = index + 1;
+          const count = Math.round(item.slotCounts?.[index] ?? 0);
           return (
             <span
               key={slot}
@@ -32,12 +53,16 @@ function Spread({ item }) {
                 'spectrum-spread-col',
                 slot === item.userSlot ? 'is-yours' : '',
                 slot === Math.round(item.meanRank) ? 'is-mean' : '',
+                tapped === slot ? 'is-tapped' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
               style={{ '--share': share / maxShare }}
-              title={`#${slot}: ${Math.round(share * 100)}%`}
+              onClick={() => toggleTap(slot)}
             >
+              <span className="spectrum-spread-tip" role="tooltip">
+                #{slot}: {count}
+              </span>
               {slot === item.userSlot ? (
                 <span className="spectrum-blade-badge">{t('results.yourVote')}</span>
               ) : null}

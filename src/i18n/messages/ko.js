@@ -37,7 +37,7 @@ export const ko = {
     instinctCta: '당신은요?',
     mostCta: '당신 것은요?',
     betweenCta: '반대예요?',
-    spectrumCta: '직접 평가해요',
+    spectrumCta: '직접 평가해요!',
     spectrumShare: '위대한 채소 조사를 채워 보세요:',
     instinctQuip: '내 생각엔…',
     notAfter: '채소가 아니에요',
@@ -210,7 +210,7 @@ export const ko = {
     commentsBody:
       '만든 이에게 보내는 선택 메모예요. 사용 의견으로만 쓰이고, 공개되지 않으며 조사에도 들어가지 않아요.',
     commentsLabel: '만든 이에게 보내는 메모',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: '오류, 생각, 잘못된 번역?',
     sent: '보냈어요. 고마워요.',
     send: '메모 보내기',
     sending: '보내는 중…',
@@ -276,7 +276,7 @@ export const ko = {
         title: '채소다움의 줄',
         prompt: '가장 덜 채소 같은 것에서 가장 채소 같은 것까지.',
         designNote:
-          '먹을 수 있는 이 열 가지 식물은 서로 다른 과에서 왔거나, 같은 과의 아주 다른 부위예요. 줄 세우기는 뿌리, 잎, 꽃, 열매와 곡식을 섞어요. 식물학적인 자리, 생김새, 태어난 곳이 채소다움에 영향을 주는지 보려고 해요.',
+          '먹을 수 있는 이 열 가지 식물은 서로 다른 과에서 왔거나, 같은 과의 아주 다른 부위예요. 줄 세우기는 뿌리, 잎, 꽃, 열매와 곡식을 섞어요. 식물학적인 자리, 생김새, 태어난 곳이 채소다움에 영향을 주는지 보려고 해요.\n\n식물은 각 칸이 받은 표로 가중된 평균 칸으로 순위를 매기며, 평균은 분수일 수 있어요.',
       },
       'most-vegetable': {
         eyebrow: '5번 문항',

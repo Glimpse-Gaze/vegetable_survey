@@ -1,8 +1,7 @@
-import { VEGETABLE_ART } from '../data/resultsMock.js';
+import { artForVegetable } from '../data/resultsMock.js';
 
-function artFor(id) {
-  if (!id) return '';
-  return VEGETABLE_ART[id] ?? '';
+function artFor(id, fallbackKey = '') {
+  return artForVegetable(id, fallbackKey);
 }
 
 function named(id, fallback, byId) {
@@ -30,7 +29,7 @@ function instinctCard(id, tone, source, byId) {
     layout: 'instinct',
     tone,
     name,
-    art: artFor(source?.canonicalId),
+    art: artFor(source?.canonicalId, source?.rawAnswer),
   };
 }
 

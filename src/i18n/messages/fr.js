@@ -37,7 +37,7 @@ export const fr = {
     instinctCta: 'Et toi ?',
     mostCta: 'Et le tien ?',
     betweenCta: 'Pas d’accord ?',
-    spectrumCta: 'À toi de juger',
+    spectrumCta: 'À toi de juger !',
     spectrumShare: 'Remplis la grande enquête sur les légumes :',
     instinctQuip: 'Je pense que…',
     notAfter: 'n’est pas un légume',
@@ -221,7 +221,7 @@ export const fr = {
     commentsBody:
       'Note facultative pour le développeur. Juste un retour : elle ne sera pas publique et ne servira pas à la recherche.',
     commentsLabel: 'Commentaires pour le développeur',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: 'Un bug, une idée, une mauvaise traduction ?',
     sent: 'Envoyé. Merci.',
     send: 'Envoyer la note',
     sending: 'Envoi…',
@@ -287,7 +287,7 @@ export const fr = {
         title: 'Échelle du côté légume',
         prompt: 'Des plantes les moins légumes aux plus légumes.',
         designNote:
-          'J’ai choisi ces dix plantes comestibles parce qu’elles représentent des familles botaniques différentes, ou des parties très différentes d’une même famille. Le classement mêle racines, feuilles, fleurs, fruits et grains. Il s’agit de voir si le statut botanique, la morphologie ou l’origine géographique change quelque chose au côté légume.',
+          'J’ai choisi ces dix plantes comestibles parce qu’elles représentent des familles botaniques différentes, ou des parties très différentes d’une même famille. Le classement mêle racines, feuilles, fleurs, fruits et grains. Il s’agit de voir si le statut botanique, la morphologie ou l’origine géographique change quelque chose au côté légume.\n\nLes plantes sont classées selon leur cran moyen, pondéré par les votes reçus sur chaque cran ; la moyenne peut être fractionnaire.',
       },
       'most-vegetable': {
         eyebrow: 'Question 5',
