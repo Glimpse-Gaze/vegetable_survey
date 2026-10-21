@@ -23,6 +23,23 @@ import sweetPotato from '../content/Sweet_Potato.jpg';
 import tomato from '../content/Tomato.jpg';
 import turnip from '../content/Turnips.jpg';
 import zucchini from '../content/Zucchini.jpg';
+import avocado from '../content/Avocado.jpg';
+import bambooShoots from '../content/Bamboo_shoots.jpg';
+import bellPeppers from '../content/Bell_peppers.jpg';
+import cassava from '../content/Cassava.jpg';
+import chiliPepper from '../content/Chilli_pepper.jpg';
+import cinnamon from '../content/Cinnamon.jpg';
+import garlic from '../content/Garlic.jpg';
+import ginger from '../content/Ginger.jpg';
+import horseradish from '../content/Horseradish.jpg';
+import lotusRoot from '../content/Lotus_root.jpg';
+import mushrooms from '../content/Mushrooms.jpg';
+import olives from '../content/Olives.jpg';
+import peanut from '../content/Peanut.jpg';
+import rhubarb from '../content/Rhubarb.jpg';
+import rocket from '../content/Rocket.jpg';
+import soya from '../content/Soya.jpg';
+import tobacco from '../content/Tobacco.jpg';
 import placeholder from '../content/Placeholder.jpg';
 import { DEV_SPEEDRUN } from './devSpeedrun.js';
 import { vegetables } from './vegetables.js';
@@ -44,6 +61,7 @@ export const VEGETABLE_ART = {
   celery,
   green_bean: greenBean,
   corn,
+  sweetcorn: corn,
   cucumber,
   eggplant,
   kale,
@@ -59,6 +77,25 @@ export const VEGETABLE_ART = {
   tomato,
   turnip,
   zucchini,
+  avocado,
+  bamboo_shoot: bambooShoots,
+  bamboo_shoots: bambooShoots,
+  bell_pepper: bellPeppers,
+  cassava,
+  chili_pepper: chiliPepper,
+  cinnamon,
+  garlic,
+  ginger,
+  horseradish,
+  lotus_root: lotusRoot,
+  mushrooms,
+  olive: olives,
+  peanut,
+  rhubarb,
+  arugula: rocket,
+  rocket,
+  soybean: soya,
+  tobacco,
 };
 
 export const VEGETABLE_LABELS = {

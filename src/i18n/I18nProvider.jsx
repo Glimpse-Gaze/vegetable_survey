@@ -43,6 +43,17 @@ export function I18nProvider({ children }) {
     document.documentElement.lang = match?.htmlLang ?? DEFAULT_LOCALE;
     const title = lookup(bundles[locale], 'home.title');
     document.title = typeof title === 'string' ? title : 'The Great Vegetable Survey';
+    const description = lookup(bundles[locale], 'home.description')
+      ?? lookup(bundles.en, 'home.description');
+    if (typeof description === 'string') {
+      let meta = document.querySelector('meta[name="description"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'description');
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', description);
+    }
   }, [locale]);
 
   useEffect(() => {

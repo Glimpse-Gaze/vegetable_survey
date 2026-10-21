@@ -1,3 +1,29 @@
+/**
+ * Letters that stay distinct under Unicode NFD, typed without the special key.
+ * Decomposable accents (é, ñ, ü, ą, …) are stripped separately.
+ */
+const LATIN_ASCII = {
+  ł: 'l',
+  ø: 'o',
+  đ: 'd',
+  ð: 'd',
+  ħ: 'h',
+  ŧ: 't',
+  ı: 'i',
+  ŋ: 'n',
+  ß: 'ss',
+  æ: 'ae',
+  œ: 'oe',
+  þ: 'th',
+};
+
+function foldLatinLetters(value) {
+  return String(value ?? '').replace(
+    /[łøđðħŧıŋßæœþ]/g,
+    (letter) => LATIN_ASCII[letter],
+  );
+}
+
 export function normalizeText(value) {
   return String(value ?? '')
     .trim()
@@ -45,9 +71,9 @@ function hangulToJamo(value) {
   return out;
 }
 
-/** Search key: tones, tone digits, and spaces do not matter. Hangul folds to jamo. */
+/** Search key: tones, tone digits, and spaces do not matter. Hangul folds to jamo. Latin letters fold to ASCII. */
 export function normalizeQuery(value) {
-  const prepared = String(value ?? '').replace(/[üÜǖǘǚǜ]/g, 'v');
+  const prepared = foldLatinLetters(String(value ?? '').toLowerCase());
   return hangulToJamo(normalizeText(prepared))
     .replace(ZHUYIN_TONE, '')
     .replace(/[0-9]/g, '')

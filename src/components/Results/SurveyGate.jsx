@@ -17,30 +17,10 @@ export function SurveyNudge({ kind = 'compare', onThisMachine = false }) {
   );
 }
 
-export function ResponseCodeCard({
-  code,
-  categoryId,
-  viewingOther = false,
-  invalid = false,
-}) {
-  const navigate = useNavigate();
+export function OwnRankingCode({ code }) {
   const { t, locale } = useI18n();
-  const [draft, setDraft] = useState('');
-  const [filledFrom, setFilledFrom] = useState('');
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
-  const [openedFor, setOpenedFor] = useState('');
-  const [formError, setFormError] = useState('');
-  const [checking, setChecking] = useState(false);
-  const sharePath = withLocale(locale, resultsSharePath(categoryId, code));
-  const error = formError || (invalid ? t('results.gate.incorrect') : '');
-  const opened = openedFor === categoryId;
-  const showForm = opened || invalid || !code;
-
-  if (invalid && filledFrom !== code) {
-    setFilledFrom(code ?? '');
-    setDraft(code ?? '');
-  }
 
   async function copyCode() {
     if (!code) return;
@@ -51,6 +31,64 @@ export function ResponseCodeCard({
     } catch {
       // ignore
     }
+  }
+
+  async function copyLink() {
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(resultsShareUrl(locale, code));
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 1600);
+    } catch {
+      // ignore
+    }
+  }
+
+  return (
+    <div className="response-code-own">
+      <p className="response-code-title">{t('results.gate.rankingsTitle')}</p>
+      <p className="response-code-kicker">{t('results.gate.yourCode')}</p>
+      <button
+        className={copied ? 'response-code is-copied' : 'response-code'}
+        type="button"
+        onClick={copyCode}
+        aria-live="polite"
+      >
+        {copied ? t('results.gate.copied') : code}
+      </button>
+      <button
+        className={linkCopied ? 'response-code-copy response-code-share is-copied' : 'response-code-copy response-code-share'}
+        type="button"
+        onClick={copyLink}
+      >
+        {linkCopied ? t('results.gate.linkCopied') : t('results.gate.shareLink')}
+      </button>
+      <p className="response-code-hint">{t('results.gate.keepCode')}</p>
+    </div>
+  );
+}
+
+export function ResponseCodeCard({
+  code,
+  categoryId,
+  viewingOther = false,
+  invalid = false,
+}) {
+  const navigate = useNavigate();
+  const { t, locale } = useI18n();
+  const [draft, setDraft] = useState('');
+  const [filledFrom, setFilledFrom] = useState('');
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [openedFor, setOpenedFor] = useState('');
+  const [formError, setFormError] = useState('');
+  const [checking, setChecking] = useState(false);
+  const error = formError || (invalid ? t('results.gate.incorrect') : '');
+  const opened = openedFor === categoryId;
+  const showForm = opened || invalid || !code;
+
+  if (invalid && filledFrom !== code) {
+    setFilledFrom(code ?? '');
+    setDraft(code ?? '');
   }
 
   async function copyLink() {
@@ -101,37 +139,14 @@ export function ResponseCodeCard({
         type="button"
         onClick={() => setOpenedFor(categoryId)}
       >
-        {t('results.gate.openCode')}
+        {t('results.gate.rankingsTitle')}
       </button>
     );
   }
 
   return (
-    <div className="response-code-card">
-      {code && !viewingOther ? (
-        <p className="response-code-line">
-          {t('results.gate.yourCode')}{' '}
-          <code className="response-code">{code}</code>
-          <button
-            className={
-              copied ? 'response-code-copy is-copied' : 'response-code-copy'
-            }
-            type="button"
-            onClick={copyCode}
-          >
-            {copied ? t('results.gate.copied') : t('results.gate.copy')}
-          </button>
-          <button
-            className={
-              linkCopied ? 'response-code-copy is-copied' : 'response-code-copy'
-            }
-            type="button"
-            onClick={copyLink}
-          >
-            {linkCopied ? t('results.gate.linkCopied') : t('results.gate.shareLink')}
-          </button>
-        </p>
-      ) : null}
+    <div className="response-code-card is-rankings">
+      {code && !viewingOther ? <OwnRankingCode code={code} /> : null}
       {viewingOther && code && !invalid ? (
         <p className="response-code-line">
           {t('results.gate.viewing')}{' '}
@@ -147,21 +162,22 @@ export function ResponseCodeCard({
           </button>
         </p>
       ) : null}
-      {code && !viewingOther ? (
-        <p className="response-code-hint">
-          {t('results.gate.keepCode')}{' '}
-          <span className="response-code-path">{sharePath}</span>
-        </p>
-      ) : null}
       <form className="response-code-form" onSubmit={handleLoad}>
         <label htmlFor="ranking-code">{t('results.gate.openCode')}</label>
         <div className="response-code-row">
-          <input
+          <textarea
             id="ranking-code"
+            rows={1}
             value={draft}
             onChange={(event) => {
-              setDraft(event.target.value);
+              setDraft(event.target.value.replace(/[\r\n]+/g, ''));
               setFormError('');
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                event.currentTarget.form?.requestSubmit();
+              }
             }}
             placeholder={t('results.gate.paste')}
             autoComplete="off"

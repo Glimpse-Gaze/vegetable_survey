@@ -16,6 +16,8 @@ import { ReasonResults } from '../components/Results/ReasonResults.jsx';
 import { SpectrumList } from '../components/Results/SpectrumList.jsx';
 import { NoteResults } from '../components/Results/NoteResults.jsx';
 import { ResponseCodeCard, SurveyNudge } from '../components/Results/SurveyGate.jsx';
+import { ResultShareCards } from '../components/Results/ResultShareCards.jsx';
+import { ShareBar } from '../components/ShareBar.jsx';
 import {
   acknowledgeResults,
   hasAcknowledgedResults,
@@ -1331,16 +1333,20 @@ export function Results() {
             </div>
           )}
 
+          {myResponseId ? <ResultShareCards answers={myAnswers} /> : null}
           <div className="results-survey-foot">
             {myResponseId ? null : (
               <SurveyNudge kind="vote" onThisMachine={viewingOther} />
             )}
-            <ResponseCodeCard
-              code={viewingOther ? codeParam : myResponseId}
-              categoryId={category.id}
-              viewingOther={viewingOther}
-              invalid={codeInvalid}
-            />
+            <div className="results-share-row">
+              <ResponseCodeCard
+                code={viewingOther ? codeParam : myResponseId}
+                categoryId={category.id}
+                viewingOther={viewingOther}
+                invalid={codeInvalid}
+              />
+              <ShareBar labelled />
+            </div>
           </div>
           <BrandFooter className="brand-footer--results" />
         </section>

@@ -139,12 +139,17 @@ function formsFor(text) {
   }).filter(Boolean);
   if (!numbered.length) return [];
   const plain = numbered.map((part) => part.replace(/[0-5]$/u, ''));
+  const asU = (form) => form.replace(/v/g, 'u');
   const zhuyin = numbered.map(syllableToZhuyin).filter(Boolean);
   return [
     plain.join(''),
     plain.join(' '),
+    asU(plain.join('')),
+    asU(plain.join(' ')),
     numbered.join(''),
     numbered.join(' '),
+    asU(numbered.join('')),
+    asU(numbered.join(' ')),
     zhuyin.join(''),
     zhuyin.join(' '),
     zhuyin.join('').replace(/[ˉˊˇˋ˙]/g, ''),
