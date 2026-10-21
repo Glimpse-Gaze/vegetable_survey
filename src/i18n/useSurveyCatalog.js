@@ -7,6 +7,7 @@ import { vegetables } from '../data/vegetables.js';
 import { applyLexicon } from './applyLexicon.js';
 import { useI18n } from './useI18n.js';
 import { lexicons } from './lexicon/index.js';
+import { normalizeQuery } from '../utils/normalization.js';
 
 let chinesePhonetics = null;
 let phoneticsPromise = null;
@@ -23,6 +24,28 @@ function subscribePhonetics(listener) {
 }
 
 const ignorePhonetics = () => () => {};
+
+/** Spectrum ids such as corn are answers in their own right. Add one when its
+ * localized name is not already the display name of another vegetable. */
+function withDistinctSpectrum(items, lexicon) {
+  const localized = applyLexicon(items, lexicon);
+  const taken = new Set(localized.map((item) => normalizeQuery(item.name)));
+  const ids = new Set(localized.map((item) => item.id));
+  const extras = [];
+  for (const source of spectrumVegetables) {
+    if (ids.has(source.id)) continue;
+    const [next] = applyLexicon(
+      [{ id: source.id, name: source.name, aliases: [] }],
+      lexicon,
+    );
+    const key = normalizeQuery(next.name);
+    if (!key || taken.has(key)) continue;
+    taken.add(key);
+    ids.add(next.id);
+    extras.push(next);
+  }
+  return [...localized, ...extras];
+}
 
 function useChinesePhonetics(enabled) {
   return useSyncExternalStore(
@@ -44,7 +67,9 @@ export function useSurveyCatalog() {
     const localizedBuckets = withPhonetics(applyLexicon(bucketItems, lexicon.vegetables));
     const localizedSpectrum = withPhonetics(applyLexicon(spectrumVegetables, lexicon.vegetables));
 
-    const localizedVegetables = withPhonetics(applyLexicon(vegetables, lexicon.vegetables));
+    const localizedVegetables = withPhonetics(
+      withDistinctSpectrum(vegetables, lexicon.vegetables),
+    );
     const localizedCountries = withPhonetics(applyLexicon(countries, lexicon.countries));
     const localizedLanguages = withPhonetics(applyLexicon(languages, lexicon.languages));
 

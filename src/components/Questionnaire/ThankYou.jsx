@@ -1,52 +1,27 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BrandFooter } from '../BrandFooter.jsx';
+import { ShareBar } from '../ShareBar.jsx';
 import { numberLocale as intlLocale } from '../../i18n/locales.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import { withLocale } from '../../i18n/paths.js';
-import { resultsShareUrl } from '../../utils/myResponse.js';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { submitDeveloperMessage } from '../../utils/submitResponse.js';
+import { OwnRankingCode } from '../Results/SurveyGate.jsx';
+import { ResultShareCards } from '../Results/ResultShareCards.jsx';
+import { readMyAnswers } from '../../utils/myResponse.js';
 
 const MAX_DEV_MESSAGE = 1000;
 
-export function ThankYou({ responseId }) {
+export function ThankYou({ responseId, answers = null }) {
   const { t, locale } = useI18n();
   const numberLocale = intlLocale(locale);
   const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
   const [error, setError] = useState('');
-  const resultsTo = withLocale(
-    locale,
-    responseId
-      ? `/results?code=${encodeURIComponent(responseId)}`
-      : '/results',
-  );
-
-  async function copyCode() {
-    if (!responseId) return;
-    try {
-      await navigator.clipboard.writeText(responseId);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
-    } catch {
-      // ignore
-    }
-  }
-
-  async function copyLink() {
-    if (!responseId) return;
-    try {
-      await navigator.clipboard.writeText(resultsShareUrl(locale, responseId));
-      setLinkCopied(true);
-      window.setTimeout(() => setLinkCopied(false), 1600);
-    } catch {
-      // ignore
-    }
-  }
+  const cardAnswers = answers ?? readMyAnswers();
+  const resultsTo = withLocale(locale, '/results');
 
   async function sendNote(event) {
     event.preventDefault();
@@ -80,35 +55,17 @@ export function ThankYou({ responseId }) {
       </section>
 
       {responseId ? (
-        <section className="thanks-block thanks-code-block">
-          <h2 className="thanks-block-title">{t('thanks.codeTitle')}</h2>
-          <p className="microcopy">{t('thanks.codeBody')}</p>
-          <p className="thanks-code-row">
-            <code className="response-code">{responseId}</code>
-            <button
-              className={
-                copied
-                  ? 'response-code-copy is-copied'
-                  : 'response-code-copy'
-              }
-              type="button"
-              onClick={copyCode}
-            >
-              {copied ? t('thanks.copied') : t('thanks.copy')}
-            </button>
-            <button
-              className={
-                linkCopied
-                  ? 'response-code-copy is-copied'
-                  : 'response-code-copy'
-              }
-              type="button"
-              onClick={copyLink}
-            >
-              {linkCopied ? t('thanks.linkCopied') : t('thanks.shareLink')}
-            </button>
-          </p>
-        </section>
+        <>
+          <ResultShareCards answers={cardAnswers} />
+          <section className="thanks-block thanks-code-block">
+            <div className="response-code-card is-rankings">
+              <OwnRankingCode code={responseId} />
+            </div>
+          </section>
+          <div className="thanks-invite">
+            <ShareBar labelled />
+          </div>
+        </>
       ) : null}
 
       {responseId ? (

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BrandFooter } from '../components/BrandFooter.jsx';
 import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { LocaleSwitcher } from '../components/LocaleSwitcher.jsx';
+import { ShareBar } from '../components/ShareBar.jsx';
 import { LOCALES } from '../i18n/locales.js';
 import { useI18n } from '../i18n/useI18n.js';
 import { withLocale } from '../i18n/paths.js';
@@ -51,6 +52,7 @@ export function Home() {
             {t('home.seeResults')}
           </Link>
         </div>
+        <ShareBar labelled />
         <nav className="home-locales" aria-label={t('home.language')}>
           {LOCALES.map((item) => (
             <Link

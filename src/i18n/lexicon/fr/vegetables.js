@@ -193,7 +193,7 @@ export const vegetables = {
   banana_flower: 'Fleur de bananier',
   banana_stem: 'Tronc de bananier',
   drumstick: 'Gousse de moringa',
-  sweetcorn: ['Maïs doux', 'maïs'],
+  sweetcorn: ['Maïs doux'],
   corn: 'Maïs',
   baby_corn: ['Jeune maïs', 'mini-maïs'],
   avocado: 'Avocat',

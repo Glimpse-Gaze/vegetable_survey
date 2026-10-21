@@ -13,9 +13,12 @@ export function findCanonicalMatch(query, vegetables) {
   const q = normalizeQuery(query);
   if (!q) return null;
 
-  for (const vegetable of vegetables) {
-    if (normalizeQuery(vegetable.name) === q) return vegetable.id;
-  }
+  const nameHits = uniqueIds(
+    vegetables.filter((vegetable) => normalizeQuery(vegetable.name) === q),
+  );
+  if (nameHits.length === 1) return nameHits[0];
+  // Two display names folding together is a real conflict. Leave it unassigned.
+  if (nameHits.length > 1) return null;
 
   for (const vegetable of vegetables) {
     if (vegetable.aliases.some((alias) => normalizeQuery(alias) === q)) {
@@ -24,6 +27,10 @@ export function findCanonicalMatch(query, vegetables) {
   }
 
   return null;
+}
+
+function uniqueIds(vegetables) {
+  return [...new Set(vegetables.map((vegetable) => vegetable.id))];
 }
 
 function minimumQueryLength(query) {

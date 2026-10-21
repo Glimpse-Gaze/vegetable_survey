@@ -1324,16 +1324,49 @@ h1.eyebrow {
   letter-spacing: -0.03em;
 }
 
-.thanks-code-block .microcopy {
-  margin-bottom: 8px;
+.thanks-code-block {
+  display: flex;
+  justify-content: center;
 }
 
-.thanks-code-row {
+.thanks-code-block .response-code-card {
+  width: min(28rem, 100%);
+  margin-top: 4px;
+}
+
+.thanks-invite {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: center;
+  margin: 4px 0 8px;
+}
+
+.thanks-invite .share-bar.is-labelled {
+  margin-top: 12px;
+}
+
+.question-panel .result-cards {
+  width: 100%;
+  margin: 28px 0 12px;
+}
+
+.question-panel .result-cards-stage {
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin: 4px 0 0;
+  width: 100%;
+}
+
+.question-panel .result-cards-row {
+  flex-wrap: nowrap;
+  justify-content: safe center;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+}
+
+.question-panel .result-card-wrap {
+  scroll-snap-align: start;
 }
 
 .thanks-comments-block {

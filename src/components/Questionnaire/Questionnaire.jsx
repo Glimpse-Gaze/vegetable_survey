@@ -433,7 +433,7 @@ export function Questionnaire() {
           />
         ) : null}
         {step === STEPS.THANKS ? (
-          <ThankYou responseId={response.submittedId} />
+          <ThankYou responseId={response.submittedId} answers={response} />
         ) : null}
       </div>
 
