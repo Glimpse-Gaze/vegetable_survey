@@ -37,7 +37,7 @@ export const ptBr = {
     instinctCta: 'E você?',
     mostCta: 'E o seu?',
     betweenCta: 'Não concorda?',
-    spectrumCta: 'Você decide',
+    spectrumCta: 'Você decide!',
     spectrumShare: 'Preencha a Grande Pesquisa do Legume:',
     instinctQuip: 'Acho que…',
     notAfter: 'não é um legume',
@@ -221,7 +221,7 @@ export const ptBr = {
     commentsBody:
       'Nota opcional pro desenvolvedor. Só um retorno: não aparece em público e não entra na pesquisa.',
     commentsLabel: 'Comentários pro desenvolvedor',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: 'Um bug, uma ideia, uma tradução ruim?',
     sent: 'Já foi. Valeu.',
     send: 'Enviar nota',
     sending: 'Enviando…',
@@ -287,7 +287,7 @@ export const ptBr = {
         title: 'Escala de legume',
         prompt: 'Das plantas menos legume às mais legume.',
         designNote:
-          'Eu escolhi estas dez plantas comestíveis porque elas representam famílias botânicas diferentes, ou pedaços bem diferentes da mesma família. A ordem mistura raízes, folhas, flores, frutos e grãos. Serve pra ver se o status botânico, a forma ou a origem geográfica muda alguma coisa no quanto aquilo parece legume.',
+          'Eu escolhi estas dez plantas comestíveis porque elas representam famílias botânicas diferentes, ou pedaços bem diferentes da mesma família. A ordem mistura raízes, folhas, flores, frutos e grãos. Serve pra ver se o status botânico, a forma ou a origem geográfica muda alguma coisa no quanto aquilo parece legume.\n\nAs plantas são ranqueadas pela posição média, ponderada pelos votos que cada posição recebeu; a média pode ser fracionária.',
       },
       'most-vegetable': {
         eyebrow: 'Pergunta 5',

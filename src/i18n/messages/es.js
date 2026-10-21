@@ -37,7 +37,7 @@ export const es = {
     instinctCta: '¿Y tú?',
     mostCta: '¿Y la tuya?',
     betweenCta: '¿En desacuerdo?',
-    spectrumCta: 'Tú decides',
+    spectrumCta: '¡Tú decides!',
     spectrumShare: 'Rellena la gran encuesta de la verdura:',
     instinctQuip: 'Creo que…',
     notAfter: 'no es una verdura',
@@ -221,7 +221,7 @@ export const es = {
     commentsBody:
       'Nota opcional para el desarrollador. Solo es un comentario: no se mostrará en público y no entra en la investigación.',
     commentsLabel: 'Comentarios para el desarrollador',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: 'Un fallo, una idea, ¿una mala traducción?',
     sent: 'Enviado. Gracias.',
     send: 'Enviar la nota',
     sending: 'Enviando…',
@@ -287,7 +287,7 @@ export const es = {
         title: 'Escala de verdura',
         prompt: 'De las plantas menos verdura a las más verdura.',
         designNote:
-          'Elegí estas diez plantas comestibles porque representan familias botánicas distintas, o partes muy distintas de la misma familia. El ranking mezcla raíces, hojas, flores, frutos y granos. Sirve para ver si el estatus botánico, la forma o el origen geográfico cambian algo en lo verdura que se siente.',
+          'Elegí estas diez plantas comestibles porque representan familias botánicas distintas, o partes muy distintas de la misma familia. El ranking mezcla raíces, hojas, flores, frutos y granos. Sirve para ver si el estatus botánico, la forma o el origen geográfico cambian algo en lo verdura que se siente.\n\nLas plantas se ordenan por su tramo medio, ponderado por los votos que recibió cada tramo; la media puede ser fraccionaria.',
       },
       'most-vegetable': {
         eyebrow: 'Pregunta 5',

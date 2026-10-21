@@ -37,7 +37,7 @@ export const zh = {
     instinctCta: '你呢？',
     mostCta: '那你的呢？',
     betweenCta: '不同意？',
-    spectrumCta: '你来评',
+    spectrumCta: '你来评！',
     spectrumShare: '来填写伟大的蔬菜调查：',
     instinctQuip: '我觉得…',
     notAfter: '不是蔬菜',
@@ -204,7 +204,7 @@ export const zh = {
     commentsTitle: '还有什么想说的吗？',
     commentsBody: '给开发者的可选留言。只用于改进体验，不会公开，也不会进入调查结果。',
     commentsLabel: '给开发者的留言',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: '一个漏洞、一个念头、一处糟糕的翻译？',
     sent: '已发送。谢谢。',
     send: '发送留言',
     sending: '正在发送……',
@@ -270,7 +270,7 @@ export const zh = {
         title: '蔬菜感阶梯',
         prompt: '从最不像蔬菜，到最像蔬菜。',
         designNote:
-          '我挑了这十种可食用植物，因为它们来自不同的科，或者同一科里差别很大的部位。排序把根、叶、花、果实和籽粒混在一起。这是为了看植物学身份、形态和产地，会不会影响“像不像蔬菜”的感觉。',
+          '我挑了这十种可食用植物，因为它们来自不同的科，或者同一科里差别很大的部位。排序把根、叶、花、果实和籽粒混在一起。这是为了看植物学身份、形态和产地，会不会影响“像不像蔬菜”的感觉。\n\n植物按其平均档位排序，并以各档所得票数加权；平均数可以是小数。',
       },
       'most-vegetable': {
         eyebrow: '第 5 题',

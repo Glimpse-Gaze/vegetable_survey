@@ -33,9 +33,28 @@ export function isMixingLive(live) {
   return count > 0 && count < MIX_DISPLAY_TARGET;
 }
 
-function liveBoostFor(respondents) {
-  const sample = Math.max(1, respondents || MIX_DISPLAY_TARGET);
-  return LIVE_VOTE_BOOST * (sample / MIX_DISPLAY_TARGET);
+// Decay length that makes the first real ballot worth LIVE_VOTE_BOOST generated ones.
+const SEED_DECAY = 1 / -Math.log(1 - LIVE_VOTE_BOOST / MIX_DISPLAY_TARGET);
+
+/**
+ * Generated ballots are multiplied by seedBoost, real ballots by liveBoost.
+ * seedBoost starts at 1 and falls toward 0 as real answers arrive.
+ * liveBoost starts at LIVE_VOTE_BOOST and eases down toward 1, so early
+ * human votes move the board and later ones stop drowning the sample.
+ * The displayed total stays at 700 until real answers pass it.
+ */
+export function mixWeights(liveCount) {
+  const real = Math.max(0, Math.round(Number(liveCount) || 0));
+  const target = MIX_DISPLAY_TARGET;
+  if (real <= 0) {
+    return { real: 0, display: target, seedBoost: 1, liveBoost: 0 };
+  }
+  if (real >= target) {
+    return { real, display: real, seedBoost: 0, liveBoost: 1 };
+  }
+  const seedBoost = Math.exp(-real / SEED_DECAY);
+  const liveBoost = ((1 - seedBoost) * target) / real;
+  return { real, display: target, seedBoost, liveBoost };
 }
 
 function shareOf(votes, respondents) {
@@ -43,13 +62,35 @@ function shareOf(votes, respondents) {
   return Math.min(1, Math.max(0, votes / respondents));
 }
 
-function boostMap(base, liveCounts, boost = LIVE_VOTE_BOOST) {
-  const next = { ...base };
-  for (const [id, count] of Object.entries(liveCounts ?? {})) {
-    if (!count) continue;
-    next[id] = (next[id] ?? 0) + count * boost;
+/** Whole votes that sum to `total`. Remainder goes to the largest fractions. */
+function allocateToTotal(entries, total) {
+  const target = Math.max(0, Math.round(total));
+  const list = entries.map((entry) => ({
+    id: entry.id,
+    weight: Math.max(0, Number(entry.weight) || 0),
+  }));
+  if (!list.length || target <= 0) {
+    return Object.fromEntries(list.map((entry) => [entry.id, 0]));
   }
-  return next;
+  const sum = list.reduce((totalWeight, entry) => totalWeight + entry.weight, 0);
+  if (sum <= 0) {
+    return Object.fromEntries(list.map((entry) => [entry.id, 0]));
+  }
+  const raw = list.map((entry) => (entry.weight / sum) * target);
+  const counts = raw.map((value) => Math.floor(value));
+  let left = target - counts.reduce((totalCount, count) => totalCount + count, 0);
+  const order = raw
+    .map((value, index) => ({ index, frac: value - counts[index] }))
+    .sort((a, b) => b.frac - a.frac || list[a.index].id.localeCompare(list[b.index].id));
+  for (let step = 0; step < order.length && left > 0; step += 1) {
+    counts[order[step].index] += 1;
+    left -= 1;
+  }
+  return Object.fromEntries(list.map((entry, index) => [entry.id, counts[index]]));
+}
+
+function blendedWeight(mockCount, liveCount, weights) {
+  return (mockCount ?? 0) * weights.seedBoost + (liveCount ?? 0) * weights.liveBoost;
 }
 
 function rankBoard(votesById, artFor, labelFor) {
@@ -69,19 +110,28 @@ function rankBoard(votesById, artFor, labelFor) {
 
 /**
  * Rebuild blade boards with live votes weighted over the mock tallies.
- * Keeps the displayed responseCount from the mock section.
+ * Counts are whole numbers and sum to the displayed sample.
  */
-export function blendBladeSection(section, liveCounts, { artFor, labelFor }) {
-  if (!liveCounts || !Object.keys(liveCounts).length) return section;
-  const respondents = Math.max(1, section.responseCount || MIX_DISPLAY_TARGET);
-  const boost = liveBoostFor(respondents);
+export function blendBladeSection(section, liveCounts, helpers, liveCount = 0) {
+  const { artFor, labelFor } = helpers;
+  const weights = mixWeights(liveCount);
+  if (!liveCounts || !Object.keys(liveCounts).length) {
+    return { ...section, responseCount: weights.display };
+  }
   const baseVotes = Object.fromEntries(
     (section.items ?? []).map((item) => [item.id, item.votes]),
   );
-  const blended = boostMap(baseVotes, liveCounts, boost);
+  const ids = new Set([...Object.keys(baseVotes), ...Object.keys(liveCounts)]);
+  const blended = allocateToTotal(
+    [...ids].map((id) => ({
+      id,
+      weight: blendedWeight(baseVotes[id], liveCounts[id], weights),
+    })),
+    weights.display,
+  );
   const ranked = rankBoard(blended, artFor, labelFor).map((item) => ({
     ...item,
-    // Blades show share of the board total; keep that relative slice.
+    votes: Math.round(item.votes),
     share: item.share,
   }));
   const boardSize = section.items?.length ?? ranked.length;
@@ -100,6 +150,7 @@ export function blendBladeSection(section, liveCounts, { artFor, labelFor }) {
     items,
     userRanked,
     userOnBoard: Boolean(userRanked && userRanked.rank <= items.length),
+    responseCount: weights.display,
   };
 }
 
@@ -108,36 +159,14 @@ export function blendBladeSection(section, liveCounts, { artFor, labelFor }) {
  * column counts for an item must always sum to `respondents`. Live votes are
  * mixed into that split, then renormalized — never tacked on as unbounded extras.
  */
-function renormalizeBucketSplit(split, columnIds, respondents) {
-  const raw = Object.fromEntries(
-    columnIds.map((id) => [id, Math.max(0, split?.[id] ?? 0)]),
-  );
-  const sum = columnIds.reduce((total, id) => total + raw[id], 0);
-  if (sum <= 0) {
-    return Object.fromEntries(columnIds.map((id) => [id, 0]));
-  }
-
-  const next = {};
-  let allocated = 0;
-  columnIds.forEach((id, index) => {
-    if (index === columnIds.length - 1) {
-      next[id] = Math.max(0, respondents - allocated);
-      return;
-    }
-    const votes = Math.round((raw[id] / sum) * respondents);
-    next[id] = votes;
-    allocated += votes;
-  });
-  return next;
-}
-
-export function blendBucketSection(section, liveBuckets) {
-  if (!liveBuckets || !Object.keys(liveBuckets).length) return section;
-
-  const respondents = Math.max(1, section.responseCount || MIX_DISPLAY_TARGET);
-  const boost = liveBoostFor(respondents);
+export function blendBucketSection(section, liveBuckets, liveCount = 0) {
+  const weights = mixWeights(liveCount);
   const columnIds = (section.columns ?? []).map((column) => column.id);
-  if (!columnIds.length) return section;
+  if (!columnIds.length) return { ...section, responseCount: weights.display };
+  if (!liveBuckets || !Object.keys(liveBuckets).length) {
+    return { ...section, responseCount: weights.display };
+  }
+  const respondents = weights.display;
 
   const splits = {};
   for (const item of section.lookupItems ?? []) {
@@ -153,15 +182,21 @@ export function blendBucketSection(section, liveBuckets) {
     if (!splits[id]) {
       splits[id] = Object.fromEntries(columnIds.map((columnId) => [columnId, 0]));
     }
-    for (const columnId of columnIds) {
-      const extra = (liveSplit?.[columnId] ?? 0) * boost;
-      if (!extra) continue;
-      splits[id][columnId] = (splits[id][columnId] ?? 0) + extra;
+    const mock = splits[id];
+    const mockSum = columnIds.reduce((sum, columnId) => sum + (mock[columnId] ?? 0), 0);
+    if (mockSum <= 0) {
+      splits[id] = Object.fromEntries(
+        columnIds.map((columnId) => [columnId, Math.round(liveSplit?.[columnId] ?? 0)]),
+      );
+      continue;
     }
-  }
-
-  for (const id of Object.keys(splits)) {
-    splits[id] = renormalizeBucketSplit(splits[id], columnIds, respondents);
+    splits[id] = allocateToTotal(
+      columnIds.map((columnId) => ({
+        id: columnId,
+        weight: blendedWeight(mock[columnId], liveSplit?.[columnId] ?? 0, weights),
+      })),
+      respondents,
+    );
   }
 
   const nameById = Object.fromEntries(
@@ -216,22 +251,25 @@ export function blendBucketSection(section, liveBuckets) {
     return { ...item, rows };
   });
 
-  return { ...section, columns, lookupItems };
+  return { ...section, columns, lookupItems, responseCount: respondents };
 }
 
-export function blendSpectrumSection(section, liveSpectrum, bandForRank) {
-  if (!liveSpectrum || !Object.keys(liveSpectrum).length) return section;
-  const respondents = Math.max(1, section.responseCount || MIX_DISPLAY_TARGET);
-  const boost = liveBoostFor(respondents);
+export function blendSpectrumSection(section, liveSpectrum, bandForRank, liveCount = 0) {
+  const weights = mixWeights(liveCount);
+  if (!section.items?.length) return { ...section, responseCount: weights.display };
 
   const items = section.items
     .map((item) => {
-      const liveSlots = liveSpectrum[item.id];
-      if (!liveSlots) return item;
-      const slotCounts = item.slotCounts.map(
-        (count, index) => count + (liveSlots[index] ?? 0) * boost,
+      const liveSlots = liveSpectrum?.[item.id];
+      const weighted = (item.slotCounts ?? []).map(
+        (count, index) => blendedWeight(count, liveSlots?.[index] ?? 0, weights),
       );
-      const weight = slotCounts.reduce((sum, n) => sum + n, 0) || 1;
+      const allocated = allocateToTotal(
+        weighted.map((weight, index) => ({ id: String(index), weight })),
+        weights.display,
+      );
+      const slotCounts = weighted.map((_, index) => allocated[String(index)] ?? 0);
+      const weight = slotCounts.reduce((sum, count) => sum + count, 0) || 1;
       const meanRank =
         slotCounts.reduce((sum, count, index) => sum + (index + 1) * count, 0) /
         weight;
@@ -262,6 +300,7 @@ export function blendSpectrumSection(section, liveSpectrum, bandForRank) {
     ...section,
     items,
     bands,
+    responseCount: weights.display,
   };
 }
 
@@ -369,32 +408,36 @@ export function blendNoteSection(section, liveNotes, locale = 'en') {
 }
 
 export function blendReasonCriteria(section, liveCriteria, liveCount = 0) {
-  if (!liveCriteria || !Object.keys(liveCriteria).length) return section;
-  const respondents = Math.max(1, section.responseCount || MIX_DISPLAY_TARGET);
-  const boost = liveBoostFor(respondents);
-  const sample = Math.max(0, Number(liveCount) || 0);
-  // Each live ballot counts as `boost` mock ballots. Grow the denominator
-  // with that sample so a popular criterion is a share of people, not a
-  // count that then gets clamped to 100% on its own.
-  const denom = respondents + sample * boost;
+  const weights = mixWeights(liveCount);
+  if (!liveCriteria || !Object.keys(liveCriteria).length) {
+    return { ...section, responseCount: weights.display };
+  }
   const votes = Object.fromEntries(
     (section.items ?? []).map((item) => [item.id, item.votes]),
   );
-  for (const [id, count] of Object.entries(liveCriteria)) {
-    if (!count) continue;
-    votes[id] = (votes[id] ?? 0) + count * boost;
+  for (const id of Object.keys(liveCriteria)) {
+    if (votes[id] == null) votes[id] = 0;
   }
   const items = Object.entries(votes)
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([id, mockCount]) => {
+      const weight = blendedWeight(mockCount, liveCriteria[id], weights);
+      const denom = weights.seedBoost <= 0
+        ? weights.display
+        : (section.responseCount || MIX_DISPLAY_TARGET) * weights.seedBoost
+          + weights.real * weights.liveBoost;
+      const share = denom > 0 ? Math.min(1, Math.max(0, weight / denom)) : 0;
+      const shown = Math.max(0, Math.min(weights.display, Math.round(share * weights.display)));
+      return { id, shown, share };
+    })
+    .sort((a, b) => b.shown - a.shown || a.id.localeCompare(b.id))
     .slice(0, 5)
-    .map(([id, count], index) => {
-      const prior = section.items.find((item) => item.id === id);
-      const share = shareOf(count, denom);
+    .map((entry, index) => {
+      const prior = section.items.find((item) => item.id === entry.id);
       return {
-        id,
-        name: prior?.name ?? id,
-        votes: Math.round(share * respondents),
-        share,
+        id: entry.id,
+        name: prior?.name ?? entry.id,
+        votes: entry.shown,
+        share: entry.share,
         rank: index + 1,
         isYours: prior?.isYours ?? false,
       };
@@ -403,6 +446,7 @@ export function blendReasonCriteria(section, liveCriteria, liveCount = 0) {
     ...section,
     items,
     leader: items[0],
+    responseCount: weights.display,
   };
 }
 
@@ -411,22 +455,23 @@ export function applyLiveBlend(section, categoryId, live, helpers = {}) {
   const locale = helpers.locale ?? 'en';
   let next = section;
 
+  const sample = live.liveCount;
   if (categoryId === 'first-instincts') {
-    next = blendBladeSection(next, live.associations, helpers);
+    next = blendBladeSection(next, live.associations, helpers, sample);
   } else if (categoryId === 'most-vegetable') {
-    next = blendBladeSection(next, live.mostVegetable, helpers);
+    next = blendBladeSection(next, live.mostVegetable, helpers, sample);
   } else if (categoryId === 'why-vegetabley') {
-    next = blendReasonCriteria(next, live.criteria, live.liveCount);
+    next = blendReasonCriteria(next, live.criteria, sample);
     next = blendReasonSection(next, live.customReasons, locale);
   } else if (categoryId === 'sort-buckets') {
-    next = blendBucketSection(next, live.buckets);
+    next = blendBucketSection(next, live.buckets, sample);
   } else if (categoryId === 'vegetabley-spectrum') {
-    next = blendSpectrumSection(next, live.spectrum, helpers.bandForRank);
+    next = blendSpectrumSection(next, live.spectrum, helpers.bandForRank, sample);
   } else if (categoryId === 'vegetabley-words') {
     next = blendNoteSection(next, live.notes, locale);
   }
 
-  return next;
+  return { ...next, responseCount: mixWeights(sample).display };
 }
 
 /**

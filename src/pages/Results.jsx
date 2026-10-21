@@ -34,7 +34,7 @@ import {
   overlayCategory,
   BLADE_BOARD_SIZE,
   VEGETABLE_LABELS,
-  VEGETABLE_ART,
+  artForVegetable,
   ALL_LANGUAGES_ID,
   VOTE_THRESHOLD,
 } from '../data/resultsMock.js';
@@ -54,7 +54,6 @@ import {
   placeFilterGroups,
 } from '../data/liveFilter.js';
 import { bandForRank } from '../data/spectrumVegetables.js';
-import placeholder from '../content/Placeholder.jpg';
 import '../styles/results.css';
 
 const WorldMap = lazy(() =>
@@ -863,7 +862,7 @@ export function Results() {
   }, []);
 
   const helpers = useMemo(() => ({
-    artFor: (id) => VEGETABLE_ART[id] ?? placeholder,
+    artFor: (id) => artForVegetable(id),
     labelFor: (id) =>
       catalog.vegetablesById?.get(id)?.name
       ?? VEGETABLE_LABELS[id]

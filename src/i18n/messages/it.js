@@ -37,7 +37,7 @@ export const it = {
     instinctCta: 'E tu?',
     mostCta: 'E la tua?',
     betweenCta: 'Non sei d’accordo?',
-    spectrumCta: 'Fai da giudice',
+    spectrumCta: 'Fai da giudice!',
     spectrumShare: 'Compila la grande indagine sulla verdura:',
     instinctQuip: 'Penso che…',
     notAfter: 'non è una verdura',
@@ -221,7 +221,7 @@ export const it = {
     commentsBody:
       'Nota facoltativa per lo sviluppatore. Solo un riscontro: non sarà pubblica e non entrerà nella ricerca.',
     commentsLabel: 'Commenti per lo sviluppatore',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: 'Un bug, un pensiero, una traduzione sbagliata?',
     sent: 'Inviato. Grazie.',
     send: 'Invia la nota',
     sending: 'Invio…',
@@ -287,7 +287,7 @@ export const it = {
         title: 'Scala della verdura',
         prompt: 'Dalle piante meno verdura alle più verdura.',
         designNote:
-          'Ho scelto queste dieci piante commestibili perché rappresentano famiglie botaniche diverse, o parti molto diverse della stessa famiglia. La classifica mescola radici, foglie, fiori, frutti e semi. Serve a vedere se lo stato botanico, la morfologia o l’origine geografica cambiano qualcosa nel sapore di verdura.',
+          'Ho scelto queste dieci piante commestibili perché rappresentano famiglie botaniche diverse, o parti molto diverse della stessa famiglia. La classifica mescola radici, foglie, fiori, frutti e semi. Serve a vedere se lo stato botanico, la morfologia o l’origine geografica cambiano qualcosa nel sapore di verdura.\n\nLe piante sono classificate secondo la loro posizione media, pesata per i voti ricevuti da ogni posizione; la media può essere frazionaria.',
       },
       'most-vegetable': {
         eyebrow: 'Domanda 5',

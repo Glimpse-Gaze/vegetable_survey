@@ -37,7 +37,7 @@ export const de = {
     instinctCta: 'Und du?',
     mostCta: 'Und deins?',
     betweenCta: 'Nicht einverstanden?',
-    spectrumCta: 'Entscheide selbst',
+    spectrumCta: 'Entscheide selbst!',
     spectrumShare: 'Füll die große Gemüseumfrage aus:',
     instinctQuip: 'Ich denke, dass…',
     notAfter: 'ist kein Gemüse',
@@ -221,7 +221,7 @@ export const de = {
     commentsBody:
       'Freiwillige Notiz an den Entwickler. Nur Rückmeldung: sie wird nicht öffentlich und geht nicht in die Untersuchung ein.',
     commentsLabel: 'Kommentare für den Entwickler',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: 'Ein Bug, ein Gedanke, eine schlechte Übersetzung?',
     sent: 'Weg. Danke.',
     send: 'Notiz senden',
     sending: 'Senden…',
@@ -287,7 +287,7 @@ export const de = {
         title: 'Gemüsigkeitsskala',
         prompt: 'Von den am wenigsten bis zu den am meisten gemüsigen Pflanzen.',
         designNote:
-          'Ich habe diese zehn essbaren Pflanzen ausgesucht, weil sie verschiedene botanische Familien vertreten, oder sehr verschiedene Teile derselben Familie. Die Rangliste mischt Wurzeln, Blätter, Blüten, Früchte und Körner. Damit lässt sich prüfen, ob botanischer Status, Gestalt oder geografische Herkunft etwas daran ändert, wie gemüsig sich etwas anfühlt.',
+          'Ich habe diese zehn essbaren Pflanzen ausgesucht, weil sie verschiedene botanische Familien vertreten, oder sehr verschiedene Teile derselben Familie. Die Rangliste mischt Wurzeln, Blätter, Blüten, Früchte und Körner. Damit lässt sich prüfen, ob botanischer Status, Gestalt oder geografische Herkunft etwas daran ändert, wie gemüsig sich etwas anfühlt.\n\nPflanzen werden nach ihrer durchschnittlichen Stufe gereiht, gewichtet nach den Stimmen jeder Stufe; der Durchschnitt kann gebrochen sein.',
       },
       'most-vegetable': {
         eyebrow: 'Frage 5',

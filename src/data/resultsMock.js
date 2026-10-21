@@ -40,7 +40,25 @@ import rhubarb from '../content/Rhubarb.jpg';
 import rocket from '../content/Rocket.jpg';
 import soya from '../content/Soya.jpg';
 import tobacco from '../content/Tobacco.jpg';
-import placeholder from '../content/Placeholder.jpg';
+import bitterMelon from '../content/Bitter_melon.jpg';
+import daikon from '../content/Daikon.jpg';
+import edamame from '../content/Edamame.jpg';
+import gaiLan from '../content/Gai_lan.jpg';
+import mizuna from '../content/Mizuna.jpg';
+import napaCabbage from '../content/Napa_cabbage.jpg';
+import okra from '../content/Okra.jpg';
+import peas from '../content/Peas.jpg';
+import redCabbage from '../content/Red_cabbage.jpg';
+import rutabaga from '../content/Rutabaga.jpg';
+import sugarSnapPea from '../content/Sugar_snap_pea.jpg';
+import watercress from '../content/Watercress.jpg';
+import defaultArt1 from '../content/Default.jpg';
+import defaultArt2 from '../content/Default2.jpg';
+import defaultArt3 from '../content/Default3.jpg';
+import defaultArt4 from '../content/Default4.jpg';
+import defaultArt5 from '../content/Default5.jpg';
+import defaultArt6 from '../content/Default6.jpg';
+import defaultArt7 from '../content/Default7.jpg';
 import { DEV_SPEEDRUN } from './devSpeedrun.js';
 import { vegetables } from './vegetables.js';
 import { findCanonicalMatch } from '../utils/autocomplete.js';
@@ -96,7 +114,44 @@ export const VEGETABLE_ART = {
   rocket,
   soybean: soya,
   tobacco,
+  rutabaga,
+  daikon,
+  red_cabbage: redCabbage,
+  napa_cabbage: napaCabbage,
+  gai_lan: gaiLan,
+  mizuna,
+  watercress,
+  bitter_gourd: bitterMelon,
+  pea: peas,
+  sugar_snap_pea: sugarSnapPea,
+  edamame,
+  okra,
 };
+
+const DEFAULT_ART = [
+  defaultArt1,
+  defaultArt2,
+  defaultArt3,
+  defaultArt4,
+  defaultArt5,
+  defaultArt6,
+  defaultArt7,
+];
+
+function defaultArtFor(key) {
+  const text = String(key || 'vegetable');
+  let hash = 0;
+  for (let index = 0; index < text.length; index += 1) {
+    hash = (hash * 31 + text.charCodeAt(index)) >>> 0;
+  }
+  return DEFAULT_ART[hash % DEFAULT_ART.length];
+}
+
+/** Catalogue photo, or a stable Default image when this id has none. */
+export function artForVegetable(id, fallbackKey = '') {
+  if (id && VEGETABLE_ART[id]) return VEGETABLE_ART[id];
+  return defaultArtFor(id || fallbackKey || 'vegetable');
+}
 
 export const VEGETABLE_LABELS = {
   beetroot: 'Beetroot',
@@ -576,7 +631,7 @@ function rankBoard(votesById) {
     .map(([id, votes], index) => ({
       id,
       name: labelForVoteId(id) ?? humanizeVoteId(id),
-      art: VEGETABLE_ART[id] ?? placeholder,
+      art: artForVegetable(id),
       votes,
       total,
       share: total ? votes / total : 0,
@@ -896,7 +951,7 @@ export function resultView(region, languageId) {
 }
 
 function artFor(id) {
-  return VEGETABLE_ART[id] ?? placeholder;
+  return artForVegetable(id);
 }
 
 export function getSection(categoryId, regionId, userAnswers = null, languageId = ALL_LANGUAGES_ID) {

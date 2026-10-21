@@ -37,7 +37,7 @@ export const zhHant = {
     instinctCta: '你呢？',
     mostCta: '那你的呢？',
     betweenCta: '不同意？',
-    spectrumCta: '你來評',
+    spectrumCta: '你來評！',
     spectrumShare: '來填寫偉大的蔬菜調查：',
     instinctQuip: '我覺得…',
     notAfter: '不是蔬菜',
@@ -204,7 +204,7 @@ export const zhHant = {
     commentsTitle: '還有什麼想說的嗎？',
     commentsBody: '給開發者的可選留言。只用於改進體驗，不會公開，也不會進入調查結果。',
     commentsLabel: '給開發者的留言',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: '一個程式問題、一個念頭、一處糟糕的翻譯？',
     sent: '已送出。謝謝。',
     send: '送出留言',
     sending: '正在送出……',
@@ -270,7 +270,7 @@ export const zhHant = {
         title: '蔬菜感階梯',
         prompt: '從最不像蔬菜，到最像蔬菜。',
         designNote:
-          '我挑了這十種可食用植物，因為它們來自不同的科，或者同一科裡差別很大的部位。排序把根、葉、花、果實和籽粒混在一起。這是為了看植物學身分、形態和產地，會不會影響「像不像蔬菜」的感覺。',
+          '我挑了這十種可食用植物，因為它們來自不同的科，或者同一科裡差別很大的部位。排序把根、葉、花、果實和籽粒混在一起。這是為了看植物學身分、形態和產地，會不會影響「像不像蔬菜」的感覺。\n\n植物按其平均檔位排序，並以各檔所得票數加權；平均數可以是小數。',
       },
       'most-vegetable': {
         eyebrow: '第 5 題',

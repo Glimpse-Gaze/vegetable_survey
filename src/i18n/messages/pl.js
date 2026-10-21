@@ -37,7 +37,7 @@ export const pl = {
     instinctCta: 'A ty?',
     mostCta: 'A Twoje?',
     betweenCta: 'Nie zgadzasz się?',
-    spectrumCta: 'Też je osądź',
+    spectrumCta: 'Też je osądź!',
     spectrumShare: 'Wypełnij Wielką ankietę warzywną:',
     instinctQuip: 'Myślę, że…',
     notAfter: 'nie jest warzywem',
@@ -221,7 +221,7 @@ export const pl = {
     commentsBody:
       'Opcjonalna notatka dla developera. Służy tylko jako informacja zwrotna – nie będzie publiczna i nie wejdzie do badania.',
     commentsLabel: 'Uwagi dla developera',
-    placeholder: 'A bug, a thought, a bad translation?',
+    placeholder: 'Błąd, myśl, złe tłumaczenie?',
     sent: 'Wysłane. Dziękuję.',
     send: 'Wyślij notatkę',
     sending: 'Wysyłanie…',
@@ -288,7 +288,7 @@ export const pl = {
         title: 'Skala warzywności',
         prompt: 'Od najmniej do najbardziej warzywnych roślin.',
         designNote:
-          'Wybrałem te dziesięć jadalnych roślin, ponieważ reprezentują różne rodziny botaniczne albo skrajnie różne części tej samej rodziny. Ranking miesza korzenie, liście, kwiaty, owoce i ziarna. Chodzi o to, żeby sprawdzić, czy status botaniczny, morfologia albo pochodzenie geograficzne wpływają na to, jak bardzo coś wydaje się warzywem.',
+          'Wybrałem te dziesięć jadalnych roślin, ponieważ reprezentują różne rodziny botaniczne albo skrajnie różne części tej samej rodziny. Ranking miesza korzenie, liście, kwiaty, owoce i ziarna. Chodzi o to, żeby sprawdzić, czy status botaniczny, morfologia albo pochodzenie geograficzne wpływają na to, jak bardzo coś wydaje się warzywem.\n\nRośliny są uszeregowane według średniej pozycji, ważonej głosami oddanymi na każdą pozycję; średnia może być ułamkowa.',
       },
       'most-vegetable': {
         eyebrow: 'Pytanie 5',
