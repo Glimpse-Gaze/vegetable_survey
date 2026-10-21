@@ -57,14 +57,14 @@ export function ThankYou({ responseId, answers = null }) {
       {responseId ? (
         <>
           <ResultShareCards answers={cardAnswers} />
+          <div className="thanks-invite">
+            <ShareBar labelled />
+          </div>
           <section className="thanks-block thanks-code-block">
             <div className="response-code-card is-rankings">
               <OwnRankingCode code={responseId} />
             </div>
           </section>
-          <div className="thanks-invite">
-            <ShareBar labelled />
-          </div>
         </>
       ) : null}
 

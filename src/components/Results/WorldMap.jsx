@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useRef, useState } from 'react';
+import { startTransition, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import mapMarkup from '../../assets/map/World_Equal.svg?raw';
 import { LIVE_COUNTRIES, VOTE_THRESHOLD } from '../../data/resultsMock.js';
 import { countryIdFromMapTitle } from '../../i18n/countryNameIndex.js';
@@ -24,16 +24,20 @@ function nextZoom(zoom, direction) {
   return clamp(stepped, MIN_ZOOM, MAX_ZOOM);
 }
 
-/** Keep the vote popup on screen. Touch places it above the finger. */
-function tipOrigin(clientX, clientY, above, height = 86) {
-  const width = 220;
-  const margin = 10;
-  const left = above ? clientX - width / 2 : clientX + 14;
-  const top = above ? clientY - height - 18 : clientY + 14;
-  return {
-    left: clamp(left, margin, Math.max(margin, window.innerWidth - width - margin)),
-    top: clamp(top, margin, Math.max(margin, window.innerHeight - height - margin)),
-  };
+/** Place the vote popup next to the point, in map coordinates so it scrolls with the page. */
+function tipBox(clientX, clientY, mapEl, above) {
+  const rect = mapEl?.getBoundingClientRect();
+  const x = rect ? clientX - rect.left : clientX;
+  const y = rect ? clientY - rect.top : clientY;
+  const width = 210;
+  const height = 64;
+  const gap = 8;
+  const margin = 6;
+  const maxLeft = rect ? Math.max(margin, rect.width - width - margin) : x;
+  const left = clamp(above ? x - width / 2 : x + 14, margin, maxLeft);
+  let top = above ? y - height - gap : y + 14;
+  if (above && top < margin) top = y + gap;
+  return { left, top, anchorX: x, anchorY: y, above: above && top < y };
 }
 
 /** Territories drawn on the map, counted as the country they belong to. */
@@ -128,6 +132,7 @@ export function WorldMap({
   const [zoom, setZoom] = useState(1);
   const [panning, setPanning] = useState(false);
   const tipEl = useRef(null);
+  const mapRef = useRef(null);
 
   useEffect(() => {
     onSelectRef.current = onSelect;
@@ -147,6 +152,47 @@ export function WorldMap({
       return { ...prev, name: localized };
     });
   }, [catalog.countriesById, locale]);
+
+  useLayoutEffect(() => {
+    const el = tipEl.current;
+    const map = mapRef.current;
+    if (!el || !tip?.touch || !map || tip.measured) return;
+    const gap = 8;
+    const margin = 6;
+    const height = el.offsetHeight;
+    const width = el.offsetWidth;
+    let top = tip.above ? tip.anchorY - height - gap : tip.anchorY + gap;
+    let above = tip.above;
+    if (above && top < margin) {
+      top = tip.anchorY + gap;
+      above = false;
+    }
+    const maxLeft = Math.max(margin, map.clientWidth - width - margin);
+    const left = clamp(tip.anchorX - width / 2, margin, maxLeft);
+    const serial = tip.serial;
+    setTip((current) => (
+      current?.serial === serial
+        ? { ...current, left, top, above, measured: true }
+        : current
+    ));
+  }, [tip]);
+
+  useEffect(() => {
+    if (!tip?.touch) return undefined;
+    const serial = tip.serial;
+    const timer = window.setTimeout(() => {
+      setTip((current) => (current?.serial === serial ? null : current));
+    }, 5400);
+    const dismiss = (event) => {
+      if (mapRef.current?.contains(event.target)) return;
+      setTip((current) => (current?.serial === serial ? null : current));
+    };
+    document.addEventListener('pointerdown', dismiss);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener('pointerdown', dismiss);
+    };
+  }, [tip]);
 
   useEffect(() => {
     zoomRef.current = zoom;
@@ -229,7 +275,8 @@ export function WorldMap({
         emerging: Boolean(live && live.votes > 0 && live.votes < VOTE_THRESHOLD),
         hiddenLanguage: Boolean(known && !live && languageFilteredRef.current),
         votes: live?.votes ?? known?.votes ?? 0,
-        ...tipOrigin(event.clientX, event.clientY, false),
+        touch: false,
+        ...tipBox(event.clientX, event.clientY, mapRef.current, false),
       };
     }
 
@@ -249,7 +296,12 @@ export function WorldMap({
         setTip(null);
         return;
       }
-      setTip({ ...next, ...tipOrigin(x, y, true) });
+      setTip({
+        ...next,
+        ...tipBox(x, y, mapRef.current, true),
+        touch: true,
+        serial: Date.now(),
+      });
     }
 
     function pickCountry(group, x, y) {
@@ -278,7 +330,7 @@ export function WorldMap({
     function onMove(event) {
       const el = tipEl.current;
       if (el && hoverTip) {
-        const origin = tipOrigin(event.clientX, event.clientY, false);
+        const origin = tipBox(event.clientX, event.clientY, mapRef.current, false);
         el.style.left = `${origin.left}px`;
         el.style.top = `${origin.top}px`;
       }
@@ -448,7 +500,7 @@ export function WorldMap({
   }
 
   return (
-    <div className="world-map">
+    <div className="world-map" ref={mapRef}>
       <div
         className={[
           'world-map-viewport',
@@ -488,8 +540,9 @@ export function WorldMap({
       </div>
       {tip ? (
         <div
+          key={tip.touch ? tip.serial : 'hover'}
           ref={tipEl}
-          className="world-map-tip"
+          className={tip.touch ? 'world-map-tip is-touch' : 'world-map-tip'}
           style={{ left: tip.left, top: tip.top }}
         >
           <strong>

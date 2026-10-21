@@ -1327,6 +1327,7 @@ h1.eyebrow {
 .thanks-code-block {
   display: flex;
   justify-content: center;
+  margin-top: 18px;
 }
 
 .thanks-code-block .response-code-card {
@@ -1337,7 +1338,7 @@ h1.eyebrow {
 .thanks-invite {
   display: flex;
   justify-content: center;
-  margin: 4px 0 8px;
+  margin: 18px 0 4px;
 }
 
 .thanks-invite .share-bar.is-labelled {
