@@ -75,12 +75,12 @@ export const esMx = {
     changeLanguage: 'Cambiar idioma',
     eyebrow: 'Un estudio sobre una idea popular',
     title: 'La gran encuesta de la verdura',
-    question: '¿Qué cuenta como verdura?',
+    question: '¿Qué consideramos una verdura?',
     blurb:
       'Comemos verdura todos los días, pero... ¿qué hace de verdad que algo sea una verdura? Puede que la respuesta no sea tan obvia como crees. Esta encuesta corta explora cómo clasifica la gente las verduras y por qué nuestras definiciones cambian entre personas y entre culturas.',
     lede: 'Comparte lo que piensas, compara las respuestas con tus amistades y mira cómo piensa la gente alrededor del mundo.',
     description:
-      '¿Qué cuenta como verdura? Una encuesta corta sobre cómo la gente clasifica las verduras y por qué esas definiciones cambian. Comparte lo que piensas y mira cómo piensa el mundo.',
+      '¿Qué consideramos una verdura? Una encuesta corta sobre cómo la gente clasifica las verduras y por qué esas definiciones cambian. Comparte lo que piensas y mira cómo piensa el mundo.',
     takeSurvey: 'Hacer la encuesta',
     seeResults: 'Ver los resultados',
     skipTitle: 'Antes de saltar',

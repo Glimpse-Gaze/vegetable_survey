@@ -75,12 +75,12 @@ export const de = {
     changeLanguage: 'Sprache wechseln',
     eyebrow: 'Eine Studie über eine Alltagsidee',
     title: 'Die große Gemüseumfrage',
-    question: 'Was zählt als Gemüse?',
+    question: 'Was betrachten wir als Gemüse?',
     blurb:
       'Wir essen jeden Tag Gemüse, aber... was macht etwas eigentlich zum Gemüse? Die Antwort ist vielleicht nicht so klar, wie du denkst. Diese kurze Umfrage schaut sich an, wie Leute Gemüse einordnen und warum sich unsere Definitionen von Mensch zu Mensch und von Kultur zu Kultur unterscheiden.',
     lede: 'Teile deine Sicht, vergleiche die Antworten mit Bekannten und schau, wie die Menschen auf der Welt denken!',
     description:
-      'Was zählt als Gemüse? Eine kurze Umfrage dazu, wie Leute Gemüse einordnen und warum diese Definitionen sich unterscheiden. Teile deine Sicht und schau, wie die Welt denkt.',
+      'Was betrachten wir als Gemüse? Eine kurze Umfrage dazu, wie Leute Gemüse einordnen und warum diese Definitionen sich unterscheiden. Teile deine Sicht und schau, wie die Welt denkt.',
     takeSurvey: 'Umfrage machen',
     seeResults: 'Ergebnisse ansehen',
     skipTitle: 'Bevor du überspringst',
