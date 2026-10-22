@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vegetable.glimpsegaze.com/sitemap.xml

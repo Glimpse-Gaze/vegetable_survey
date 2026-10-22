@@ -77,12 +77,12 @@ export const en = {
     changeLanguage: 'Change language',
     eyebrow: 'A folk concept study',
     title: 'The Great Vegetable Survey',
-    question: 'What counts as a vegetable?',
+    question: 'What do we consider a vegetable?',
     blurb:
       'We all eat vegetables every day, but... what actually makes something a vegetable? The answer might not be as obvious as you think. This short survey explores how people classify veggies and why our definitions differ across individuals and cultures.',
     lede: 'Share your take, compare answers with friends, and see how people around the world think!',
     description:
-      'What counts as a vegetable? A short survey of how people classify veggies, and why those definitions differ. Share your take and see how the world thinks.',
+      'What do we consider a vegetable? A short survey of how people classify veggies, and why those definitions differ. Share your take and see how the world thinks.',
     takeSurvey: 'Take the survey',
     seeResults: 'See the results',
     skipTitle: 'Before you skip ahead',

@@ -85,13 +85,14 @@ function Icon({ id }) {
 }
 
 export function ShareBar({ labelled = false }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [copied, setCopied] = useState(false);
+  const pageUrl = `${PUBLIC_SITE_URL}/${locale}`;
   const text = `${t('home.title')}. ${t('home.question')}`;
 
   async function copyLink() {
     try {
-      await navigator.clipboard.writeText(PUBLIC_SITE_URL);
+      await navigator.clipboard.writeText(pageUrl);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
@@ -108,7 +109,7 @@ export function ShareBar({ labelled = false }) {
             key={network.id}
             className="share-bar-btn"
             data-network={network.id}
-            href={network.href(PUBLIC_SITE_URL, text)}
+            href={network.href(pageUrl, text)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t('share.on', { name: network.name })}

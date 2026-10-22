@@ -1,5 +1,13 @@
 {
   "rewrites": [
+    {
+      "source": "/:locale(zh-hant|es-mx|pt-br|pt-pt|en|pl|zh|ko|th|fr|it|de|es)",
+      "destination": "/:locale/index.html"
+    },
+    {
+      "source": "/:locale(zh-hant|es-mx|pt-br|pt-pt|en|pl|zh|ko|th|fr|it|de|es)/:path*",
+      "destination": "/:locale/index.html"
+    },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
