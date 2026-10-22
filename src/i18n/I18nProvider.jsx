@@ -89,6 +89,14 @@ export function I18nProvider({ children }) {
   }, [locale]);
 
   const value = useMemo(() => {
+    function raw(key) {
+      const local = lookup(bundles[locale], key);
+      const fallback = lookup(bundles.en, key);
+      if (typeof local === 'string') return local;
+      if (typeof fallback === 'string') return fallback;
+      return key;
+    }
+
     function t(key, vars) {
       const local = lookup(bundles[locale], key);
       const fallback = lookup(bundles.en, key);
@@ -97,7 +105,7 @@ export function I18nProvider({ children }) {
       return interpolate(template, vars);
     }
 
-    return { locale, setLocale, t, locales: LOCALES };
+    return { locale, setLocale, t, raw, locales: LOCALES };
   }, [locale, setLocale]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;

@@ -25,7 +25,11 @@ export function Home() {
         <p className="eyebrow">{t('home.eyebrow')}</p>
         <h1 className="home-title">{t('home.title')}</h1>
         <h2 className="home-question">{t('home.question')}</h2>
-        <p className="home-blurb">{t('home.blurb')}</p>
+        {t('home.blurb').split(/\n{2,}/).map((paragraph) => (
+          <p className="home-blurb" key={paragraph}>
+            {paragraph}
+          </p>
+        ))}
         <p className="home-lede">{t('home.lede')}</p>
         <div className="home-actions">
           <Link className="home-button home-button-primary" to={withLocale(locale, '/survey')}>

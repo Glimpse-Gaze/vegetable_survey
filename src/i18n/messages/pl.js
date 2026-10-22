@@ -77,10 +77,10 @@ export const pl = {
     title: 'Wielka ankieta warzywna',
     question: 'Co uznajemy za warzywo?',
     blurb:
-      'Wszyscy jemy warzywa na co dzień, ale... co tak naprawdę sprawia, że coś jest warzywem? Odpowiedź nie jest tak prosta, jak Ci się wydaje. Ta krótka ankieta sprawdza, jak ludzie klasyfikują warzywa i dlaczego nasze definicje różnią się między osobami i kulturami.',
+      'Wszyscy jemy warzywa na co dzień, ale... co tak naprawdę sprawia, że coś jest warzywem? Odpowiedź nie jest tak prosta, jak Ci się wydaje.\n\nTa krótka ankieta sprawdza, jak ludzie klasyfikują warzywa i dlaczego nasze definicje różnią się między osobami i kulturami.',
     lede: 'Podziel się swoim zdaniem, porównaj odpowiedzi ze znajomymi i zobacz, jak myślą ludzie na świecie!',
     description:
-      'Co uznajemy za warzywo? Krótka ankieta o tym, jak ludzie klasyfikują warzywa i dlaczego te definicje się różnią. Podziel się zdaniem i zobacz, jak myśli świat.',
+      'Co uznajemy za warzywo? Podziel się opinią i zobacz, jak myśli świat!',
     takeSurvey: 'Wypełnij ankietę',
     seeResults: 'Zobacz wyniki',
     skipTitle: 'Zanim przejdziesz dalej',
@@ -123,6 +123,7 @@ export const pl = {
     whatElse: 'Co takiego?',
     placeholder: 'Podaj swój powód.',
     publicConsent: 'Zgadzam się na wyświetlenie tej odpowiedzi publicznie.',
+    publicSpam: 'To nie wygląda na prawdziwą odpowiedź, więc nie pokażemy jej publicznie.',
     continueHint: 'Wybierz przynajmniej jedno',
   },
   criteria: {

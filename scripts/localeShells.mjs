@@ -33,6 +33,18 @@ function replaceAll(html, from, to) {
   return html.split(from).join(to);
 }
 
+function replaceBlurb(html, english, localized) {
+  const enParts = String(english).split(/\n+/).filter(Boolean);
+  const localParts = String(localized).split(/\n+/).filter(Boolean);
+  if (enParts.length < 2 || localParts.length !== enParts.length) {
+    return replaceAll(html, english, escapeHtml(localized));
+  }
+  return enParts.reduce(
+    (next, part, index) => replaceAll(next, part, escapeHtml(localParts[index] || '')),
+    html,
+  );
+}
+
 export const RESULT_CATEGORIES = [
   'first-instincts',
   'why-vegetabley',
@@ -56,9 +68,13 @@ export function localizeIndexHtml(html, localeId) {
   if (!home || !locale) throw new Error(`Unknown locale: ${localeId}`);
 
   let next = html;
-  next = replaceAll(next, '<html lang="en">', `<html lang="${locale.htmlLang}">`);
+  next = replaceAll(
+    next,
+    '<html lang="en" prefix="og: https://ogp.me/ns#">',
+    `<html lang="${locale.htmlLang}" prefix="og: https://ogp.me/ns#">`,
+  );
   next = replaceAll(next, en.description, escapeHtml(home.description));
-  next = replaceAll(next, en.blurb, escapeHtml(home.blurb));
+  next = replaceBlurb(next, en.blurb, home.blurb);
   next = replaceAll(next, en.lede, escapeHtml(home.lede));
   next = replaceAll(next, en.question, escapeHtml(home.question));
   next = replaceAll(next, en.title, escapeHtml(home.title));

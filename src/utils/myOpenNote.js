@@ -1,4 +1,5 @@
 import { normalizeText } from './normalization.js';
+import { isPublishableText } from './publishableText.js';
 
 const MY_OPEN_NOTE_KEY = 'veg-survey-my-note';
 
@@ -27,10 +28,11 @@ export function readMyOpenNote() {
     if (!raw) return { text: '', isPublic: false };
     const parsed = JSON.parse(raw);
     const text = typeof parsed?.text === 'string' ? parsed.text.trim() : '';
-    const isPublic =
+    const storedPublic =
       parsed?.public === undefined && parsed?.isPublic === undefined
         ? Boolean(text)
         : Boolean(parsed?.public ?? parsed?.isPublic);
+    const isPublic = storedPublic && isPublishableText(text);
     return { text, isPublic };
   } catch {
     return { text: '', isPublic: false };
@@ -43,7 +45,7 @@ export function isMyOpenNote(text, mine) {
 }
 
 export function applyMyNoteToPage(items, myText) {
-  if (!myText) return items;
+  if (!myText || !isPublishableText(myText)) return items;
 
   let found = false;
   const marked = items.map((item) => {

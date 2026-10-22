@@ -79,10 +79,10 @@ export const en = {
     title: 'The Great Vegetable Survey',
     question: 'What do we consider a vegetable?',
     blurb:
-      'We all eat vegetables every day, but... what actually makes something a vegetable? The answer might not be as obvious as you think. This short survey explores how people classify veggies and why our definitions differ across individuals and cultures.',
+      'We all eat vegetables every day, but... what actually makes something a vegetable? The answer might not be as obvious as you think.\n\nThis short survey explores how people classify veggies and why our definitions differ across individuals and cultures.',
     lede: 'Share your take, compare answers with friends, and see how people around the world think!',
     description:
-      'What do we consider a vegetable? A short survey of how people classify veggies, and why those definitions differ. Share your take and see how the world thinks.',
+      'What do we consider a vegetable? Share your opinion and see how the world thinks!',
     takeSurvey: 'Take the survey',
     seeResults: 'See the results',
     skipTitle: 'Before you skip ahead',
@@ -125,6 +125,7 @@ export const en = {
     whatElse: 'What else?',
     placeholder: 'Type your own reason...',
     publicConsent: 'I agree to display this answer publicly.',
+    publicSpam: 'That doesn’t look like a real answer, so it won’t be shown publicly.',
     continueHint: 'Select at least one',
   },
   criteria: Object.fromEntries(criteria.map((item) => [item.id, item.label])),

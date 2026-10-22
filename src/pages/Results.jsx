@@ -115,20 +115,42 @@ function ordinal(n, t) {
   }
 }
 
-function placeLabel(region, t) {
-  if (region.id === 'global') return t('results.worldwide');
-  return t('results.inPlace', { place: region.name });
+function fillTemplate(template, vars) {
+  const parts = String(template).split(/\{(\w+)\}/g);
+  const nodes = [];
+  for (let index = 0; index < parts.length; index += 1) {
+    if (index % 2 === 0) {
+      if (parts[index]) nodes.push(parts[index]);
+      continue;
+    }
+    const value = vars[parts[index]];
+    if (value == null || value === '') continue;
+    if (Array.isArray(value)) nodes.push(...value);
+    else nodes.push(value);
+  }
+  return nodes;
 }
 
-function audienceLabel(section, t) {
+function AlignmentMark({ tone, children }) {
+  return <strong className={`alignment-var is-${tone}`}>{children}</strong>;
+}
+
+function audienceNodes(section, raw, tone) {
   const language = section.language?.name;
-  if (!language) return placeLabel(section.region, t);
-  if (section.region.id === 'global') {
-    return t('results.amongSpeakers', { language, place: '' });
+  if (!language) {
+    if (section.region.id === 'global') return [raw('results.worldwide')];
+    return fillTemplate(raw('results.inPlace'), {
+      place: <AlignmentMark tone={tone}>{section.region.name}</AlignmentMark>,
+    });
   }
-  return t('results.amongSpeakersIn', {
-    language,
-    place: section.region.name,
+  const key = section.region.id === 'global'
+    ? 'results.amongSpeakers'
+    : 'results.amongSpeakersIn';
+  return fillTemplate(raw(key), {
+    language: <AlignmentMark tone={tone}>{language}</AlignmentMark>,
+    place: section.region.id === 'global'
+      ? ''
+      : <AlignmentMark tone={tone}>{section.region.name}</AlignmentMark>,
   });
 }
 
@@ -138,7 +160,7 @@ function alignmentTone(rank) {
   return 'place';
 }
 
-function alignmentCopy(section, t) {
+function alignmentCopy(section, t, raw) {
   const picked = section.userOnBoard ? section.userRanked : null;
   const name =
     picked?.name ??
@@ -146,27 +168,32 @@ function alignmentCopy(section, t) {
     VEGETABLE_LABELS[section.userVoteId];
   if (!name) return null;
 
-  const place = audienceLabel(section, t);
   if (!picked) {
     const share = section.userRanked?.share ?? 0;
     const people = section.language
       ? t('results.speakers', { language: section.language.name })
       : t('results.people');
+    const tone = 'lose';
     return {
       kicker: t(share > 0 ? 'results.onlyShare' : 'results.shareVoted', {
         share: formatShare(share),
         people,
       }),
       name,
-      tone: 'lose',
+      tone,
       connector: t('results.it'),
-      outcome: t('results.placedBelow', { size: BLADE_BOARD_SIZE, place }),
+      outcome: fillTemplate(raw('results.placedBelow'), {
+        size: <AlignmentMark tone={tone}>{BLADE_BOARD_SIZE}</AlignmentMark>,
+        place: audienceNodes(section, raw, tone),
+      }),
     };
   }
 
   const people = section.language
     ? t('results.speakers', { language: section.language.name })
     : t('results.people');
+  const tone = alignmentTone(picked.rank);
+  const place = audienceNodes(section, raw, tone);
 
   return {
     kicker: t('results.shareVoted', {
@@ -174,13 +201,13 @@ function alignmentCopy(section, t) {
       people,
     }),
     name,
-    tone: alignmentTone(picked.rank),
+    tone,
     connector: t('results.itIs'),
     outcome:
       picked.rank === 1
-        ? t('results.leading', { place })
-        : t('results.ordinalPlace', {
-            rank: ordinal(picked.rank, t),
+        ? fillTemplate(raw('results.leading'), { place })
+        : fillTemplate(raw('results.ordinalPlace'), {
+            rank: <AlignmentMark tone={tone}>{ordinal(picked.rank, t)}</AlignmentMark>,
             place,
           }),
   };
@@ -807,7 +834,7 @@ function ResultsSkeleton({ layout }) {
 
 export function Results() {
   const navigate = useNavigate();
-  const { t, locale } = useI18n();
+  const { t, raw, locale } = useI18n();
   const catalog = useSurveyCatalog();
   const numberLocale = intlLocale(locale);
   const cjk = locale === 'zh' || locale === 'zh-hant';
@@ -932,7 +959,7 @@ export function Results() {
   }, [liveSummary.ballots, allowedPlaceIds, languageOptions, regionId, languageId]);
   const nextId = nextCategoryId(category.id);
   const alignment =
-    category.layout === 'blades' ? alignmentCopy(section, t) : null;
+    category.layout === 'blades' ? alignmentCopy(section, t, raw) : null;
   const showMap =
     category.layout === 'blades' || category.layout === 'spectrum';
   const bladesRef = useRef(null);
@@ -1236,11 +1263,16 @@ export function Results() {
                     {alignment.name}
                   </strong>
                   {stop}
-                  {alignment.connector ? `${gap}${alignment.connector}` : ''}
+                  {alignment.connector ? (
+                    <>
+                      {gap}
+                      {alignment.connector}
+                    </>
+                  ) : null}
                   {gap}
-                  <strong className={`alignment-var is-${alignment.tone}`}>
-                    {alignment.outcome}
-                  </strong>
+                  {alignment.outcome.map((node, index) => (
+                    <span key={index}>{node}</span>
+                  ))}
                   {stop}
                 </p>
               </div>
@@ -1375,8 +1407,8 @@ export function Results() {
               }}
             />
           </div>
-          <BrandFooter className="brand-footer--results" />
         </section>
+        <BrandFooter className="brand-footer--results" />
       </main>
       <ReportIssuesButton variant="fab" />
       {gateOpen ? (

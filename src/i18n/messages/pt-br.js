@@ -77,10 +77,10 @@ export const ptBr = {
     title: 'A Grande Pesquisa do Legume',
     question: 'O que consideramos um legume?',
     blurb:
-      'A gente come legumes todo dia, mas... o que faz de algo, de fato, um legume? A resposta pode não ser tão óbvia quanto você pensa. Esta pesquisa curta explora como as pessoas classificam os legumes e por que as nossas definições mudam de pessoa para pessoa e de cultura para cultura.',
+      'A gente come legumes todo dia, mas... o que faz de algo, de fato, um legume? A resposta pode não ser tão óbvia quanto você pensa.\n\nEsta pesquisa curta explora como as pessoas classificam os legumes e por que as nossas definições mudam de pessoa para pessoa e de cultura para cultura.',
     lede: 'Compartilha a sua opinião, compara as respostas com quem você conhece e vê como as pessoas ao redor do mundo pensam!',
     description:
-      'O que consideramos um legume? Uma pesquisa curta sobre como as pessoas classificam os legumes e por que essas definições mudam. Compartilha a sua opinião e vê como o mundo pensa.',
+      'O que consideramos um legume? Compartilha a sua opinião e vê como o mundo pensa!',
     takeSurvey: 'Fazer a pesquisa',
     seeResults: 'Ver os resultados',
     skipTitle: 'Antes de pular',
@@ -123,6 +123,7 @@ export const ptBr = {
     whatElse: 'O que mais?',
     placeholder: 'Escreve um motivo…',
     publicConsent: 'Aceito que esta resposta apareça em público.',
+    publicSpam: 'Isso não parece uma resposta de verdade, então não entra na área pública.',
     continueHint: 'Escolhe pelo menos um',
   },
   criteria: {

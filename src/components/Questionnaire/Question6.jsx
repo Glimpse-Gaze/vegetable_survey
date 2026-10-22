@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { numberLocale as intlLocale } from '../../i18n/locales.js';
 import { useI18n } from '../../i18n/useI18n.js';
+import { isPublishableText } from '../../utils/publishableText.js';
 import { ConfirmDialog } from '../ConfirmDialog.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
 import { QuestionNav } from './QuestionNav.jsx';
@@ -16,13 +17,17 @@ export function Question6({ onContinue, onBack, initialDescription }) {
     initialDescription?.publicDisplay ?? false,
   );
   const [askSkip, setAskSkip] = useState(false);
+  const trimmed = text.trim();
+  const showSpam = publicDisplay && Boolean(trimmed) && !isPublishableText(trimmed);
 
   function commit(nextText) {
-    const trimmed = nextText.trim();
-    const publish = publicDisplay && trimmed.length >= MIN_PUBLIC_NOTE;
+    const nextTrimmed = nextText.trim();
+    const longEnough = nextTrimmed.length >= MIN_PUBLIC_NOTE;
+    const publish =
+      publicDisplay && longEnough && isPublishableText(nextTrimmed);
     onContinue({
       openDescription: {
-        text: publish || !publicDisplay ? trimmed : '',
+        text: publicDisplay && !longEnough ? '' : nextTrimmed,
         publicDisplay: publish,
       },
     });
@@ -68,6 +73,7 @@ export function Question6({ onContinue, onBack, initialDescription }) {
           />
           <span>{t('q6.publicConsent')}</span>
         </label>
+        {showSpam ? <p className="public-spam-hint">{t('q2.publicSpam')}</p> : null}
 
         <QuestionNav onBack={onBack} />
       </form>
