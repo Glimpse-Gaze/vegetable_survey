@@ -4,21 +4,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 14px;
   /* Clear the fixed locale switcher. The brand block stays in the flow. */
   padding:
     max(88px, calc(env(safe-area-inset-top) + 56px))
     max(20px, env(safe-area-inset-right))
-    max(24px, calc(env(safe-area-inset-bottom) + 12px))
+    max(8px, env(safe-area-inset-bottom))
     max(20px, env(safe-area-inset-left));
 }
 
 .home-shell .brand-footer--page {
   position: static;
   flex-shrink: 0;
-  margin: 0;
-  padding: 0 4.5rem;
+  margin: auto 0 0;
+  padding: 12px 20px 0;
 }
 
 .home-version {
@@ -250,8 +250,9 @@
 }
 
 .brand-footer--results {
-  margin: 28px auto 8px;
-  padding: 0;
+  margin-top: 12px;
+  margin-bottom: 0;
+  padding: 0 16px max(8px, env(safe-area-inset-bottom));
 }
 
 .locale-switcher select {
@@ -423,12 +424,21 @@ html[lang='pt-PT'] .home-title {
   text-transform: uppercase;
 }
 
+.share-bar-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+}
+
 .share-bar-buttons {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  max-width: 100%;
 }
 
 .share-bar-btn {
@@ -449,10 +459,28 @@ html[lang='pt-PT'] .home-title {
   transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
-.share-bar-btn svg {
-  width: 24px;
-  height: 24px;
+.share-bar-btn svg,
+.share-bar-glyph {
+  width: calc(29px * 0.9);
+  height: calc(29px * 0.9);
   display: block;
+}
+
+.share-bar-btn svg,
+.share-bar-btn[data-network='facebook'] .share-bar-glyph,
+.share-bar-btn[data-network='telegram'] .share-bar-glyph {
+  width: 29px;
+  height: 29px;
+}
+
+.share-bar-glyph {
+  background: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
 }
 
 .share-bar-btn:hover {
@@ -478,6 +506,59 @@ html[lang='pt-PT'] .home-title {
 .share-bar-btn[data-network='reddit']:hover {
   color: #ff4500;
   border-color: #ff4500;
+}
+
+.share-bar-btn[data-network='instagram']:hover {
+  color: #c13584;
+  border-color: #c13584;
+}
+
+.share-bar-btn[data-network='bluesky']:hover {
+  color: #1185fe;
+  border-color: #1185fe;
+}
+
+.share-bar-btn[data-network='substack']:hover {
+  color: #ff6719;
+  border-color: #ff6719;
+}
+
+.share-bar-btn[data-network='wechat']:hover {
+  color: #07c160;
+  border-color: #07c160;
+}
+
+.share-bar-btn[data-network='messenger']:hover {
+  color: #0084ff;
+  border-color: #0084ff;
+}
+
+.share-bar-btn[data-network='telegram']:hover {
+  color: #229ed9;
+  border-color: #229ed9;
+}
+
+@media (max-width: 560px) {
+  .share-bar-buttons {
+    gap: 6px;
+  }
+
+  .share-bar .share-bar-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .share-bar .share-bar-glyph {
+    width: calc(22px * 0.9);
+    height: calc(22px * 0.9);
+  }
+
+  .share-bar .share-bar-btn svg,
+  .share-bar .share-bar-btn[data-network='facebook'] .share-bar-glyph,
+  .share-bar .share-bar-btn[data-network='telegram'] .share-bar-glyph {
+    width: 22px;
+    height: 22px;
+  }
 }
 
 .share-bar-btn:focus-visible {
@@ -813,7 +894,7 @@ button.response-code.is-copied {
     padding:
       max(76px, calc(env(safe-area-inset-top) + 48px))
       max(16px, env(safe-area-inset-right))
-      max(88px, calc(env(safe-area-inset-bottom) + 64px))
+      max(8px, env(safe-area-inset-bottom))
       max(16px, env(safe-area-inset-left));
   }
 

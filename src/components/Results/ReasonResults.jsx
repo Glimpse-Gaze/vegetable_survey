@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   COMMENT_DISPLAY_COUNT,
   layoutCommentRows,
@@ -103,18 +103,52 @@ function pointFromEvent(event) {
 
 function DriftRow({ row, leading = false, myVotes, canVote, onVote, onHoldStart, onHoldMove, onHoldEnd }) {
   const { t } = useI18n();
-  const loop = [...row.items, ...row.items];
+  const rowRef = useRef(null);
+  const loop = useMemo(() => [...row.items, ...row.items], [row.items]);
+  const [shift, setShift] = useState('');
+
+  useLayoutEffect(() => {
+    const node = rowRef.current;
+    if (!node) return;
+
+    const measure = () => {
+      const chips = node.querySelectorAll(':scope > .reason-chip');
+      const half = chips.length / 2;
+      if (half < 1) return;
+      const distance = Math.round(chips[half].offsetLeft - chips[0].offsetLeft);
+      if (distance <= 0) return;
+      const next = `-${distance}px`;
+      setShift((current) => (current === next ? current : next));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    let cancelled = false;
+    document.fonts?.ready?.then(() => {
+      if (!cancelled) measure();
+    });
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+    };
+  }, [loop]);
 
   return (
     <div
+      ref={rowRef}
       className={[
         'reason-drift-row',
+        shift ? 'is-ready' : '',
         row.reverse ? 'is-reverse' : '',
         leading ? 'is-leading' : '',
       ]
         .filter(Boolean)
         .join(' ')}
-      style={{ '--drift-duration': row.duration }}
+      style={{
+        '--drift-duration': row.duration,
+        '--drift-shift': shift || '-50%',
+      }}
     >
       {loop.map((item, index) => {
         const mine = myVotes[item.id] ?? 0;

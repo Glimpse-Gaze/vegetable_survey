@@ -77,10 +77,10 @@ export const esMx = {
     title: 'La gran encuesta de la verdura',
     question: '¿Qué consideramos una verdura?',
     blurb:
-      'Comemos verdura todos los días, pero... ¿qué hace de verdad que algo sea una verdura? Puede que la respuesta no sea tan obvia como crees. Esta encuesta corta explora cómo clasifica la gente las verduras y por qué nuestras definiciones cambian entre personas y entre culturas.',
+      'Comemos verdura todos los días, pero... ¿qué hace de verdad que algo sea una verdura? Puede que la respuesta no sea tan obvia como crees.\n\nEsta encuesta corta explora cómo clasifica la gente las verduras y por qué nuestras definiciones cambian entre personas y entre culturas.',
     lede: 'Comparte lo que piensas, compara las respuestas con tus amistades y mira cómo piensa la gente alrededor del mundo.',
     description:
-      '¿Qué consideramos una verdura? Una encuesta corta sobre cómo la gente clasifica las verduras y por qué esas definiciones cambian. Comparte lo que piensas y mira cómo piensa el mundo.',
+      '¿Qué consideramos una verdura? Comparte tu opinión y mira cómo piensa el mundo.',
     takeSurvey: 'Hacer la encuesta',
     seeResults: 'Ver los resultados',
     skipTitle: 'Antes de saltar',
@@ -123,6 +123,7 @@ export const esMx = {
     whatElse: '¿Qué más?',
     placeholder: 'Escribe una razón…',
     publicConsent: 'Acepto que esta respuesta se muestre en público.',
+    publicSpam: 'Esto no parece una respuesta real, así que no se va a mostrar en público.',
     continueHint: 'Elige al menos uno',
   },
   criteria: {

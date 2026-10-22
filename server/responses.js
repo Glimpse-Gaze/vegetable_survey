@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { isPublishableText } from '../src/utils/publishableText.js';
 import { consumeRateLimit } from './rateLimit.js';
 import {
   generateRankingCode,
@@ -46,7 +47,9 @@ const MIN_PUBLIC_NOTE = 3;
 export function storedOpenDescription(openDescription) {
   const text = String(openDescription?.text ?? '').trim();
   const publish =
-    Boolean(openDescription?.publicDisplay) && text.length >= MIN_PUBLIC_NOTE;
+    Boolean(openDescription?.publicDisplay) &&
+    text.length >= MIN_PUBLIC_NOTE &&
+    isPublishableText(text);
   if (openDescription?.publicDisplay && !publish) {
     return { text: '', publicDisplay: false };
   }
@@ -60,13 +63,15 @@ export function storedOpenDescription(openDescription) {
 export function comparisonFromPayload(payload) {
   const note = storedOpenDescription(payload?.openDescription);
   const publicWriteup = note.publicDisplay;
-  const publicCustom = Boolean(payload?.customCriterionPublic);
+  const customText = String(payload?.customCriterion ?? '').trim();
+  const publicCustom =
+    Boolean(payload?.customCriterionPublic) && isPublishableText(customText);
   return {
     initialAssociation: payload?.initialAssociation ?? null,
     initialCriteria: Array.isArray(payload?.initialCriteria)
       ? payload.initialCriteria
       : [],
-    customCriterion: publicCustom ? payload?.customCriterion ?? '' : '',
+    customCriterion: publicCustom ? customText : '',
     customCriterionPublic: publicCustom,
     sortBuckets: payload?.sortBuckets ?? null,
     spectrum: Array.isArray(payload?.spectrum) ? payload.spectrum : [],
@@ -142,7 +147,15 @@ export async function insertResponse(payload, databaseUrl) {
   const sql = neon(databaseUrl);
   const publicDisplay = openDescription.publicDisplay;
   const rankingCode = await uniqueRankingCode(sql);
-  const storedPayload = { ...payload, openDescription, rankingCode };
+  const customText = String(payload?.customCriterion ?? '').trim();
+  const storedPayload = {
+    ...payload,
+    customCriterion: customText,
+    customCriterionPublic:
+      Boolean(payload?.customCriterionPublic) && isPublishableText(customText),
+    openDescription,
+    rankingCode,
+  };
   const serialized = JSON.stringify(storedPayload);
   if (serialized.length > MAX_BODY_BYTES) {
     throw new Error('Response is too large.');
@@ -173,14 +186,16 @@ export async function lookupComparison(id, databaseUrl) {
 }
 
 export function fillFromPayload(payload, publicId) {
-  const publicCustom = Boolean(payload?.customCriterionPublic);
+  const customText = String(payload?.customCriterion ?? '').trim();
+  const publicCustom =
+    Boolean(payload?.customCriterionPublic) && isPublishableText(customText);
   return {
     id: publicId,
     initialAssociation: payload?.initialAssociation ?? null,
     initialCriteria: Array.isArray(payload?.initialCriteria)
       ? payload.initialCriteria
       : [],
-    customCriterion: payload?.customCriterion ?? '',
+    customCriterion: customText,
     customCriterionPublic: publicCustom,
     sortBuckets: payload?.sortBuckets ?? null,
     spectrum: Array.isArray(payload?.spectrum) ? payload.spectrum : [],

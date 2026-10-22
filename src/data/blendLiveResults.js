@@ -1,4 +1,5 @@
 import { VOTE_THRESHOLD } from './resultsMock.js';
+import { isPublishableText } from '../utils/publishableText.js';
 import { iso3ForCountry } from './countryIso3.js';
 import { countries } from './countries.js';
 
@@ -347,7 +348,7 @@ export function liveTextItemsForLocale(items, locale = 'en') {
   const want = normalizeTextLocale(locale);
   return (items ?? []).filter((item) => {
     const text = String(item?.text ?? '');
-    if (!text.trim()) return false;
+    if (!isPublishableText(text)) return false;
     return normalizeTextLocale(item?.locale, text) === want;
   });
 }

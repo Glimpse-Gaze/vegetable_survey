@@ -1,11 +1,13 @@
 import { normalizeText } from './normalization.js';
+import { isPublishableText } from './publishableText.js';
 
 const MY_CUSTOM_REASON_KEY = 'veg-survey-my-reason';
 
 export function writeMyCustomReason(text, isPublic) {
   const trimmed = String(text ?? '').trim();
+  const publish = Boolean(isPublic) && isPublishableText(trimmed);
   try {
-    if (!trimmed || !isPublic) {
+    if (!trimmed || !publish) {
       localStorage.removeItem(MY_CUSTOM_REASON_KEY);
       return;
     }
@@ -23,7 +25,8 @@ export function readMyCustomReason() {
     const raw = localStorage.getItem(MY_CUSTOM_REASON_KEY);
     if (!raw) return '';
     const parsed = JSON.parse(raw);
-    return typeof parsed?.text === 'string' ? parsed.text.trim() : '';
+    const text = typeof parsed?.text === 'string' ? parsed.text.trim() : '';
+    return isPublishableText(text) ? text : '';
   } catch {
     return '';
   }
@@ -35,7 +38,7 @@ export function isMyCustomReason(text, mine) {
 }
 
 export function applyMyAnswerToRows(rows, myText) {
-  if (!myText) return rows;
+  if (!myText || !isPublishableText(myText)) return rows;
 
   let found = false;
   const marked = rows.map((row) => ({

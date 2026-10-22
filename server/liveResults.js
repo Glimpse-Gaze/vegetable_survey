@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { isPublishableText } from '../src/utils/publishableText.js';
 
 /** User-confirmed real ranking codes. Later rows (after the newest seed) are included automatically. */
 export const LIVE_SEED_CODES = [
@@ -119,7 +120,7 @@ function compactBallot(payload, index) {
     buckets,
     spectrum: spectrum.length === SPECTRUM_SLOTS ? spectrum : [],
     customReason:
-      custom && payload?.customCriterionPublic
+      custom && payload?.customCriterionPublic && isPublishableText(custom)
         ? {
             id: `live-reason-${index}`,
             text: custom.slice(0, 280),
@@ -127,7 +128,7 @@ function compactBallot(payload, index) {
           }
         : null,
     note:
-      noteText && note?.publicDisplay
+      noteText && note?.publicDisplay && isPublishableText(noteText)
         ? {
             id: `live-note-${index}`,
             text: noteText.slice(0, 1200),

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { criteria, MAX_CUSTOM_CRITERION, shuffleCriteria } from '../../data/criteria.js';
 import { useI18n } from '../../i18n/useI18n.js';
+import { isPublishableText } from '../../utils/publishableText.js';
 import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import { CriteriaSelector } from './CriteriaSelector.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
@@ -32,6 +33,8 @@ export function Question2({
   const otherSelected = selectedIds.includes('other');
   const customText = customCriterion.trim();
   const customReady = !otherSelected || customText.length > 0;
+  const customPublicOk = !customText || isPublishableText(customText);
+  const showSpam = otherSelected && customPublic && Boolean(customText) && !customPublicOk;
   const canContinue = selectedIds.length > 0 && customReady;
   const atLimit = selectedIds.length >= MAX_CRITERIA;
 
@@ -56,7 +59,7 @@ export function Question2({
     onContinue({
       initialCriteria: selectedIds,
       customCriterion: otherSelected ? customText : '',
-      customCriterionPublic: otherSelected ? customPublic : false,
+      customCriterionPublic: otherSelected && customPublic && customPublicOk,
     });
   }
 
@@ -97,6 +100,7 @@ export function Question2({
               />
               <span>{t('q2.publicConsent')}</span>
             </label>
+            {showSpam ? <p className="public-spam-hint">{t('q2.publicSpam')}</p> : null}
           </div>
         ) : null}
 
