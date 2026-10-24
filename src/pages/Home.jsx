@@ -9,10 +9,10 @@ import { useI18n } from '../i18n/useI18n.js';
 import { withLocale } from '../i18n/paths.js';
 import { acknowledgeResults, readMyResponseId } from '../utils/myResponse.js';
 import { version } from '../../package.json';
-import borderTop from '../assets/Mainpage_border/SVG/Top.svg';
-import borderBottom from '../assets/Mainpage_border/SVG/Bottom.svg';
-import borderLeft from '../assets/Mainpage_border/SVG/Left.svg';
-import borderRight from '../assets/Mainpage_border/SVG/Right.svg';
+import borderTop from '../assets/Mainpage_border/web/Top.webp';
+import borderBottom from '../assets/Mainpage_border/web/Bottom.webp';
+import borderLeft from '../assets/Mainpage_border/web/Left.webp';
+import borderRight from '../assets/Mainpage_border/web/Right.webp';
 
 export function Home() {
   const navigate = useNavigate();
@@ -106,9 +106,8 @@ export function Home() {
             ))}
           </nav>
         </section>
-        <BrandFooter className="brand-footer--page" />
+        <BrandFooter className="brand-footer--page" version={version} />
       </div>
-      <p className="home-version">{version}</p>
       {askResults ? (
         <ConfirmDialog
           title={t('home.skipTitle')}

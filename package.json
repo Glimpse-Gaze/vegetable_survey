@@ -1,7 +1,7 @@
 {
   "name": "vegetable_survey",
   "private": true,
-  "version": "1.1.2",
+  "version": "1.5.0",
   "type": "module",
   "scripts": {
     "predev": "npm run compress:images",
@@ -9,6 +9,7 @@
     "prebuild": "npm run compress:images",
     "build": "node ./node_modules/vite/bin/vite.js build",
     "compress:images": "node ./scripts/compress-content-images.mjs",
+    "compress:borders": "node ./scripts/compress-border-svgs.mjs",
     "lint": "node ./node_modules/oxlint/bin/oxlint",
     "preview": "node ./node_modules/vite/bin/vite.js preview"
   },

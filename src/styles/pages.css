@@ -39,11 +39,11 @@ body:has(.home-shell) {
 }
 
 .veg-side-left {
-  left: 3%;
+  left: 5.5%;
 }
 
 .veg-side-right {
-  right: 2%;
+  right: 3%;
 }
 
 .veg-border {
@@ -88,7 +88,7 @@ body:has(.home-shell) {
 }
 
 .veg-border-top {
-  top: -3%;
+  top: -0.2%;
   left: 50%;
   width: 107%;
   transform: translate(-50%, -23%);
@@ -120,7 +120,7 @@ body:has(.home-shell) {
   padding:
     calc(var(--veg-band) * 0.78)
     max(20px, env(safe-area-inset-right, 0px))
-    calc(var(--veg-band) * 0.72)
+    calc(var(--veg-band) * 0.28)
     max(20px, env(safe-area-inset-left, 0px));
 }
 
@@ -128,20 +128,7 @@ body:has(.home-shell) {
   position: static;
   flex-shrink: 0;
   margin: auto 0 0;
-  padding: 12px 20px 0;
-}
-
-.home-version {
-  position: absolute;
-  z-index: 4;
-  left: max(16px, env(safe-area-inset-left, 0px));
-  bottom: max(14px, env(safe-area-inset-bottom, 0px));
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  line-height: 1;
-  pointer-events: none;
+  padding: 0 20px;
 }
 
 .locale-tools {
@@ -364,8 +351,17 @@ body:has(.home-shell) {
 }
 
 .brand-footer--page {
-  margin-top: 36px;
-  margin-bottom: 12px;
+  margin-top: 12px;
+  margin-bottom: 0;
+  gap: 4px;
+}
+
+.brand-footer-version {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 
 .brand-footer--results {
