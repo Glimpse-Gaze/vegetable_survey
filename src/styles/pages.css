@@ -1,6 +1,6 @@
 /* Drawings scroll with the page. Full-height transparent silhouettes — never
-   clip or scale the art. When the content shield is tight, translateX pushes
-   the strip OUTWARD past the window edge. */
+   clip or scale the art. Anchors stay at the window edges; translateX only
+   pushes strips OUTWARD when the content shield is tight. */
 body:has(.home-shell) {
   background: var(--paper);
   --veg-ease: 280ms ease;
@@ -21,6 +21,7 @@ body:has(.home-shell) {
 }
 
 .home-shell {
+  /* Matches the gently tucked top/bottom bands (not a deep crop). */
   --veg-band: clamp(100px, 15.4vw, 200px);
   position: relative;
   min-height: 100svh;
@@ -39,11 +40,11 @@ body:has(.home-shell) {
 }
 
 .veg-side-left {
-  left: 5.5%;
+  left: 0;
 }
 
 .veg-side-right {
-  right: 3%;
+  right: 0;
 }
 
 .veg-border {
@@ -65,18 +66,18 @@ body:has(.home-shell) {
   left: 0;
   top: 55%;
   height: 128%;
-  /* space == natural → hug the left edge.
-     space < natural → slide left (outward) so the inward edge clears the shield. */
+  /* space == natural → hug the window (outer tuck pulls art past the edge).
+     space < natural → slide further left so the inward edge clears the shield. */
   transform:
     translateY(-50%)
-    translateX(calc(var(--veg-side-space-left) - 100% - 6%));
+    translateX(calc(var(--veg-side-space-left) - 100% - 14%));
 }
 
 .veg-border-right {
   top: -5%;
   right: 0;
   height: 107%;
-  transform: translateX(calc(100% + 4% - var(--veg-side-space)));
+  transform: translateX(calc(100% + 12% - var(--veg-side-space)));
 }
 
 .veg-border-top,
@@ -85,17 +86,18 @@ body:has(.home-shell) {
   z-index: 5;
   height: auto;
   pointer-events: none;
+  transition: transform var(--veg-ease);
 }
 
 .veg-border-top {
-  top: -0.2%;
+  top: 0;
   left: 50%;
   width: 107%;
   transform: translate(-50%, -23%);
 }
 
 .veg-border-bottom {
-  bottom: -0.2%;
+  bottom: 0;
   left: 0;
   width: 100%;
   transform: translateY(11%);
@@ -111,9 +113,10 @@ body:has(.home-shell) {
   position: relative;
   z-index: 4;
   min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  /* Bias UI ~20% above true center; footer stays in the bottom fr. */
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 4fr);
+  justify-items: center;
   gap: 14px;
   box-sizing: border-box;
   background: transparent;
@@ -124,10 +127,15 @@ body:has(.home-shell) {
     max(20px, env(safe-area-inset-left, 0px));
 }
 
+.home-scroll > .home-panel {
+  grid-row: 2;
+}
+
 .home-shell .brand-footer--page {
   position: static;
-  flex-shrink: 0;
-  margin: auto 0 0;
+  grid-row: 3;
+  align-self: end;
+  margin: 0;
   padding: 0 20px;
 }
 

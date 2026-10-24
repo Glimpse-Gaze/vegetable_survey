@@ -22,7 +22,7 @@ const outDir = path.join(root, 'src', 'assets', 'Mainpage_border', 'web');
 /** Display-oriented caps (covers ~2x up to ~1600 CSS px / tall desktops). */
 const SPECS = {
   'Top.svg': { width: 2800, density: 144 },
-  'Bottom.svg': { width: 2800, density: 144 },
+  'Bottom2.svg': { width: 2800, density: 144 },
   'Left.svg': { height: 2400, density: 144 },
   'Right.svg': { height: 2400, density: 144 },
 };

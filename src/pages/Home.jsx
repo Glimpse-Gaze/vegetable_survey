@@ -10,7 +10,7 @@ import { withLocale } from '../i18n/paths.js';
 import { acknowledgeResults, readMyResponseId } from '../utils/myResponse.js';
 import { version } from '../../package.json';
 import borderTop from '../assets/Mainpage_border/web/Top.webp';
-import borderBottom from '../assets/Mainpage_border/web/Bottom.webp';
+import borderBottom from '../assets/Mainpage_border/web/Bottom2.webp';
 import borderLeft from '../assets/Mainpage_border/web/Left.webp';
 import borderRight from '../assets/Mainpage_border/web/Right.webp';
 
