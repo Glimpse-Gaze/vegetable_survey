@@ -64,20 +64,20 @@ body:has(.home-shell) {
 
 .veg-border-left {
   left: 0;
-  top: 55%;
+  top: 58%;
   height: 128%;
   /* space == natural → hug the window (outer tuck pulls art past the edge).
      space < natural → slide further left so the inward edge clears the shield. */
   transform:
     translateY(-50%)
-    translateX(calc(var(--veg-side-space-left) - 100% - 14%));
+    translateX(calc(var(--veg-side-space-left) - 100% - 2.75%));
 }
 
 .veg-border-right {
   top: -5%;
   right: 0;
   height: 107%;
-  transform: translateX(calc(100% + 12% - var(--veg-side-space)));
+  transform: translateX(calc(100% + 3% - var(--veg-side-space)));
 }
 
 .veg-border-top,
@@ -90,7 +90,7 @@ body:has(.home-shell) {
 }
 
 .veg-border-top {
-  top: 0;
+  top: -1%;
   left: 50%;
   width: 107%;
   transform: translate(-50%, -23%);
@@ -98,8 +98,8 @@ body:has(.home-shell) {
 
 .veg-border-bottom {
   bottom: 0;
-  left: 0;
-  width: 100%;
+  left: -1.5%;
+  width: 107%;
   transform: translateY(11%);
 }
 
