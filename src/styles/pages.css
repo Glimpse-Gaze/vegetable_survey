@@ -1,17 +1,89 @@
+/* The drawings sit on the page and scroll with it. Each file keeps its own
+   transparent background, so the four edges overlap as vegetables rather than
+   as a cut-out frame. Outer edges stay flush with the window. */
 .home-shell {
   position: relative;
   min-height: 100svh;
+  min-height: 100dvh;
+  overflow: clip;
+}
+
+.veg-side {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.veg-side-left {
+  left: 0;
+}
+
+.veg-side-right {
+  right: 0;
+}
+
+.veg-border {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.veg-border-left,
+.veg-border-right {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: auto;
+  max-width: none;
+}
+
+.veg-border-left {
+  left: 0;
+  transform: translateX(-13.2%);
+}
+
+.veg-border-right {
+  right: 0;
+  transform: translateX(2.4%);
+}
+
+.veg-border-top,
+.veg-border-bottom {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  aspect-ratio: 5 / 1;
+}
+
+.veg-border-top {
+  top: 0;
+}
+
+.veg-border-bottom {
+  bottom: 0;
+}
+
+.home-scroll {
+  position: relative;
+  z-index: 4;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   gap: 14px;
-  /* Clear the fixed locale switcher. The brand block stays in the flow. */
+  box-sizing: border-box;
   padding:
-    max(88px, calc(env(safe-area-inset-top) + 56px))
-    max(20px, env(safe-area-inset-right))
-    max(8px, env(safe-area-inset-bottom))
-    max(20px, env(safe-area-inset-left));
+    clamp(76px, 10vw, 132px)
+    max(20px, env(safe-area-inset-right, 0px))
+    clamp(68px, 9vw, 120px)
+    max(20px, env(safe-area-inset-left, 0px));
 }
 
 .home-shell .brand-footer--page {
@@ -23,20 +95,28 @@
 
 .home-version {
   position: absolute;
-  left: max(16px, env(safe-area-inset-left));
-  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 4;
+  left: max(16px, env(safe-area-inset-left, 0px));
+  bottom: max(14px, env(safe-area-inset-bottom, 0px));
   margin: 0;
   color: var(--muted);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   line-height: 1;
+  pointer-events: none;
 }
 
 .locale-tools {
   position: absolute;
-  top: max(16px, env(safe-area-inset-top));
-  right: max(16px, env(safe-area-inset-right));
+  top: max(12px, env(safe-area-inset-top, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
   z-index: 5;
+}
+
+.home-shell .locale-switcher select {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: 0 1px 0 rgba(29, 42, 28, 0.04);
 }
 
 .locale-switcher {
@@ -95,6 +175,7 @@
   width: 20px;
   height: 20px;
 }
+
 
 .report-issues-btn.is-drawer {
   width: 100%;
@@ -889,13 +970,32 @@ button.response-code.is-copied {
   color: #f7fff6;
 }
 
+@media (max-width: 40rem) {
+  .veg-border-left,
+  .veg-border-right {
+    visibility: hidden;
+  }
+}
+
+@media (max-height: 520px) {
+  .home-scroll {
+    padding-top: 64px;
+    padding-bottom: 56px;
+  }
+
+  .home-shell .home-title {
+    font-size: clamp(1.7rem, 9vh, 2.6rem);
+  }
+
+  .home-panel .eyebrow {
+    margin-bottom: 6px;
+  }
+}
+
 @media (max-width: 640px) {
-  .home-shell {
-    padding:
-      max(76px, calc(env(safe-area-inset-top) + 48px))
-      max(16px, env(safe-area-inset-right))
-      max(8px, env(safe-area-inset-bottom))
-      max(16px, env(safe-area-inset-left));
+  .home-scroll {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
 
   .response-code-title {
