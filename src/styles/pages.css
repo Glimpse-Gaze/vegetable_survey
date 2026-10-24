@@ -1,7 +1,27 @@
-/* The drawings sit on the page and scroll with it. Each file keeps its own
-   transparent background, so the four edges overlap as vegetables rather than
-   as a cut-out frame. Outer edges stay flush with the window. */
+/* Drawings scroll with the page. Full-height transparent silhouettes — never
+   clip or scale the art. When the content shield is tight, translateX pushes
+   the strip OUTWARD past the window edge. */
+body:has(.home-shell) {
+  background: var(--paper);
+  --veg-ease: 280ms ease;
+  --veg-shield: 40rem;
+  --veg-crawl: 20px;
+  --veg-side-natural: calc(100dvh * 1000 / 2160);
+  --veg-side-natural-left: calc(100dvh * 1.28 * 1000 / 2160);
+  --veg-side-space: clamp(
+    0px,
+    calc((100vw - var(--veg-shield)) / 2 + var(--veg-crawl)),
+    var(--veg-side-natural)
+  );
+  --veg-side-space-left: clamp(
+    0px,
+    calc((100vw - var(--veg-shield)) / 2 + var(--veg-crawl)),
+    var(--veg-side-natural-left)
+  );
+}
+
 .home-shell {
+  --veg-band: clamp(100px, 15.4vw, 200px);
   position: relative;
   min-height: 100svh;
   min-height: 100dvh;
@@ -15,15 +35,15 @@
   width: 0;
   overflow: visible;
   pointer-events: none;
-  z-index: 2;
+  z-index: 5;
 }
 
 .veg-side-left {
-  left: 0;
+  left: 3%;
 }
 
 .veg-side-right {
-  right: 0;
+  right: 2%;
 }
 
 .veg-border {
@@ -35,39 +55,56 @@
 .veg-border-left,
 .veg-border-right {
   position: absolute;
-  top: 0;
-  height: 100%;
   width: auto;
   max-width: none;
+  aspect-ratio: 1000 / 2160;
+  transition: transform var(--veg-ease);
 }
 
 .veg-border-left {
   left: 0;
-  transform: translateX(-13.2%);
+  top: 55%;
+  height: 128%;
+  /* space == natural → hug the left edge.
+     space < natural → slide left (outward) so the inward edge clears the shield. */
+  transform:
+    translateY(-50%)
+    translateX(calc(var(--veg-side-space-left) - 100% - 6%));
 }
 
 .veg-border-right {
+  top: -5%;
   right: 0;
-  transform: translateX(2.4%);
+  height: 107%;
+  transform: translateX(calc(100% + 4% - var(--veg-side-space)));
 }
 
 .veg-border-top,
 .veg-border-bottom {
   position: absolute;
-  z-index: 3;
-  left: 0;
-  width: 100%;
+  z-index: 5;
   height: auto;
   pointer-events: none;
-  aspect-ratio: 5 / 1;
 }
 
 .veg-border-top {
-  top: 0;
+  top: -3%;
+  left: 50%;
+  width: 107%;
+  transform: translate(-50%, -23%);
 }
 
 .veg-border-bottom {
-  bottom: 0;
+  bottom: -0.2%;
+  left: 0;
+  width: 100%;
+  transform: translateY(11%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.home-shell) {
+    --veg-ease: 0s;
+  }
 }
 
 .home-scroll {
@@ -79,10 +116,11 @@
   align-items: center;
   gap: 14px;
   box-sizing: border-box;
+  background: transparent;
   padding:
-    clamp(76px, 10vw, 132px)
+    calc(var(--veg-band) * 0.78)
     max(20px, env(safe-area-inset-right, 0px))
-    clamp(68px, 9vw, 120px)
+    calc(var(--veg-band) * 0.72)
     max(20px, env(safe-area-inset-left, 0px));
 }
 
@@ -480,6 +518,13 @@ html[lang='pt-PT'] .home-title {
   gap: 12px;
   width: min(22rem, 100%);
   margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .home-actions {
+    grid-template-columns: 1fr 1fr;
+    width: min(36rem, 100%);
+  }
 }
 
 .share-bar {
@@ -971,9 +1016,8 @@ button.response-code.is-copied {
 }
 
 @media (max-width: 40rem) {
-  .veg-border-left,
-  .veg-border-right {
-    visibility: hidden;
+  .veg-side {
+    display: none;
   }
 }
 
