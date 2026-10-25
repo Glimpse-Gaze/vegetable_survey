@@ -1038,8 +1038,8 @@ button.response-code.is-copied {
   }
 
   .veg-border-bottom {
-    width: 128%;
-    transform: translateY(6%);
+    width: 130%;
+    transform: translate(-8.5%, 9%);
   }
 }
 
