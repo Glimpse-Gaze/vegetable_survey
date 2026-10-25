@@ -63,7 +63,7 @@ body:has(.home-shell) {
 }
 
 .veg-border-left {
-  left: -80px;
+  left: -88px;
   top: 96lvh;
   height: var(--veg-side-h);
   transform:
@@ -73,7 +73,7 @@ body:has(.home-shell) {
 
 .veg-border-right {
   top: -7lvh;
-  right: -80px;
+  right: -30px;
   height: 175lvh;
   transform: translateX(var(--veg-side-push));
 }
