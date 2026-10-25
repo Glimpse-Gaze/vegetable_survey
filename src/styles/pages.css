@@ -1028,13 +1028,13 @@ button.response-code.is-copied {
 
   .home-scroll {
     grid-template-rows: minmax(0, 0.25fr) auto minmax(0, 1fr);
-    padding-top: calc(var(--veg-band) * 0.42);
+    padding-top: calc(var(--veg-band) * 0.38);
     padding-bottom: calc(var(--veg-band) * 0.32);
   }
 
   .veg-border-top {
     width: 148%;
-    transform: translate(-50%, -10%);
+    transform: translate(-50%, -19%);
   }
 
   .veg-border-bottom {
