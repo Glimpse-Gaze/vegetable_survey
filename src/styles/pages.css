@@ -1028,7 +1028,7 @@ button.response-code.is-copied {
 
   .home-scroll {
     grid-template-rows: minmax(0, 0.25fr) auto minmax(0, 1fr);
-    padding-top: calc(var(--veg-band) * 0.38);
+    padding-top: calc(var(--veg-band) * 0.45);
     padding-bottom: calc(var(--veg-band) * 0.32);
   }
 
