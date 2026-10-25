@@ -6,18 +6,16 @@ body:has(.home-shell) {
   --veg-ease: 280ms ease;
   --veg-shield: 40rem;
   --veg-crawl: 20px;
+  /* Push retreats both sides equally (px). Scale the art with height; width
+     follows the image’s own ratio (undistorted). Do not use object-fit:contain
+     with a fixed width — that caps painted height no matter how tall the box. */
   --veg-side-natural: calc(100dvh * 1000 / 2160);
-  --veg-side-natural-left: calc(100dvh * 1.28 * 1000 / 2160);
-  --veg-side-space: clamp(
+  --veg-side-room: clamp(
     0px,
     calc((100vw - var(--veg-shield)) / 2 + var(--veg-crawl)),
     var(--veg-side-natural)
   );
-  --veg-side-space-left: clamp(
-    0px,
-    calc((100vw - var(--veg-shield)) / 2 + var(--veg-crawl)),
-    var(--veg-side-natural-left)
-  );
+  --veg-side-push: calc(var(--veg-side-natural) - var(--veg-side-room));
 }
 
 .home-shell {
@@ -58,26 +56,23 @@ body:has(.home-shell) {
   position: absolute;
   width: auto;
   max-width: none;
-  aspect-ratio: 1000 / 2160;
+  height: 175dvh;
   transition: transform var(--veg-ease);
 }
 
 .veg-border-left {
-  left: 0;
-  top: 58%;
-  height: 128%;
-  /* space == natural → hug the window (outer tuck pulls art past the edge).
-     space < natural → slide further left so the inward edge clears the shield. */
+  left: -310px;
+  top: 93dvh;
+  height: 205dvh;
   transform:
     translateY(-50%)
-    translateX(calc(var(--veg-side-space-left) - 100% - 2.75%));
+    translateX(calc(-1 * var(--veg-side-push)));
 }
 
 .veg-border-right {
-  top: -5%;
-  right: 0;
-  height: 107%;
-  transform: translateX(calc(100% + 3% - var(--veg-side-space)));
+  top: -7dvh;
+  right: -210px;
+  transform: translateX(var(--veg-side-push));
 }
 
 .veg-border-top,
