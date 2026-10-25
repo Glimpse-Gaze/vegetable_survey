@@ -6,16 +6,18 @@ body:has(.home-shell) {
   --veg-ease: 280ms ease;
   --veg-shield: 40rem;
   --veg-crawl: 20px;
-  /* Push retreats both sides equally (px). Scale with height; width follows
-     the image ratio. Use svh (not dvh) so mobile chrome show/hide does not
-     rescale the art while scrolling. */
-  --veg-side-natural: calc(100svh * 1000 / 2160);
+  /* Scale strips with lvh (stable vs windowed chrome). Push budget must use the
+     REAL strip width (~210lvh tall), not 100lvh — otherwise narrowing the
+     window under-repels and the art overlaps the title. Rest offsets stay in
+     px/lvh so they do not shrink with vw. Mobile still hides .veg-side. */
+  --veg-side-h: 210lvh;
+  --veg-side-w: calc(var(--veg-side-h) * 1000 / 2160);
   --veg-side-room: clamp(
     0px,
     calc((100vw - var(--veg-shield)) / 2 + var(--veg-crawl)),
-    var(--veg-side-natural)
+    var(--veg-side-w)
   );
-  --veg-side-push: calc(var(--veg-side-natural) - var(--veg-side-room));
+  --veg-side-push: calc(var(--veg-side-w) - var(--veg-side-room));
 }
 
 .home-shell {
@@ -56,22 +58,23 @@ body:has(.home-shell) {
   position: absolute;
   width: auto;
   max-width: none;
-  height: 175svh;
+  height: 175lvh;
   transition: transform var(--veg-ease);
 }
 
 .veg-border-left {
-  left: -310px;
-  top: 93svh;
-  height: 205svh;
+  left: -80px;
+  top: 96lvh;
+  height: var(--veg-side-h);
   transform:
     translateY(-50%)
     translateX(calc(-1 * var(--veg-side-push)));
 }
 
 .veg-border-right {
-  top: -7svh;
-  right: -210px;
+  top: -7lvh;
+  right: -80px;
+  height: 175lvh;
   transform: translateX(var(--veg-side-push));
 }
 
@@ -92,10 +95,10 @@ body:has(.home-shell) {
 }
 
 .veg-border-bottom {
-  bottom: 0;
-  left: -1.5%;
-  width: 107%;
-  transform: translateY(11%);
+  bottom: -1%;
+  left: -6%;
+  width: 112%;
+  transform: translateY(6%);
 }
 
 @media (prefers-reduced-motion: reduce) {
