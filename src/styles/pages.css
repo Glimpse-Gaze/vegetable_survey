@@ -6,10 +6,10 @@ body:has(.home-shell) {
   --veg-ease: 280ms ease;
   --veg-shield: 40rem;
   --veg-crawl: 20px;
-  /* Push retreats both sides equally (px). Scale the art with height; width
-     follows the image’s own ratio (undistorted). Do not use object-fit:contain
-     with a fixed width — that caps painted height no matter how tall the box. */
-  --veg-side-natural: calc(100dvh * 1000 / 2160);
+  /* Push retreats both sides equally (px). Scale with height; width follows
+     the image ratio. Use svh (not dvh) so mobile chrome show/hide does not
+     rescale the art while scrolling. */
+  --veg-side-natural: calc(100svh * 1000 / 2160);
   --veg-side-room: clamp(
     0px,
     calc((100vw - var(--veg-shield)) / 2 + var(--veg-crawl)),
@@ -56,21 +56,21 @@ body:has(.home-shell) {
   position: absolute;
   width: auto;
   max-width: none;
-  height: 175dvh;
+  height: 175svh;
   transition: transform var(--veg-ease);
 }
 
 .veg-border-left {
   left: -310px;
-  top: 93dvh;
-  height: 205dvh;
+  top: 93svh;
+  height: 205svh;
   transform:
     translateY(-50%)
     translateX(calc(-1 * var(--veg-side-push)));
 }
 
 .veg-border-right {
-  top: -7dvh;
+  top: -7svh;
   right: -210px;
   transform: translateX(var(--veg-side-push));
 }
@@ -1014,7 +1014,9 @@ button.response-code.is-copied {
   color: #f7fff6;
 }
 
-@media (max-width: 40rem) {
+/* Hide side strips on narrow viewports and on touch devices (catches phones
+   that spoof a desktop width via “Request desktop site”). Top/bottom stay. */
+@media (max-width: 40rem), ((hover: none) and (pointer: coarse)) {
   .veg-side {
     display: none;
   }
