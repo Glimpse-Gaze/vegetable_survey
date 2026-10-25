@@ -1015,10 +1015,31 @@ button.response-code.is-copied {
 }
 
 /* Hide side strips on narrow viewports and on touch devices (catches phones
-   that spoof a desktop width via “Request desktop site”). Top/bottom stay. */
+   that spoof a desktop width via “Request desktop site”). Top/bottom stay.
+   Also pull the title up into the old side-clearance gap and enlarge the bands. */
 @media (max-width: 40rem), ((hover: none) and (pointer: coarse)) {
   .veg-side {
     display: none;
+  }
+
+  .home-shell {
+    --veg-band: clamp(88px, 28vw, 160px);
+  }
+
+  .home-scroll {
+    grid-template-rows: minmax(0, 0.25fr) auto minmax(0, 1fr);
+    padding-top: calc(var(--veg-band) * 0.42);
+    padding-bottom: calc(var(--veg-band) * 0.32);
+  }
+
+  .veg-border-top {
+    width: 148%;
+    transform: translate(-50%, -10%);
+  }
+
+  .veg-border-bottom {
+    width: 128%;
+    transform: translateY(6%);
   }
 }
 
