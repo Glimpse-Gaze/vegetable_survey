@@ -313,9 +313,11 @@ export function blendSpectrumSection(section, liveSpectrum, bandForRank, liveCou
 const TEXT_LOCALES = new Set([
   'en',
   'pl',
+  'ru',
   'zh',
   'zh-hant',
   'ko',
+  'ja',
   'th',
   'fr',
   'it',

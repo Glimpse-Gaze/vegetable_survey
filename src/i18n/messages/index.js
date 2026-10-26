@@ -1,8 +1,10 @@
 import { en } from './en.js';
 import { pl } from './pl.js';
+import { ru } from './ru.js';
 import { zh } from './zh.js';
 import { zhHant } from './zh-hant.js';
 import { ko } from './ko.js';
+import { ja } from './ja.js';
 import { th } from './th.js';
 import { fr } from './fr.js';
 import { it } from './it.js';
@@ -15,9 +17,11 @@ import { ptPt } from './pt-pt.js';
 export const bundles = {
   en,
   pl,
+  ru,
   zh,
   'zh-hant': zhHant,
   ko,
+  ja,
   th,
   fr,
   it,

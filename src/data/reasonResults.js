@@ -1,5 +1,6 @@
 import { criteria } from './criteria.js';
 import { REASON_COMMENTS_PL } from './reasonComments.pl.js';
+import { REASON_COMMENTS_RU } from './reasonComments.ru.js';
 import { REASON_COMMENTS_ZH } from './reasonComments.zh.js';
 import { REASON_COMMENTS_FR } from './reasonComments.fr.js';
 import { REASON_COMMENTS_IT } from './reasonComments.it.js';
@@ -7,6 +8,7 @@ import { REASON_COMMENTS_DE } from './reasonComments.de.js';
 import { REASON_COMMENTS_ES } from './reasonComments.es.js';
 import { REASON_COMMENTS_ZH_HANT } from './reasonComments.zh-hant.js';
 import { REASON_COMMENTS_KO } from './reasonComments.ko.js';
+import { REASON_COMMENTS_JA } from './reasonComments.ja.js';
 import { REASON_COMMENTS_TH } from './reasonComments.th.js';
 import { REASON_COMMENTS_ES_MX } from './reasonComments.es-mx.js';
 import { REASON_COMMENTS_PT_BR } from './reasonComments.pt-br.js';
@@ -88,6 +90,7 @@ export const REASON_COMMENTS = REASON_COMMENTS_EN;
 const REASON_COMMENTS_BY_LOCALE = {
   en: REASON_COMMENTS_EN,
   pl: REASON_COMMENTS_PL,
+  ru: REASON_COMMENTS_RU,
   zh: REASON_COMMENTS_ZH,
   fr: REASON_COMMENTS_FR,
   it: REASON_COMMENTS_IT,
@@ -95,6 +98,7 @@ const REASON_COMMENTS_BY_LOCALE = {
   es: REASON_COMMENTS_ES,
   'zh-hant': REASON_COMMENTS_ZH_HANT,
   ko: REASON_COMMENTS_KO,
+  ja: REASON_COMMENTS_JA,
   th: REASON_COMMENTS_TH,
   'es-mx': REASON_COMMENTS_ES_MX,
   'pt-br': REASON_COMMENTS_PT_BR,

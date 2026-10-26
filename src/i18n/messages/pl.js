@@ -401,11 +401,11 @@ export const pl = {
       reset: 'Wyczyść głosy',
       cleared: 'Wyczyszczono',
       resetTip:
-        'Czyści Twoje 5 polubień i 5 obniżeń, żeby znów móc głosować na 10 odpowiedzi.',
+        'Czyści Twoje 5 polubień i 5 znielubiń, żeby znów móc głosować na 10 odpowiedzi.',
       voteAria:
         '{text}. {mine}{state}. Dotknij lub kliknij, żeby polubić. Kliknij dwukrotnie, prawym przyciskiem, lub przytrzymaj, żeby znielubić.',
       liked: 'Polubione',
-      sunk: 'Obniżone',
+      sunk: 'Znielubione',
       notVoted: 'Bez głosu',
       likeCap: 'Możesz polubić tylko 5!',
       dislikeCap: 'Możesz znielubić tylko 5!',

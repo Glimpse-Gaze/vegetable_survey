@@ -3,7 +3,11 @@ import path from 'node:path';
 import { LOCALES } from '../src/i18n/locales.js';
 import { RESULT_CATEGORIES, localizeIndexHtml, localizeResultsHtml } from './localeShells.mjs';
 
-const LOCALE = 'zh-hant|es-mx|pt-br|pt-pt|en|pl|zh|ko|th|fr|it|de|es';
+// Longest ids first so zh-hant / es-mx / pt-br / pt-pt win over prefixes.
+const LOCALE = [...LOCALES]
+  .map((locale) => locale.id)
+  .sort((a, b) => b.length - a.length)
+  .join('|');
 const CATEGORY = RESULT_CATEGORIES.join('|');
 const RESULTS_PAGE = new RegExp(`^\\/(${LOCALE})\\/results\\/(${CATEGORY})\\/?$`);
 const LOCALE_HOME = new RegExp(`^\\/(${LOCALE})(\\/.*)?$`);

@@ -6,9 +6,11 @@ export const SITE = 'https://vegetable.glimpsegaze.com';
 const OG_LOCALE = {
   en: 'en_GB',
   pl: 'pl_PL',
+  ru: 'ru_RU',
   zh: 'zh_CN',
   'zh-hant': 'zh_TW',
   ko: 'ko_KR',
+  ja: 'ja_JP',
   th: 'th_TH',
   fr: 'fr_FR',
   it: 'it_IT',

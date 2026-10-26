@@ -1,7 +1,7 @@
 {
   "name": "vegetable_survey",
   "private": true,
-  "version": "1.5.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "predev": "npm run compress:images",
@@ -18,7 +18,8 @@
     "pinyin-pro": "^3.29.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.4"
+    "react-router-dom": "^7.18.4",
+    "wanakana": "^5.3.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

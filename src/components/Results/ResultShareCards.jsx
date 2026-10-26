@@ -254,10 +254,12 @@ function CardDraft({ card, treatment = null, tint = null }) {
 
 function CardGallery({ cards, onClose, heading }) {
   const { t } = useI18n();
-  const [solid, setSolid] = useState(null);
+  // Single last swatch (no default). Photo only hides it; Tint brings it back.
   const [wash, setWash] = useState(false);
-  const [washColor, setWashColor] = useState('green');
-  const activeTint = wash ? washColor : solid;
+  const [photo, setPhoto] = useState(true);
+  const [lastColor, setLastColor] = useState(null);
+  const tintColor = photo ? null : lastColor;
+  const treatment = tintColor ? (wash ? 'wash' : 'solid') : null;
 
   useEffect(() => {
     const onKey = (event) => {
@@ -295,18 +297,18 @@ function CardGallery({ cards, onClose, heading }) {
               onChange={(event) => {
                 const next = event.target.checked;
                 setWash(next);
-                if (next && solid) setWashColor(solid);
+                if (next) setPhoto(false);
               }}
             />
             {t('cards.tintLabel')}
           </label>
           <button
             type="button"
-            className={!wash && !solid ? 'result-card-tint is-selected' : 'result-card-tint'}
-            aria-pressed={!wash && !solid}
+            className={photo || !lastColor ? 'result-card-tint is-selected' : 'result-card-tint'}
+            aria-pressed={photo || !lastColor}
             onClick={() => {
               setWash(false);
-              setSolid(null);
+              setPhoto(true);
             }}
           >
             {t('cards.photo')}
@@ -315,13 +317,13 @@ function CardGallery({ cards, onClose, heading }) {
             <button
               key={item.id}
               type="button"
-              className={activeTint === item.id ? 'result-card-swatch is-selected' : 'result-card-swatch'}
+              className={!photo && lastColor === item.id ? 'result-card-swatch is-selected' : 'result-card-swatch'}
               style={{ background: item.color }}
               aria-label={t(`cards.tint.${item.id}`)}
-              aria-pressed={activeTint === item.id}
+              aria-pressed={!photo && lastColor === item.id}
               onClick={() => {
-                if (wash) setWashColor(item.id);
-                else setSolid(item.id);
+                setLastColor(item.id);
+                setPhoto(false);
               }}
             />
           ))}
@@ -329,10 +331,10 @@ function CardGallery({ cards, onClose, heading }) {
         <div className="result-cards-gallery">
           {cards.map((card) => (
             <CardDraft
-              key={`${card.id}-${wash ? 'wash' : 'solid'}-${activeTint || 'photo'}`}
+              key={`${card.id}-${treatment || 'photo'}-${tintColor || 'none'}`}
               card={card}
-              treatment={wash ? 'wash' : solid ? 'solid' : null}
-              tint={activeTint}
+              treatment={treatment}
+              tint={tintColor}
             />
           ))}
         </div>

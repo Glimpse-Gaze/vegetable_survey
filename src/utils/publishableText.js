@@ -23,8 +23,9 @@ function hasKeyboardRun(letters) {
 /**
  * Public free text has to look like a real answer in any of the survey scripts.
  * Latin text needs a vowel once it is long enough to be mash ("sdsds").
- * Chinese, Thai, and Hangul syllables are words without Latin vowels, so they
- * stay. A run of the same mark, or consonant-only Hangul jamo, does not.
+ * Chinese, Japanese kana, Cyrillic, Thai, and Hangul syllables are words
+ * without Latin vowels, so they stay. A run of the same mark, or
+ * consonant-only Hangul jamo, does not.
  */
 export function isPublishableText(value) {
   const text = String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -36,15 +37,20 @@ export function isPublishableText(value) {
 
   const latin = chars.filter((char) => /\p{Script=Latin}/u.test(char));
   const han = chars.some((char) => /\p{Script=Han}/u.test(char));
+  const kana = chars.some((char) =>
+    /\p{Script=Hiragana}|\p{Script=Katakana}/u.test(char),
+  );
+  const cyrillic = chars.some((char) => /\p{Script=Cyrillic}/u.test(char));
   const hangulSyllable = chars.some((char) => /[\uAC00-\uD7A3]/.test(char));
   const thai = chars.some((char) => /\p{Script=Thai}/u.test(char));
   const hangulVowel = chars.some((char) => /[\u1161-\u1175\u314F-\u3163]/.test(char));
   const hangulConsonants = chars.filter((char) =>
     /[\u1100-\u115F\u11A8-\u11FF\u3131-\u314E]/.test(char),
   ).length;
+  const wordScript = han || kana || cyrillic || hangulSyllable || thai;
 
   if (latin.length >= 3 && !latin.some(isLatinVowel)) return false;
-  if (latin.length > 0 && latin.length < 3 && !han && !hangulSyllable && !thai) {
+  if (latin.length > 0 && latin.length < 3 && !wordScript) {
     return false;
   }
   if (hangulConsonants >= 3 && !hangulSyllable && !hangulVowel && latin.length === 0) {

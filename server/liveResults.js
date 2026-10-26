@@ -66,9 +66,11 @@ function emptySpectrumSlots() {
 const SURVEY_LOCALES = new Set([
   'en',
   'pl',
+  'ru',
   'zh',
   'zh-hant',
   'ko',
+  'ja',
   'th',
   'fr',
   'it',

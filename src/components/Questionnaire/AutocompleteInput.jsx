@@ -14,21 +14,23 @@ export function AutocompleteInput({
 }) {
   const [open, setOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
+  const [composing, setComposing] = useState(false);
   const containerRef = useRef(null);
   const inputRef = useRef(null);
   const listRef = useRef(null);
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const listId = `${inputId}-listbox`;
-  const showList = open && !disabled && suggestions.length > 0;
+  const showList = open && !disabled && !composing && suggestions.length > 0;
   const activeDescendant =
     showList && highlightIndex >= 0
       ? `${listId}-option-${highlightIndex}`
       : undefined;
 
   useEffect(() => {
+    if (composing) return;
     setHighlightIndex(-1);
-  }, [suggestions]);
+  }, [suggestions, composing]);
 
   useEffect(() => {
     if (!autoFocus) return;
@@ -235,6 +237,13 @@ export function AutocompleteInput({
         value={value}
         disabled={disabled}
         onChange={(event) => {
+          if (disabled) return;
+          onChange(event.target.value);
+          if (!composing) setOpen(true);
+        }}
+        onCompositionStart={() => setComposing(true)}
+        onCompositionEnd={(event) => {
+          setComposing(false);
           if (disabled) return;
           onChange(event.target.value);
           setOpen(true);

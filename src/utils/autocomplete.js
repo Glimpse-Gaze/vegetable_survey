@@ -34,7 +34,9 @@ function uniqueIds(vegetables) {
 }
 
 function minimumQueryLength(query) {
-  return /\p{Script=Han}|\p{Script=Hangul}|\p{Script=Thai}/u.test(String(query ?? ''))
+  return /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Hangul}|\p{Script=Thai}/u.test(
+    String(query ?? ''),
+  )
     ? 1
     : 2;
 }

@@ -6,6 +6,7 @@ import {
 import { commentsForLocale } from '../data/reasonResults.js';
 import { notesForLocale } from '../data/noteResults.js';
 import { spectrumCopy as spectrumCopyPl } from './lexicon/pl/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyRu } from './lexicon/ru/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyZh } from './lexicon/zh/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyFr } from './lexicon/fr/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyIt } from './lexicon/it/spectrumCopy.js';
@@ -13,6 +14,7 @@ import { spectrumCopy as spectrumCopyDe } from './lexicon/de/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyEs } from './lexicon/es/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyZhHant } from './lexicon/zh-hant/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyKo } from './lexicon/ko/spectrumCopy.js';
+import { spectrumCopy as spectrumCopyJa } from './lexicon/ja/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyTh } from './lexicon/th/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyEsMx } from './lexicon/es-mx/spectrumCopy.js';
 import { spectrumCopy as spectrumCopyPtBr } from './lexicon/pt-br/spectrumCopy.js';
@@ -26,6 +28,7 @@ const BAND_KEYS = {
 
 const SPECTRUM_COPY = {
   pl: spectrumCopyPl,
+  ru: spectrumCopyRu,
   zh: spectrumCopyZh,
   fr: spectrumCopyFr,
   it: spectrumCopyIt,
@@ -33,6 +36,7 @@ const SPECTRUM_COPY = {
   es: spectrumCopyEs,
   'zh-hant': spectrumCopyZhHant,
   ko: spectrumCopyKo,
+  ja: spectrumCopyJa,
   th: spectrumCopyTh,
   'es-mx': spectrumCopyEsMx,
   'pt-br': spectrumCopyPtBr,

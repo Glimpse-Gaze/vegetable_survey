@@ -65,6 +65,80 @@ html[lang='zh-Hant'] .thanks-results-button {
   letter-spacing: 0.06em;
 }
 
+/* Japanese. */
+html[lang='ja'] {
+  --font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --font-display: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "Noto Sans JP", serif;
+}
+
+html[lang='ja'] body,
+html[lang='ja'] .criterion-label,
+html[lang='ja'] .microcopy,
+html[lang='ja'] .alignment-body {
+  line-height: 1.7;
+}
+
+html[lang='ja'] .home-title,
+html[lang='ja'] .question-title,
+html[lang='ja'] .results-section-title,
+html[lang='ja'] .blade-name,
+html[lang='ja'] .spectrum-blade-name {
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+html[lang='ja'] .home-title,
+html[lang='ja'] .home-shell .home-title {
+  text-transform: none;
+  /* 10 fullwidth glyphs — size from viewport so mobile never orphans ト. */
+  font-size: clamp(1.45rem, calc((100vw - 3rem) / 11), 3.55rem);
+}
+
+html[lang='ja'] .spectrum,
+html[lang='ja'] .buckets {
+  --tile-h: 3.8rem;
+}
+
+html[lang='ja'] .spectrum .spectrum-tile-label {
+  line-height: 1.45;
+  max-height: 2.9em;
+}
+
+html[lang='ja'] .buckets .spectrum-tile-label {
+  line-height: 1.45;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  max-height: none;
+  white-space: normal;
+}
+
+/* Russian (Cyrillic via Noto). */
+html[lang='ru'] {
+  --font-body: "Noto Sans", "Segoe UI", "Arial", sans-serif;
+  --font-display: "Noto Serif", "Georgia", "Times New Roman", serif;
+}
+
+html[lang='ru'] body,
+html[lang='ru'] .criterion-label,
+html[lang='ru'] .microcopy,
+html[lang='ru'] .alignment-body {
+  line-height: 1.55;
+}
+
+html[lang='ru'] .home-title {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+html[lang='ru'] .question-title,
+html[lang='ru'] .results-section-title,
+html[lang='ru'] .blade-name,
+html[lang='ru'] .spectrum-blade-name {
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+}
+
 /* Korean. The info-button “i” keeps Segoe UI from results.css. */
 html[lang='ko'] {
   --font-body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
@@ -176,7 +250,9 @@ html[lang='th'] .home-panel .eyebrow {
 }
 
 html[lang='th'] .bucket-lookup-table thead th,
-html[lang='ko'] .bucket-lookup-table thead th {
+html[lang='ko'] .bucket-lookup-table thead th,
+html[lang='ja'] .bucket-lookup-table thead th,
+html[lang='ru'] .bucket-lookup-table thead th {
   font-size: 1rem;
   letter-spacing: 0;
   line-height: 1.45;

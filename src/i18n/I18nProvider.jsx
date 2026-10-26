@@ -80,6 +80,14 @@ export function I18nProvider({ children }) {
         id: 'ko-fonts',
         href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap',
       },
+      ja: {
+        id: 'ja-fonts',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700&display=swap',
+      },
+      ru: {
+        id: 'ru-fonts',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&family=Noto+Serif:wght@600;700&display=swap',
+      },
       th: {
         id: 'th-fonts',
         href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Noto+Serif+Thai:wght@600;700&display=swap',

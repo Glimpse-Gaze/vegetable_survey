@@ -14,9 +14,11 @@
 export const LOCALES = [
   { id: 'en', nativeName: 'English', htmlLang: 'en' },
   { id: 'pl', nativeName: 'Polski', htmlLang: 'pl' },
+  { id: 'ru', nativeName: 'Русский', htmlLang: 'ru' },
   { id: 'zh', nativeName: '简体中文', htmlLang: 'zh-Hans' },
   { id: 'zh-hant', nativeName: '繁體中文', htmlLang: 'zh-Hant' },
   { id: 'ko', nativeName: '한국어', htmlLang: 'ko' },
+  { id: 'ja', nativeName: '日本語', htmlLang: 'ja' },
   { id: 'th', nativeName: 'ไทย', htmlLang: 'th' },
   { id: 'fr', nativeName: 'Français', htmlLang: 'fr' },
   { id: 'it', nativeName: 'Italiano', htmlLang: 'it' },
@@ -31,9 +33,11 @@ export const DEFAULT_LOCALE = 'en';
 
 export function numberLocale(locale) {
   if (locale === 'pl') return 'pl-PL';
+  if (locale === 'ru') return 'ru-RU';
   if (locale === 'zh') return 'zh-CN';
   if (locale === 'zh-hant') return 'zh-TW';
   if (locale === 'ko') return 'ko-KR';
+  if (locale === 'ja') return 'ja-JP';
   if (locale === 'th') return 'th-TH-u-nu-latn';
   if (locale === 'fr') return 'fr-FR';
   if (locale === 'it') return 'it-IT';

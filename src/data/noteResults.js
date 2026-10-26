@@ -1,4 +1,5 @@
 import { OPEN_NOTES_PL } from './noteResults.pl.js';
+import { OPEN_NOTES_RU } from './noteResults.ru.js';
 import { OPEN_NOTES_ZH } from './noteResults.zh.js';
 import { OPEN_NOTES_FR } from './noteResults.fr.js';
 import { OPEN_NOTES_IT } from './noteResults.it.js';
@@ -6,6 +7,7 @@ import { OPEN_NOTES_DE } from './noteResults.de.js';
 import { OPEN_NOTES_ES } from './noteResults.es.js';
 import { OPEN_NOTES_ZH_HANT } from './noteResults.zh-hant.js';
 import { OPEN_NOTES_KO } from './noteResults.ko.js';
+import { OPEN_NOTES_JA } from './noteResults.ja.js';
 import { OPEN_NOTES_TH } from './noteResults.th.js';
 import { OPEN_NOTES_ES_MX } from './noteResults.es-mx.js';
 import { OPEN_NOTES_PT_BR } from './noteResults.pt-br.js';
@@ -317,6 +319,7 @@ export const OPEN_NOTES = OPEN_NOTES_EN;
 const OPEN_NOTES_BY_LOCALE = {
   en: OPEN_NOTES_EN,
   pl: OPEN_NOTES_PL,
+  ru: OPEN_NOTES_RU,
   zh: OPEN_NOTES_ZH,
   fr: OPEN_NOTES_FR,
   it: OPEN_NOTES_IT,
@@ -324,6 +327,7 @@ const OPEN_NOTES_BY_LOCALE = {
   es: OPEN_NOTES_ES,
   'zh-hant': OPEN_NOTES_ZH_HANT,
   ko: OPEN_NOTES_KO,
+  ja: OPEN_NOTES_JA,
   th: OPEN_NOTES_TH,
   'es-mx': OPEN_NOTES_ES_MX,
   'pt-br': OPEN_NOTES_PT_BR,

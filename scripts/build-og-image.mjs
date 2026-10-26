@@ -22,6 +22,8 @@ const FONT_FILE = {
   zh: 'C:/Windows/Fonts/NotoSerifSC-VF.ttf',
   'zh-hant': 'C:/Windows/Fonts/NotoSerifTC-VF.ttf',
   ko: 'C:/Windows/Fonts/malgunbd.ttf',
+  ja: 'C:/Windows/Fonts/YuGothB.ttc',
+  ru: 'C:/Windows/Fonts/timesbd.ttf',
   th: 'C:/Windows/Fonts/LEELAWDB.TTF',
 };
 

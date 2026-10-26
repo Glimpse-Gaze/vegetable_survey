@@ -29,7 +29,11 @@ export function normalizeText(value) {
     .trim()
     .toLowerCase()
     .normalize('NFD')
-    .replace(/\p{M}/gu, '')
+    // Keep Japanese voiced marks; stripping them turns じ into し.
+    .replace(/\p{M}/gu, (mark) =>
+      mark === '\u3099' || mark === '\u309A' ? mark : '',
+    )
+    .normalize('NFC')
     .replace(/\s+/g, ' ');
 }
 
@@ -71,10 +75,17 @@ function hangulToJamo(value) {
   return out;
 }
 
-/** Search key: tones, tone digits, and spaces do not matter. Hangul folds to jamo. Latin letters fold to ASCII. */
+/** Katakana and hiragana share one search key. */
+function foldKana(value) {
+  return String(value ?? '').replace(/[\u30a1-\u30f6]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 0x60),
+  );
+}
+
+/** Search key: tones, tone digits, and spaces do not matter. Hangul folds to jamo. Katakana folds to hiragana. Latin letters fold to ASCII. */
 export function normalizeQuery(value) {
   const prepared = foldLatinLetters(String(value ?? '').toLowerCase());
-  return hangulToJamo(normalizeText(prepared))
+  return hangulToJamo(foldKana(normalizeText(prepared)))
     .replace(ZHUYIN_TONE, '')
     .replace(/[0-9]/g, '')
     .replace(/[''·.．]+/g, '')

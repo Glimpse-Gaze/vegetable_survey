@@ -10,17 +10,30 @@ import { lexicons } from './lexicon/index.js';
 import { normalizeQuery } from '../utils/normalization.js';
 
 let chinesePhonetics = null;
-let phoneticsPromise = null;
-const phoneticsListeners = new Set();
+let japanesePhonetics = null;
+let chinesePromise = null;
+let japanesePromise = null;
+const chineseListeners = new Set();
+const japaneseListeners = new Set();
 
-function subscribePhonetics(listener) {
-  phoneticsListeners.add(listener);
-  phoneticsPromise ??= import('./zhPhonetics.js').then((mod) => {
+function subscribeChinesePhonetics(listener) {
+  chineseListeners.add(listener);
+  chinesePromise ??= import('./zhPhonetics.js').then((mod) => {
     chinesePhonetics = mod.attachPhonetics;
-    phoneticsPromise = null;
-    for (const notify of phoneticsListeners) notify();
+    chinesePromise = null;
+    for (const notify of chineseListeners) notify();
   });
-  return () => phoneticsListeners.delete(listener);
+  return () => chineseListeners.delete(listener);
+}
+
+function subscribeJapanesePhonetics(listener) {
+  japaneseListeners.add(listener);
+  japanesePromise ??= import('./jaPhonetics.js').then((mod) => {
+    japanesePhonetics = mod.attachPhonetics;
+    japanesePromise = null;
+    for (const notify of japaneseListeners) notify();
+  });
+  return () => japaneseListeners.delete(listener);
 }
 
 const ignorePhonetics = () => () => {};
@@ -47,10 +60,10 @@ function withDistinctSpectrum(items, lexicon) {
   return [...localized, ...extras];
 }
 
-function useChinesePhonetics(enabled) {
+function usePhoneticsLoader(enabled, subscribe, getSnapshot) {
   return useSyncExternalStore(
-    enabled ? subscribePhonetics : ignorePhonetics,
-    () => (enabled ? chinesePhonetics : null),
+    enabled ? subscribe : ignorePhonetics,
+    () => (enabled ? getSnapshot() : null),
     () => null,
   );
 }
@@ -58,12 +71,24 @@ function useChinesePhonetics(enabled) {
 export function useSurveyCatalog() {
   const { locale } = useI18n();
   const chinese = locale === 'zh' || locale === 'zh-hant';
-  const attachPhonetics = useChinesePhonetics(chinese);
+  const japanese = locale === 'ja';
+  const attachChinese = usePhoneticsLoader(
+    chinese,
+    subscribeChinesePhonetics,
+    () => chinesePhonetics,
+  );
+  const attachJapanese = usePhoneticsLoader(
+    japanese,
+    subscribeJapanesePhonetics,
+    () => japanesePhonetics,
+  );
+  const attachPhonetics = chinese ? attachChinese : japanese ? attachJapanese : null;
+  const phoneticsReady = Boolean(attachPhonetics);
 
   return useMemo(() => {
     const lexicon = lexicons[locale] ?? {};
     const withPhonetics = (items) =>
-      chinese && attachPhonetics ? attachPhonetics(items) : items;
+      phoneticsReady && attachPhonetics ? attachPhonetics(items) : items;
     const localizedBuckets = withPhonetics(applyLexicon(bucketItems, lexicon.vegetables));
     const localizedSpectrum = withPhonetics(applyLexicon(spectrumVegetables, lexicon.vegetables));
 
@@ -85,5 +110,5 @@ export function useSurveyCatalog() {
       bucketById: new Map(localizedBuckets.map((item) => [item.id, item])),
       spectrumById: new Map(localizedSpectrum.map((item) => [item.id, item])),
     };
-  }, [locale, chinese, attachPhonetics]);
+  }, [locale, phoneticsReady, attachPhonetics]);
 }
