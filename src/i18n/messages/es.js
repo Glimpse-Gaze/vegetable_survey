@@ -92,6 +92,17 @@ export const es = {
     spoilerMessage:
       'Estás a punto de ver los resultados de La gran encuesta de la verdura. Sigue solo si la has rellenado tú.',
   },
+  already: {
+    eyebrow: 'Hola de nuevo',
+    title: 'Ya has hecho esta encuesta',
+    body:
+      'Este dispositivo ya tiene una respuesta terminada. Puedes abrir tus resultados con el código de abajo, o hacer la encuesta otra vez (por ejemplo si alguien más quiere su turno).',
+    seeResults: 'Ver mis resultados',
+    retake: 'Hacer la encuesta otra vez',
+    retakeHint:
+      'Si la haces otra vez, se guardará una respuesta nueva. Tu código anterior sigue valiendo hasta que termines una nueva pasada en este dispositivo.',
+    backHome: 'Volver a la página principal',
+  },
   welcome: {
     eyebrow: 'Hola',
     intro:
@@ -128,16 +139,16 @@ export const es = {
     continueHint: 'Elige al menos uno',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
-    childhood: 'Estaba en la mesa de la infancia',
+    structure: 'Por su estructura',
+    cooking: 'Por cómo se come',
+    underground: 'Por cómo crece, o cómo se cosecha',
+    appearance: 'Por cómo se ve',
+    healthy: 'Se considera sano',
+    local: 'Lo veo o lo como a menudo',
+    plant: 'Es una parte concreta de una planta',
+    taste: 'Por su sabor',
+    childhood: 'Es algo que comía de pequeño/a',
+    just_feels: 'Simplemente me parece una verdura',
     other: 'Otra cosa',
   },
   q3: {
@@ -248,6 +259,7 @@ export const es = {
     yourAnswer: 'Tu respuesta',
     yourAnswerPeriod: 'Tu respuesta. ',
     vote: 'voto',
+    votesFew: 'votos',
     votes: 'votos',
     top5: 'Top 5',
     categories: {
@@ -416,6 +428,15 @@ export const es = {
       options: 'Opciones para compartir',
       compareHint: 'Mira cómo quedan tus respuestas junto a las de los demás.',
       picturesHint: 'Convierte tus respuestas en gráficos que puedes guardar y enviar.',
+    },
+    tip: {
+      title: '¿Te gustan los resultados?',
+      before:
+        'Esto es un proyecto independiente, hecho por diversión. Me ha costado mucho trabajo, así que si te gusta lo que ves, plantéate',
+      link: 'dejarme una propina',
+      after: '.',
+      later: 'Quizá más tarde',
+      close: 'Cerrar',
     },
     gate: {
       complete: 'Completa la encuesta',

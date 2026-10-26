@@ -92,6 +92,17 @@ export const de = {
     spoilerMessage:
       'Du siehst gleich die Ergebnisse der großen Gemüseumfrage. Bitte geh nur weiter, wenn du sie selbst ausgefüllt hast.',
   },
+  already: {
+    eyebrow: 'Willkommen zurück',
+    title: 'Du hast diese Umfrage schon ausgefüllt',
+    body:
+      'Auf diesem Gerät liegt schon eine fertige Antwort. Du kannst deine Ergebnisse mit dem Code unten öffnen oder die Umfrage nochmal machen (zum Beispiel, wenn jemand anderes drankommen will).',
+    seeResults: 'Meine Ergebnisse ansehen',
+    retake: 'Umfrage nochmal machen',
+    retakeHint:
+      'Wenn du nochmal startest, wird eine neue Antwort gespeichert. Dein alter Code funktioniert weiter, bis du auf diesem Gerät eine neue Runde fertig hast.',
+    backHome: 'Zurück zur Startseite',
+  },
   welcome: {
     eyebrow: 'Willkommen',
     intro:
@@ -128,16 +139,16 @@ export const de = {
     continueHint: 'Wähl mindestens eins',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
-    childhood: 'Das gab es schon in der Kindheit',
+    structure: 'Wegen der Struktur',
+    cooking: 'Wegen der Art, wie man es isst',
+    underground: 'Wegen der Art, wie es wächst oder geerntet wird',
+    appearance: 'Wegen des Aussehens',
+    healthy: 'Es gilt als gesund',
+    local: 'Damit habe ich oft zu tun',
+    plant: 'Es ist ein bestimmter Pflanzenteil',
+    taste: 'Wegen des Geschmacks',
+    childhood: 'Das habe ich schon als Kind gegessen',
+    just_feels: 'Es fühlt sich für mich einfach nach Gemüse an',
     other: 'Etwas anderes',
   },
   q3: {
@@ -248,6 +259,7 @@ export const de = {
     yourAnswer: 'Deine Antwort',
     yourAnswerPeriod: 'Deine Antwort. ',
     vote: 'Stimme',
+    votesFew: 'Stimmen',
     votes: 'Stimmen',
     top5: 'Top 5',
     categories: {
@@ -416,6 +428,15 @@ export const de = {
       options: 'Optionen zum Teilen',
       compareHint: 'Sieh, wie deine Antworten neben denen der anderen stehen.',
       picturesHint: 'Mach aus deinen Antworten Grafiken, die du speichern und verschicken kannst.',
+    },
+    tip: {
+      title: 'Gefallen dir die Ergebnisse?',
+      before:
+        'Das ist ein unabhängiges Projekt, nur zum Spaß. Es hat mich viel Arbeit gekostet — wenn dir gefällt, was du siehst, denk doch dran,',
+      link: 'mir ein Trinkgeld zu geben',
+      after: '!',
+      later: 'Vielleicht später',
+      close: 'Schließen',
     },
     gate: {
       complete: 'Füll die Umfrage aus',

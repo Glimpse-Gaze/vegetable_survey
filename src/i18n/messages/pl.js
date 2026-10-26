@@ -92,6 +92,17 @@ export const pl = {
     spoilerMessage:
       'Zaraz zobaczysz wyniki Wielkiej ankiety warzywnej. Przejdź dalej tylko jeśli masz tę ankietę za sobą.',
   },
+  already: {
+    eyebrow: 'Witaj ponownie',
+    title: 'Ta ankieta jest już u Ciebie wypełniona',
+    body:
+      'To urządzenie ma już zapisaną ukończoną odpowiedź. Możesz otworzyć wyniki kodem poniżej albo wypełnić ankietę jeszcze raz (na przykład gdy ktoś inny chce swojej kolejki).',
+    seeResults: 'Zobacz moje wyniki',
+    retake: 'Wypełnij ankietę jeszcze raz',
+    retakeHint:
+      'Nowe wypełnienie zapisze nową odpowiedź. Poprzedni kod działa nadal, dopóki nie dokończysz nowej rundy na tym urządzeniu.',
+    backHome: 'Wróć na stronę główną',
+  },
   welcome: {
     eyebrow: 'Witaj',
     intro:
@@ -417,6 +428,15 @@ export const pl = {
       options: 'Opcje udostępniania',
       compareHint: 'Zobacz, jak Twoje odpowiedzi wypadają na tle innych.',
       picturesHint: 'Zrób z odpowiedzi grafiki, które możesz zapisać i wysłać.',
+    },
+    tip: {
+      title: 'Podoba Ci się to, co widzisz?',
+      before:
+        'To niezależny projekt zrobiony dla frajdy. Włożyłem w niego sporo pracy, więc jeśli Ci się podoba, rozważ',
+      link: 'napiwek dla mnie',
+      after: '!',
+      later: 'Może później',
+      close: 'Zamknij',
     },
     gate: {
       complete: 'Wypełnij ankietę',

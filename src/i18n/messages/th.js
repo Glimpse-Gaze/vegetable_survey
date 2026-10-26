@@ -88,6 +88,17 @@ export const th = {
     spoilerTitle: 'ก่อนจะข้ามไป',
     spoilerMessage: 'กำลังจะเห็นผลของแบบสำรวจผักครั้งใหญ่ ไปต่อได้ถ้าทำแบบสำรวจด้วยตัวเองแล้ว',
   },
+  already: {
+    eyebrow: 'ยินดีต้อนรับกลับ',
+    title: 'คุณทำแบบสำรวจนี้ไปแล้ว',
+    body:
+      'อุปกรณ์นี้มีคำตอบที่ส่งครบแล้ว คุณเปิดผลด้วยรหัสด้านล่างได้ หรือทำแบบสำรวจอีกครั้งก็ได้ (เช่น ถ้ามีคนอื่นอยากเล่นต่อ)',
+    seeResults: 'ดูผลของฉัน',
+    retake: 'ทำแบบสำรวจอีกครั้ง',
+    retakeHint:
+      'ทำอีกครั้งจะบันทึกคำตอบใหม่ รหัสเดิมยังใช้ได้จนกว่าคุณจะจบรอบใหม่บนอุปกรณ์นี้',
+    backHome: 'กลับไปหน้าหลัก',
+  },
   welcome: {
     eyebrow: 'ยินดีต้อนรับ',
     intro:
@@ -124,16 +135,16 @@ export const th = {
     continueHint: 'เลือกอย่างน้อยหนึ่งข้อ',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
+    structure: 'เพราะโครงสร้างของมัน',
+    cooking: 'เพราะวิธีที่เรากินมัน',
+    underground: 'เพราะวิธีที่มันเติบโต หรือวิธีที่เก็บเกี่ยว',
+    appearance: 'เพราะหน้าตา',
+    healthy: 'คนมองว่ามันดีต่อสุขภาพ',
+    local: 'เจอหรือกินมันบ่อย',
+    plant: 'มันเป็นส่วนเฉพาะของพืช',
+    taste: 'เพราะรสชาติ',
     childhood: 'เป็นของที่กินมาตั้งแต่เด็ก',
+    just_feels: 'แค่รู้สึกว่ามันเป็นผัก',
     other: 'อย่างอื่น',
   },
   q3: {
@@ -243,6 +254,7 @@ export const th = {
     yourAnswer: 'คำตอบของคุณ',
     yourAnswerPeriod: 'คำตอบของคุณ. ',
     vote: 'คะแนน',
+    votesFew: 'คะแนน',
     votes: 'คะแนน',
     top5: '5 อันดับแรก',
     categories: {
@@ -408,6 +420,15 @@ export const th = {
       options: 'ตัวเลือกการแชร์',
       compareHint: 'ดูว่าคำตอบของคุณเป็นอย่างไรเมื่อเทียบกับคนอื่น',
       picturesHint: 'ทำคำตอบเป็นภาพไว้บันทึกหรือส่งต่อ',
+    },
+    tip: {
+      title: 'ชอบผลแบบนี้ไหม?',
+      before:
+        'นี่เป็นโปรเจกต์อิสระที่ทำเล่นๆ ใช้แรงเยอะพอสมควร ถ้าชอบสิ่งที่เห็น ลองพิจารณา',
+      link: 'ให้ทิปหน่อย',
+      after: 'นะครับ/ค่ะ!',
+      later: 'ไว้ทีหลัง',
+      close: 'ปิด',
     },
     gate: {
       complete: 'ทำแบบสำรวจให้จบ',

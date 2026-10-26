@@ -88,6 +88,17 @@ export const ko = {
     spoilerTitle: '넘어가기 전에',
     spoilerMessage: '곧 위대한 채소 조사의 결과를 보게 돼요. 직접 설문을 채운 경우에만 넘어가 주세요.',
   },
+  already: {
+    eyebrow: '다시 반가워요',
+    title: '이미 이 설문을 했어요',
+    body:
+      '이 기기에는 이미 완료된 응답이 있어요. 아래 코드로 결과를 열거나, 설문을 다시 할 수 있어요(다른 사람이 차례를 원할 때처럼요).',
+    seeResults: '내 결과 보기',
+    retake: '설문 다시 하기',
+    retakeHint:
+      '다시 하면 새 응답이 저장돼요. 이 기기에서 새 라운드를 끝낼 때까지 이전 코드는 그대로 쓸 수 있어요.',
+    backHome: '첫 화면으로 돌아가요',
+  },
   welcome: {
     eyebrow: '환영해요',
     intro:
@@ -123,16 +134,16 @@ export const ko = {
     continueHint: '하나 이상 골라 주세요',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
-    childhood: '어릴 때부터 먹었어요',
+    structure: '구조 때문에',
+    cooking: '먹는 방식 때문에',
+    underground: '자라는 방식이나 수확하는 방식 때문에',
+    appearance: '생긴 것 때문에',
+    healthy: '건강하다고 여겨져요',
+    local: '자주 보거나 먹어요',
+    plant: '식물의 특정한 부분이에요',
+    taste: '맛 때문에',
+    childhood: '어릴 때부터 먹던 거예요',
+    just_feels: '그냥 채소 같아요',
     other: '다른 이유예요',
   },
   q3: {
@@ -237,6 +248,7 @@ export const ko = {
     yourAnswer: '내 답',
     yourAnswerPeriod: '내 답. ',
     vote: '표',
+    votesFew: '표',
     votes: '표',
     top5: '상위 5',
     categories: {
@@ -399,6 +411,15 @@ export const ko = {
       options: '공유 옵션',
       compareHint: '내 답이 다른 사람들 답과 어떻게 다른지 봐요.',
       picturesHint: '답변을 그림으로 만들어 저장하고 보낼 수 있어요.',
+    },
+    tip: {
+      title: '결과가 마음에 드세요?',
+      before:
+        '이건 재미로 만든 독립 프로젝트예요. 만드는 데 꽤 힘을 쏟았으니, 보이는 게 좋다면',
+      link: '저에게 팁을 주는 것',
+      after: '을 생각해 주세요!',
+      later: '나중에 할게요',
+      close: '닫기',
     },
     gate: {
       complete: '설문을 먼저 끝내 주세요',

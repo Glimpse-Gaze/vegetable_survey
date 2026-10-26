@@ -92,6 +92,17 @@ export const fr = {
     spoilerMessage:
       'Tu vas voir les résultats de La grande enquête sur les légumes. Poursuis seulement si tu l’as remplie toi-même.',
   },
+  already: {
+    eyebrow: 'Content de te revoir',
+    title: 'Tu as déjà rempli cette enquête',
+    body:
+      'Cet appareil a déjà une réponse terminée. Tu peux ouvrir tes résultats avec le code ci-dessous, ou recommencer l’enquête (par exemple si quelqu’un d’autre veut son tour).',
+    seeResults: 'Voir mes résultats',
+    retake: 'Refaire l’enquête',
+    retakeHint:
+      'En recommençant, tu enregistreras une nouvelle réponse. Ton ancien code marche toujours, jusqu’à ce que tu termines une nouvelle partie sur cet appareil.',
+    backHome: 'Retour à la page d’accueil',
+  },
   welcome: {
     eyebrow: 'Bienvenue',
     intro:
@@ -128,16 +139,16 @@ export const fr = {
     continueHint: 'Choisis au moins un critère',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
-    childhood: 'J’en mangeais enfant',
+    structure: 'À cause de sa structure',
+    cooking: 'À cause de la façon dont on le mange',
+    underground: 'À cause de comment ça pousse, ou comment on le récolte',
+    appearance: 'À cause de son apparence',
+    healthy: 'On le considère comme sain',
+    local: 'Je croise ça souvent',
+    plant: 'C’est une partie précise d’une plante',
+    taste: 'À cause de son goût',
+    childhood: 'C’est quelque chose que je mangeais enfant',
+    just_feels: 'Ça me fait tout simplement légume',
     other: 'Autre chose',
   },
   q3: {
@@ -248,6 +259,7 @@ export const fr = {
     yourAnswer: 'Ta réponse',
     yourAnswerPeriod: 'Ta réponse. ',
     vote: 'vote',
+    votesFew: 'votes',
     votes: 'votes',
     top5: 'Top 5',
     categories: {
@@ -418,6 +430,15 @@ export const fr = {
       options: 'Options de partage',
       compareHint: 'Vois comment tes réponses se situent par rapport aux autres.',
       picturesHint: 'Transforme tes réponses en visuels à enregistrer et à envoyer.',
+    },
+    tip: {
+      title: 'Tu aimes les résultats ?',
+      before:
+        'C’est un projet indépendant, fait pour le plaisir. Ça m’a demandé beaucoup de travail, alors si tu aimes ce que tu vois, pense à',
+      link: 'me laisser un pourboire',
+      after: ' !',
+      later: 'Plus tard',
+      close: 'Fermer',
     },
     gate: {
       complete: 'Remplis l’enquête',

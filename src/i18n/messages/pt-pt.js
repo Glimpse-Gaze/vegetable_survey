@@ -92,6 +92,17 @@ export const ptPt = {
     spoilerMessage:
       'Estás prestes a ver os resultados do Grande Inquérito aos Legumes. Segue só se foste tu a preenchê-lo.',
   },
+  already: {
+    eyebrow: 'Bem-vindo de volta',
+    title: 'Já preencheste este inquérito',
+    body:
+      'Este aparelho já tem uma resposta concluída. Podes abrir os teus resultados com o código abaixo, ou preencher o inquérito outra vez (por exemplo se outra pessoa quiser a vez).',
+    seeResults: 'Ver os meus resultados',
+    retake: 'Preencher o inquérito outra vez',
+    retakeHint:
+      'Preencher outra vez grava uma resposta nova. O teu código anterior continua a valer até terminares uma nova ronda neste aparelho.',
+    backHome: 'Voltar à página principal',
+  },
   welcome: {
     eyebrow: 'Olá',
     intro:
@@ -128,16 +139,16 @@ export const ptPt = {
     continueHint: 'Escolhe pelo menos um',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
-    childhood: 'É coisa com que cresci',
+    structure: 'Por causa da estrutura',
+    cooking: 'Por causa de como se come',
+    underground: 'Por causa de como cresce, ou como é colhido',
+    appearance: 'Por causa de como parece',
+    healthy: 'É considerado saudável',
+    local: 'Tenho contacto com isto muitas vezes',
+    plant: 'É uma parte específica de uma planta',
+    taste: 'Por causa do sabor',
+    childhood: 'É algo com que cresci a comer',
+    just_feels: 'Simplesmente parece-me um legume',
     other: 'Outra coisa',
   },
   q3: {
@@ -248,6 +259,7 @@ export const ptPt = {
     yourAnswer: 'A tua resposta',
     yourAnswerPeriod: 'A tua resposta. ',
     vote: 'voto',
+    votesFew: 'votos',
     votes: 'votos',
     top5: 'Primeiros 5',
     categories: {
@@ -416,6 +428,15 @@ export const ptPt = {
       options: 'Opções de partilha',
       compareHint: 'Vê como as tuas respostas ficam ao lado das dos outros.',
       picturesHint: 'Transforma as tuas respostas em gráficos para guardar e enviar.',
+    },
+    tip: {
+      title: 'Estás a gostar dos resultados?',
+      before:
+        'Isto é um projeto independente, feito por diversão. Deu-me muito trabalho, por isso se gostas do que estás a ver, considera',
+      link: 'deixar-me uma gorjeta',
+      after: '!',
+      later: 'Talvez mais tarde',
+      close: 'Fechar',
     },
     gate: {
       complete: 'Completa o inquérito',

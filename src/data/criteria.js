@@ -6,7 +6,7 @@ export const criteria = [
   { id: 'healthy', label: 'It’s considered healthy' },
   { id: 'local', label: "I’m often exposed to it" },
   { id: 'plant', label: 'It’s a specific part of a plant' },
-  { id: 'taste', label: 'Because of it’s taste' },
+  { id: 'taste', label: 'Because of its taste' },
   { id: 'childhood', label: "It’s something I grew up eating" },
   { id: 'just_feels', label: 'It just feels like a vegetable to me' },
   { id: 'other', label: 'Something else' },

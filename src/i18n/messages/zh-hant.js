@@ -88,6 +88,17 @@ export const zhHant = {
     spoilerTitle: '先別急著略過',
     spoilerMessage: '你馬上就要看到「偉大的蔬菜調查」的結果了。請只在自己做過這份調查後再往下看。',
   },
+  already: {
+    eyebrow: '歡迎回來',
+    title: '你已經做過這份問卷了',
+    body:
+      '這台裝置上已經有一份完成的回答。你可以用下面的代碼打開結果，也可以再做一次（比如換個人來玩）。',
+    seeResults: '查看我的結果',
+    retake: '再做一次問卷',
+    retakeHint:
+      '再做一次會保存一份新的回答。在這台裝置上完成新一輪之前，原來的代碼仍然有效。',
+    backHome: '返回首頁',
+  },
   welcome: {
     eyebrow: '歡迎',
     intro:
@@ -121,16 +132,16 @@ export const zhHant = {
     continueHint: '至少選一項',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
+    structure: '因為它的結構',
+    cooking: '因為吃法的關係',
+    underground: '因為它怎麼長，或怎麼收',
+    appearance: '因為它的樣子',
+    healthy: '大家覺得它很健康',
+    local: '我經常見到或吃到它',
+    plant: '它是植物的某個具體部分',
+    taste: '因為它的味道',
     childhood: '我從小就吃它',
+    just_feels: '就是覺得它像蔬菜',
     other: '其他……',
   },
   q3: {
@@ -231,6 +242,7 @@ export const zhHant = {
     yourAnswer: '你的回答',
     yourAnswerPeriod: '你的回答。',
     vote: '票',
+    votesFew: '票',
     votes: '票',
     top5: '前 5',
     categories: {
@@ -392,6 +404,15 @@ export const zhHant = {
       options: '分享選項',
       compareHint: '看看你的回答和大家的有什麼不同。',
       picturesHint: '把回答做成圖片，可以保存或發給別人。',
+    },
+    tip: {
+      title: '喜歡這些結果嗎？',
+      before:
+        '這是一個獨立小專案，純屬好玩。我花了不少力氣做它，所以如果你喜歡眼前的內容，不妨考慮',
+      link: '給我一點小費',
+      after: '！',
+      later: '以後再說',
+      close: '關閉',
     },
     gate: {
       complete: '先完成問卷',

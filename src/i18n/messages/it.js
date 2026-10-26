@@ -92,6 +92,17 @@ export const it = {
     spoilerMessage:
       'Stai per vedere i risultati della grande indagine sulla verdura. Vai avanti solo se l’hai compilata tu.',
   },
+  already: {
+    eyebrow: 'Bentornato/a',
+    title: 'Hai già compilato questa indagine',
+    body:
+      'Questo dispositivo ha già una risposta completa. Puoi aprire i tuoi risultati con il codice qui sotto, oppure rifare l’indagine (per esempio se qualcun altro vuole il suo turno).',
+    seeResults: 'Vedi i miei risultati',
+    retake: 'Rifai l’indagine',
+    retakeHint:
+      'Rifarla salverà una nuova risposta. Il codice precedente resta valido finché non termini una nuova sessione su questo dispositivo.',
+    backHome: 'Torna alla pagina principale',
+  },
   welcome: {
     eyebrow: 'Ciao',
     intro:
@@ -128,16 +139,16 @@ export const it = {
     continueHint: 'Scegli almeno un criterio',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
-    childhood: 'Era in tavola durante l’infanzia',
+    structure: 'Per la sua struttura',
+    cooking: 'Per come si mangia',
+    underground: 'Per come cresce, o come si raccoglie',
+    appearance: 'Per come si presenta',
+    healthy: 'È considerato sano',
+    local: 'Ci ho a che fare spesso',
+    plant: 'È una parte specifica di una pianta',
+    taste: 'Per il suo sapore',
+    childhood: 'È qualcosa che mangiavo da bambino/a',
+    just_feels: 'Semplicemente mi sembra una verdura',
     other: 'Altro',
   },
   q3: {
@@ -248,6 +259,7 @@ export const it = {
     yourAnswer: 'La tua risposta',
     yourAnswerPeriod: 'La tua risposta. ',
     vote: 'voto',
+    votesFew: 'voti',
     votes: 'voti',
     top5: 'Top 5',
     categories: {
@@ -416,6 +428,15 @@ export const it = {
       options: 'Opzioni di condivisione',
       compareHint: 'Guarda come si collocano le tue risposte rispetto a quelle degli altri.',
       picturesHint: 'Trasforma le tue risposte in grafiche da salvare e inviare.',
+    },
+    tip: {
+      title: 'Ti piacciono i risultati?',
+      before:
+        'Questo è un progetto indipendente, fatto per divertimento. Ci ho messo tanta fatica, quindi se ti piace quello che vedi, valuta di',
+      link: 'lasciarmi una mancia',
+      after: '!',
+      later: 'Magari più tardi',
+      close: 'Chiudi',
     },
     gate: {
       complete: 'Compila l’indagine',

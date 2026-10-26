@@ -92,6 +92,17 @@ export const ptBr = {
     spoilerMessage:
       'Você está prestes a ver os resultados da Grande Pesquisa do Legume. Siga só se foi você quem respondeu.',
   },
+  already: {
+    eyebrow: 'Bem-vindo de volta',
+    title: 'Você já respondeu esta pesquisa',
+    body:
+      'Este aparelho já tem uma resposta concluída. Você pode abrir seus resultados com o código abaixo, ou responder de novo (por exemplo se outra pessoa quiser a vez).',
+    seeResults: 'Ver meus resultados',
+    retake: 'Responder a pesquisa de novo',
+    retakeHint:
+      'Responder de novo grava uma resposta nova. Seu código anterior continua valendo até você terminar uma nova rodada neste aparelho.',
+    backHome: 'Voltar à página principal',
+  },
   welcome: {
     eyebrow: 'Olá',
     intro:
@@ -128,16 +139,16 @@ export const ptBr = {
     continueHint: 'Escolhe pelo menos um',
   },
   criteria: {
-    structure: 'Because of its structure or texture.',
-    cooking: 'Because of the way you consume it.',
-    underground: 'Because of how it grows, or how it is harvested.',
-    appearance: 'Its appearance makes me think of vegetables.',
-    healthy: 'It is considered healthy or nutritious.',
-    local: 'I\'m often exposed to it.',
-    just_feels: 'It just feels like a vegetable to me.',
-    plant: 'It is a specific part of a plant.',
-    taste: 'It has a taste I associate with vegetables.',
-    childhood: 'Estava na mesa da infância',
+    structure: 'Por causa da estrutura',
+    cooking: 'Por causa de como a gente come',
+    underground: 'Por causa de como cresce, ou como é colhido',
+    appearance: 'Por causa de como parece',
+    healthy: 'É considerado saudável',
+    local: 'Eu vejo ou como isso com frequência',
+    plant: 'É uma parte específica de uma planta',
+    taste: 'Por causa do sabor',
+    childhood: 'É algo que eu comia desde criança',
+    just_feels: 'Simplesmente parece um legume pra mim',
     other: 'Outra coisa',
   },
   q3: {
@@ -248,6 +259,7 @@ export const ptBr = {
     yourAnswer: 'Sua resposta',
     yourAnswerPeriod: 'Sua resposta. ',
     vote: 'voto',
+    votesFew: 'votos',
     votes: 'votos',
     top5: 'Top 5',
     categories: {
@@ -416,6 +428,15 @@ export const ptBr = {
       options: 'Opções de compartilhamento',
       compareHint: 'Veja como as suas respostas ficam perto das dos outros.',
       picturesHint: 'Transforme suas respostas em gráficos para salvar e enviar.',
+    },
+    tip: {
+      title: 'Curtindo os resultados?',
+      before:
+        'Este é um projeto independente, feito por diversão. Dei um trabalho danado nele, então se você gosta do que está vendo, considera',
+      link: 'me dar uma gorjeta',
+      after: '!',
+      later: 'Talvez depois',
+      close: 'Fechar',
     },
     gate: {
       complete: 'Complete a pesquisa',
