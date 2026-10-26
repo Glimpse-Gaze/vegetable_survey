@@ -10,7 +10,11 @@ import {
   applyMyAnswerToRows,
   readMyCustomReason,
 } from '../../utils/myCustomReason.js';
-import { readMyResponseId } from '../../utils/myResponse.js';
+import {
+  answersMatchUiLocale,
+  readMyAnswers,
+  readMyResponseId,
+} from '../../utils/myResponse.js';
 import { SurveyNudge } from './SurveyGate.jsx';
 import { formatVotes } from '../../utils/formatVotes.js';
 
@@ -230,10 +234,18 @@ export function ReasonResults({ section, viewingOwn = true }) {
   const numberLocale = intlLocale(locale);
   const responseId = useMemo(() => readMyResponseId(), []);
   const canVote = Boolean(responseId);
-  const myReason = useMemo(
-    () => (viewingOwn ? readMyCustomReason() : ''),
+  const storedReason = useMemo(
+    () => (viewingOwn ? readMyCustomReason() : { text: '', locale: null }),
     [viewingOwn],
   );
+  const myAnswers = useMemo(() => readMyAnswers(), []);
+  const myReason = useMemo(() => {
+    if (!viewingOwn || !storedReason.text) return '';
+    if (storedReason.locale) {
+      return storedReason.locale === locale ? storedReason.text : '';
+    }
+    return answersMatchUiLocale(myAnswers, locale) ? storedReason.text : '';
+  }, [viewingOwn, storedReason, locale, myAnswers]);
   const pool = section.commentPool ?? [];
   const [myVotes, setMyVotes] = useState(() => readMyVotes(locale));
   const [resetDone, setResetDone] = useState(false);

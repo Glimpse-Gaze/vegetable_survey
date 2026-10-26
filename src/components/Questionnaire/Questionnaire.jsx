@@ -11,12 +11,18 @@ import { Question5 } from './Question5.jsx';
 import { Question6 } from './Question6.jsx';
 import { Question7 } from './Question7.jsx';
 import { ThankYou } from './ThankYou.jsx';
+import { SurveyAlreadyTaken } from './SurveyAlreadyTaken.jsx';
 import { RankingCodeFill } from './RankingCodeFill.jsx';
 import { Toast } from './Toast.jsx';
 import { submitResponse } from '../../utils/submitResponse.js';
 import { writeMyCustomReason } from '../../utils/myCustomReason.js';
 import { writeMyOpenNote } from '../../utils/myOpenNote.js';
-import { writeMyResponse } from '../../utils/myResponse.js';
+import {
+  allowSurveyRetake,
+  canRetakeSurvey,
+  readMyResponseId,
+  writeMyResponse,
+} from '../../utils/myResponse.js';
 import {
   consumeRankingCodePanelFlag,
   consumeSurveyPrefillFlag,
@@ -25,10 +31,12 @@ import {
 } from '../../utils/vegSurveyConsole.js';
 import { DEV_SPEEDRUN } from '../../data/devSpeedrun.js';
 import { useI18n } from '../../i18n/useI18n.js';
+import { SurveyLocaleLockProvider } from '../../i18n/SurveyLocaleLock.jsx';
 import { isLocale } from '../../i18n/locales.js';
 import { withLocale } from '../../i18n/paths.js';
 
 const STEPS = {
+  ALREADY: 'already',
   WELCOME: 'welcome',
   CONSENT: 'consent',
   QUESTION_1: 'question1',
@@ -40,6 +48,12 @@ const STEPS = {
   QUESTION_7: 'question7',
   THANKS: 'thanks',
 };
+
+function initialSurveyStep() {
+  const code = readMyResponseId();
+  if (code && !canRetakeSurvey()) return STEPS.ALREADY;
+  return STEPS.WELCOME;
+}
 
 const PREVIOUS_STEP = {
   [STEPS.CONSENT]: STEPS.WELCOME,
@@ -78,7 +92,8 @@ function emptyResponse() {
 export function Questionnaire() {
   const navigate = useNavigate();
   const { t, locale, setLocale } = useI18n();
-  const [step, setStep] = useState(STEPS.WELCOME);
+  const [step, setStep] = useState(initialSurveyStep);
+  const [priorCode] = useState(() => readMyResponseId());
   const [response, setResponse] = useState(() => emptyResponse());
   const [toastMessage, setToastMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
@@ -102,7 +117,7 @@ export function Questionnaire() {
       window.history.pushState({ vegGuard: true }, '');
       guardReady.current = true;
     }
-    if (step === STEPS.THANKS) return undefined;
+    if (step === STEPS.THANKS || step === STEPS.ALREADY) return undefined;
 
     function onBeforeUnload(event) {
       if (leavingRef.current) return;
@@ -111,7 +126,13 @@ export function Questionnaire() {
     }
 
     function onPop() {
-      if (leavingRef.current || stepRef.current === STEPS.THANKS) return;
+      if (
+        leavingRef.current
+        || stepRef.current === STEPS.THANKS
+        || stepRef.current === STEPS.ALREADY
+      ) {
+        return;
+      }
       setLeaveAsk(true);
       window.history.pushState({ vegGuard: true }, '');
     }
@@ -226,10 +247,12 @@ export function Questionnaire() {
     writeMyCustomReason(
       nextResponse.customCriterion,
       nextResponse.customCriterionPublic,
+      nextResponse.locale ?? locale,
     );
     writeMyOpenNote(
       nextResponse.openDescription?.text,
       nextResponse.openDescription?.publicDisplay,
+      nextResponse.locale ?? locale,
     );
     writeMyResponse(body.id, nextResponse);
     persist(STEPS.THANKS, nextResponse);
@@ -269,7 +292,11 @@ export function Questionnaire() {
     customCriterion,
     customCriterionPublic,
   }) {
-    writeMyCustomReason(customCriterion, customCriterionPublic);
+    writeMyCustomReason(
+      customCriterion,
+      customCriterionPublic,
+      response.locale ?? locale,
+    );
     persist(STEPS.QUESTION_3, {
       ...response,
       initialCriteria,
@@ -313,7 +340,11 @@ export function Questionnaire() {
   }
 
   function handleQuestion6({ openDescription }) {
-    writeMyOpenNote(openDescription?.text, openDescription?.publicDisplay);
+    writeMyOpenNote(
+      openDescription?.text,
+      openDescription?.publicDisplay,
+      response.locale ?? locale,
+    );
     persist(STEPS.QUESTION_7, {
       ...response,
       openDescription,
@@ -332,6 +363,7 @@ export function Questionnaire() {
     writeMyOpenNote(
       nextResponse.openDescription?.text,
       nextResponse.openDescription?.publicDisplay,
+      nextResponse.locale,
     );
 
     setIsSubmitting(true);
@@ -363,10 +395,27 @@ export function Questionnaire() {
     navigate(withLocale(locale, '/'));
   }
 
+  function handleRetake() {
+    allowSurveyRetake();
+    setResponse(emptyResponse());
+    setResetKey((key) => key + 1);
+    setStep(STEPS.WELCOME);
+  }
+
+  const localeLocked = step !== STEPS.WELCOME;
+
   return (
+    <SurveyLocaleLockProvider locked={localeLocked}>
     <main className="questionnaire">
       {codePanel ? <RankingCodeFill onLoad={loadFromRankingCode} /> : null}
       <div className="questionnaire-inner" key={`${step}-${resetKey}`}>
+        {step === STEPS.ALREADY && priorCode ? (
+          <SurveyAlreadyTaken
+            code={priorCode}
+            onRetake={handleRetake}
+            onBack={() => navigate(withLocale(locale, '/'))}
+          />
+        ) : null}
         {step === STEPS.WELCOME ? (
           <WelcomeScreen
             onContinue={handleWelcome}
@@ -449,5 +498,6 @@ export function Questionnaire() {
         />
       ) : null}
     </main>
+    </SurveyLocaleLockProvider>
   );
 }

@@ -2,7 +2,7 @@ import { useI18n } from '../i18n/useI18n.js';
 import brandMark from '../assets/Glimpse_general.png';
 
 const BRAND_URL = 'https://glimpsegaze.com';
-const SUPPORT_URL = 'https://buymeacoffee.com/glimpsegaze';
+export const SUPPORT_URL = 'https://buymeacoffee.com/glimpsegaze';
 
 export function BrandFooter({ className = '', version }) {
   const { t } = useI18n();

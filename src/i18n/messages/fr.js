@@ -17,6 +17,7 @@ export const fr = {
   share: {
     label: 'Partager',
     on: 'Partager sur {name}',
+    via: 'Partager via {name}',
     copy: 'Copier le lien',
     copied: 'Lien copié',
     invite: 'Inviter à répondre au sondage',

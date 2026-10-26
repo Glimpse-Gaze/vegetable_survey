@@ -17,6 +17,7 @@ export const de = {
   share: {
     label: 'Teilen',
     on: 'Auf {name} teilen',
+    via: 'Über {name} teilen',
     copy: 'Link kopieren',
     copied: 'Link kopiert',
     invite: 'Andere zur Umfrage einladen',

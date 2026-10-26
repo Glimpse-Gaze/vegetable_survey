@@ -16,7 +16,8 @@ export const pl = {
   },
   share: {
     label: 'Udostępnij',
-    on: 'Udostępnij na {name}',
+    on: 'Udostępnij na: {name}',
+    via: 'Udostępnij przez {name}',
     copy: 'Kopiuj link',
     copied: 'Link skopiowany',
     invite: 'Zaproś innych do ankiety',

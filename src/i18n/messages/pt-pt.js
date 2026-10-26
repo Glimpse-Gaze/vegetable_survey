@@ -17,6 +17,7 @@ export const ptPt = {
   share: {
     label: 'Partilhar',
     on: 'Partilhar no {name}',
+    via: 'Partilhar via {name}',
     copy: 'Copiar ligação',
     copied: 'Ligação copiada',
     invite: 'Convidar para o inquérito',

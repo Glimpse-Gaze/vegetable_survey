@@ -19,6 +19,7 @@ export const en = {
   share: {
     label: 'Share',
     on: 'Share on {name}',
+    via: 'Share via {name}',
     copy: 'Copy link',
     copied: 'Link copied',
     invite: 'Invite others to take the survey',
@@ -92,6 +93,17 @@ export const en = {
     spoilerTitle: 'Before you skip ahead',
     spoilerMessage:
       'You’re about to see the results of The Great Vegetable Survey. Please proceed only if you have filled the survey yourself.',
+  },
+  already: {
+    eyebrow: 'Welcome back',
+    title: 'You’ve already taken this survey',
+    body:
+      'This device already has a completed response. You can open your results with the code below, or take the survey again (for example if someone else wants a turn).',
+    seeResults: 'See my results',
+    retake: 'Take the survey again',
+    retakeHint:
+      'Taking it again will save a new response. Your previous code still works until you finish a new run on this device.',
+    backHome: 'Back to the main page',
   },
   welcome: {
     eyebrow: 'Welcome',
@@ -405,6 +417,15 @@ export const en = {
       options: 'Sharing options',
       compareHint: 'See how your answers compare with everyone else.',
       picturesHint: 'Turn your answers into graphics you can save and send.',
+    },
+    tip: {
+      title: 'Enjoying the results?',
+      before:
+        'This is an independent project created for fun. It took me a lot of effort to build it, so if you like what you’re seeing, please consider',
+      link: 'giving me a tip',
+      after: '!',
+      later: 'Maybe later',
+      close: 'Close',
     },
     gate: {
       complete: 'Complete the survey',

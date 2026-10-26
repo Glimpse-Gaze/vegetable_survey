@@ -17,6 +17,7 @@ export const ko = {
   share: {
     label: '공유',
     on: '{name}에 공유',
+    via: '{name}(으)로 공유',
     copy: '링크 복사',
     copied: '링크를 복사했어요',
     invite: '설문에 초대하기',

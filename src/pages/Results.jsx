@@ -17,6 +17,7 @@ import { SpectrumList } from '../components/Results/SpectrumList.jsx';
 import { NoteResults } from '../components/Results/NoteResults.jsx';
 import { SurveyNudge } from '../components/Results/SurveyGate.jsx';
 import { ResultShareCards } from '../components/Results/ResultShareCards.jsx';
+import { ResultsTipDialog } from '../components/Results/ResultsTipDialog.jsx';
 import { ShareOptions } from '../components/Results/ShareOptions.jsx';
 import {
   acknowledgeResults,
@@ -890,21 +891,27 @@ export function Results() {
 
   const helpers = useMemo(() => ({
     artFor: (id) => artForVegetable(id),
-    labelFor: (id) =>
-      catalog.vegetablesById?.get(id)?.name
-      ?? VEGETABLE_LABELS[id]
-      ?? id,
+    labelFor: (id) => {
+      if (typeof id === 'string' && id.startsWith('custom:')) {
+        return liveSummary?.voteLabels?.[id] ?? id.slice('custom:'.length);
+      }
+      return (
+        catalog.vegetablesById?.get(id)?.name
+        ?? VEGETABLE_LABELS[id]
+        ?? id
+      );
+    },
     bandForRank,
     boardSize: BLADE_BOARD_SIZE,
     locale,
-  }), [catalog.vegetablesById, locale]);
+  }), [catalog.vegetablesById, liveSummary?.voteLabels, locale]);
 
   const section = useMemo(() => {
-    const overlaid = overlayCategory(category, userAnswers);
+    const overlaid = overlayCategory(category, userAnswers, locale);
     let raw;
     if (isGlobalResultsView(regionId, languageId)) {
       // Global view keeps mock standings, then weights in real votes.
-      const mock = getSection(category.id, regionId, userAnswers, languageId);
+      const mock = getSection(category.id, regionId, userAnswers, languageId, locale);
       raw = applyLiveBlend(mock, category.id, liveSummary, helpers);
     } else {
       // Region / language filters are live-only — no mock reweighting.
@@ -1411,6 +1418,7 @@ export function Results() {
         <BrandFooter className="brand-footer--results" />
       </main>
       <ReportIssuesButton variant="fab" />
+      <ResultsTipDialog />
       {gateOpen ? (
         <ConfirmDialog
           title={t('home.spoilerTitle')}

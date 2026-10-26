@@ -1,5 +1,10 @@
 import { neon } from '@neondatabase/serverless';
 import { isPublishableText } from '../src/utils/publishableText.js';
+import {
+  customVoteKey,
+  filterPublicVoteCounts,
+  isBlockedPublicLabel,
+} from '../src/utils/blockedLabels.js';
 
 /** User-confirmed real ranking codes. Later rows (after the newest seed) are included automatically. */
 export const LIVE_SEED_CODES = [
@@ -21,9 +26,16 @@ function normalizeBucketId(id) {
   return BUCKET_ALIASES[key] ?? key;
 }
 
-function voteId(entry) {
+/** Catalogue id, or a custom:* key for free-text (null if empty/blocked for public). */
+function publicVoteFromEntry(entry, locale) {
   const id = String(entry?.canonicalId ?? '').trim();
-  return id || null;
+  if (id) return { key: id, label: null };
+  const raw = String(entry?.rawAnswer ?? '').trim();
+  if (!raw) return null;
+  if (isBlockedPublicLabel(raw, locale)) return null;
+  const key = customVoteKey(raw);
+  if (!key) return null;
+  return { key, label: raw.slice(0, 80) };
 }
 
 function placeId(payload) {
@@ -108,12 +120,17 @@ function compactBallot(payload, index) {
   const noteText = String(note?.text ?? '').trim();
   const locale = surveyLocale(payload, noteText || custom);
 
+  const association = publicVoteFromEntry(payload?.initialAssociation, locale);
+  const mostVegetable = publicVoteFromEntry(payload?.mostVegetable, locale);
+
   return {
     place: placeId(payload),
     languages: languageIds(payload),
     locale,
-    association: voteId(payload?.initialAssociation),
-    mostVegetable: voteId(payload?.mostVegetable),
+    association: association?.key ?? null,
+    associationLabel: association?.label ?? null,
+    mostVegetable: mostVegetable?.key ?? null,
+    mostVegetableLabel: mostVegetable?.label ?? null,
     criteria: Array.isArray(payload?.initialCriteria)
       ? payload.initialCriteria.map((id) => String(id ?? '').trim()).filter(Boolean)
       : [],
@@ -141,6 +158,8 @@ function compactBallot(payload, index) {
 function aggregatePayloads(payloads) {
   const associations = {};
   const mostVegetable = {};
+  const associationLabels = {};
+  const mostVegetableLabels = {};
   const criteria = {};
   const places = {};
   const languages = {};
@@ -156,6 +175,12 @@ function aggregatePayloads(payloads) {
 
     bump(associations, ballot.association);
     bump(mostVegetable, ballot.mostVegetable);
+    if (ballot.association && ballot.associationLabel) {
+      associationLabels[ballot.association] = ballot.associationLabel;
+    }
+    if (ballot.mostVegetable && ballot.mostVegetableLabel) {
+      mostVegetableLabels[ballot.mostVegetable] = ballot.mostVegetableLabel;
+    }
 
     for (const criterion of ballot.criteria) {
       bump(criteria, criterion);
@@ -194,10 +219,13 @@ function aggregatePayloads(payloads) {
     }
   });
 
+  const voteLabels = { ...associationLabels, ...mostVegetableLabels };
+
   return {
     liveCount: payloads.length,
-    associations,
-    mostVegetable,
+    associations: filterPublicVoteCounts(associations, associationLabels),
+    mostVegetable: filterPublicVoteCounts(mostVegetable, mostVegetableLabels),
+    voteLabels,
     criteria,
     places,
     languages,

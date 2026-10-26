@@ -223,7 +223,8 @@ body:has(.home-shell) {
 
 @media (hover: hover) and (pointer: fine) {
   .locale-switcher[data-tooltip]::after,
-  .report-issues-btn.is-fab[data-tooltip]::after {
+  .report-issues-btn.is-fab[data-tooltip]::after,
+  .share-bar-btn[data-tooltip]::after {
     content: attr(data-tooltip);
     position: absolute;
     z-index: 90;
@@ -252,9 +253,17 @@ body:has(.home-shell) {
     transform: translateY(50%) translateX(4px);
   }
 
+  .share-bar-btn[data-tooltip]::after {
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+  }
+
   .locale-switcher:hover[data-tooltip]:not(.is-tip-quiet)::after,
   .report-issues-btn.is-fab:hover[data-tooltip]::after,
-  .report-issues-btn.is-fab:focus-visible[data-tooltip]::after {
+  .report-issues-btn.is-fab:focus-visible[data-tooltip]::after,
+  .share-bar-btn:hover[data-tooltip]::after,
+  .share-bar-btn:focus-visible[data-tooltip]::after {
     opacity: 1;
     transform: none;
   }
@@ -268,6 +277,11 @@ body:has(.home-shell) {
   .report-issues-btn.is-fab:hover[data-tooltip]::after,
   .report-issues-btn.is-fab:focus-visible[data-tooltip]::after {
     transform: translateY(50%);
+  }
+
+  .share-bar-btn:hover[data-tooltip]::after,
+  .share-bar-btn:focus-visible[data-tooltip]::after {
+    transform: translateX(-50%);
   }
 }
 
@@ -570,6 +584,7 @@ html[lang='pt-PT'] .home-title {
 }
 
 .share-bar-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;

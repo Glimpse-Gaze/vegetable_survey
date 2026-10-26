@@ -17,6 +17,7 @@ export const zhHant = {
   share: {
     label: '分享',
     on: '分享到{name}',
+    via: '透過{name}分享',
     copy: '複製連結',
     copied: '已複製連結',
     invite: '邀請別人做調查',

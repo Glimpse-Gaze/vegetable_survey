@@ -1,9 +1,11 @@
+import { isLocale } from '../i18n/locales.js';
 import { localeFromPath, preferredLocale, withLocale } from '../i18n/paths.js';
 
 const FLAG = 'veg-survey-open-code';
 const EVENT = 'veg-survey-open-code';
 const PREFILL_FLAG = 'veg-survey-prefill';
 const PREFILL_EVENT = 'veg-survey-prefill';
+export const SET_LOCALE_EVENT = 'veg-survey-set-locale';
 
 function onSurveyPage() {
   const locale = localeFromPath(window.location.pathname);
@@ -76,6 +78,40 @@ export function subscribeSurveyPrefill(onPrefill) {
   return () => window.removeEventListener(PREFILL_EVENT, handle);
 }
 
+function currentLocale() {
+  return localeFromPath(window.location.pathname) ?? preferredLocale();
+}
+
+function requestLocale(next) {
+  const value = String(next ?? '').trim().toLowerCase();
+  if (!isLocale(value)) {
+    console.warn(`[vegSurvey] Unknown locale "${next}". Try loc = 'pl' (or en, th, …).`);
+    return currentLocale();
+  }
+  window.dispatchEvent(new CustomEvent(SET_LOCALE_EVENT, { detail: value }));
+  return value;
+}
+
 export function installVegSurveyConsole() {
   window.vegSurvey = requestSurveyPrefill;
+
+  // Dev: loc = 'pl'  or  loc('th')  — works even when the survey language pill is locked.
+  Object.defineProperty(window, 'loc', {
+    configurable: true,
+    enumerable: false,
+    get() {
+      const here = currentLocale();
+      const fn = (next) => {
+        if (next == null || next === '') return here;
+        return requestLocale(next);
+      };
+      fn.toString = () => here;
+      fn.valueOf = () => here;
+      fn[Symbol.toPrimitive] = () => here;
+      return fn;
+    },
+    set(value) {
+      requestLocale(value);
+    },
+  });
 }

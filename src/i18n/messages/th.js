@@ -17,6 +17,7 @@ export const th = {
   share: {
     label: 'แชร์',
     on: 'แชร์ทาง {name}',
+    via: 'แชร์ผ่าน {name}',
     copy: 'คัดลอกลิงก์',
     copied: 'คัดลอกลิงก์แล้ว',
     invite: 'ชวนคนอื่นมาทำแบบสำรวจ',

@@ -3,7 +3,7 @@ import { isPublishableText } from './publishableText.js';
 
 const MY_CUSTOM_REASON_KEY = 'veg-survey-my-reason';
 
-export function writeMyCustomReason(text, isPublic) {
+export function writeMyCustomReason(text, isPublic, locale = null) {
   const trimmed = String(text ?? '').trim();
   const publish = Boolean(isPublic) && isPublishableText(trimmed);
   try {
@@ -11,10 +11,10 @@ export function writeMyCustomReason(text, isPublic) {
       localStorage.removeItem(MY_CUSTOM_REASON_KEY);
       return;
     }
-    localStorage.setItem(
-      MY_CUSTOM_REASON_KEY,
-      JSON.stringify({ text: trimmed }),
-    );
+    const payload = { text: trimmed };
+    const loc = String(locale ?? '').trim().toLowerCase();
+    if (loc) payload.locale = loc;
+    localStorage.setItem(MY_CUSTOM_REASON_KEY, JSON.stringify(payload));
   } catch {
     // private mode
   }
@@ -23,12 +23,15 @@ export function writeMyCustomReason(text, isPublic) {
 export function readMyCustomReason() {
   try {
     const raw = localStorage.getItem(MY_CUSTOM_REASON_KEY);
-    if (!raw) return '';
+    if (!raw) return { text: '', locale: null };
     const parsed = JSON.parse(raw);
     const text = typeof parsed?.text === 'string' ? parsed.text.trim() : '';
-    return isPublishableText(text) ? text : '';
+    const locale =
+      typeof parsed?.locale === 'string' ? parsed.locale.trim().toLowerCase() : null;
+    if (!isPublishableText(text)) return { text: '', locale: null };
+    return { text, locale: locale || null };
   } catch {
-    return '';
+    return { text: '', locale: null };
   }
 }
 

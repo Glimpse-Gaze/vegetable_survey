@@ -2,6 +2,10 @@ import { VOTE_THRESHOLD } from './resultsMock.js';
 import { isPublishableText } from '../utils/publishableText.js';
 import { iso3ForCountry } from './countryIso3.js';
 import { countries } from './countries.js';
+import {
+  filterPublicVoteCounts,
+  isCustomVoteKey,
+} from '../utils/blockedLabels.js';
 
 /** How heavily each live ballot counts relative to one mock vote at full sample size. */
 export const LIVE_VOTE_BOOST = 36;
@@ -18,6 +22,7 @@ export function emptyLiveSummary() {
     liveCount: 0,
     associations: {},
     mostVegetable: {},
+    voteLabels: {},
     criteria: {},
     places: {},
     languages: {},
@@ -451,6 +456,25 @@ export function blendReasonCriteria(section, liveCriteria, liveCount = 0) {
   };
 }
 
+/**
+ * Catalogue veggies stay global; custom:* labels only count in the UI locale
+ * they were written under.
+ */
+function voteCountsForUiLocale(counts, ballots, field, locale, labels) {
+  const want = normalizeTextLocale(locale);
+  const next = { ...(counts ?? {}) };
+  for (const key of Object.keys(next)) {
+    if (isCustomVoteKey(key)) delete next[key];
+  }
+  for (const ballot of ballots ?? []) {
+    if (normalizeTextLocale(ballot?.locale) !== want) continue;
+    const key = ballot?.[field];
+    if (!isCustomVoteKey(key)) continue;
+    next[key] = (next[key] ?? 0) + 1;
+  }
+  return filterPublicVoteCounts(next, labels ?? {}, want);
+}
+
 export function applyLiveBlend(section, categoryId, live, helpers = {}) {
   if (!live?.liveCount) return section;
   const locale = helpers.locale ?? 'en';
@@ -458,9 +482,31 @@ export function applyLiveBlend(section, categoryId, live, helpers = {}) {
 
   const sample = live.liveCount;
   if (categoryId === 'first-instincts') {
-    next = blendBladeSection(next, live.associations, helpers, sample);
+    next = blendBladeSection(
+      next,
+      voteCountsForUiLocale(
+        live.associations,
+        live.ballots,
+        'association',
+        locale,
+        live.voteLabels,
+      ),
+      helpers,
+      sample,
+    );
   } else if (categoryId === 'most-vegetable') {
-    next = blendBladeSection(next, live.mostVegetable, helpers, sample);
+    next = blendBladeSection(
+      next,
+      voteCountsForUiLocale(
+        live.mostVegetable,
+        live.ballots,
+        'mostVegetable',
+        locale,
+        live.voteLabels,
+      ),
+      helpers,
+      sample,
+    );
   } else if (categoryId === 'why-vegetabley') {
     next = blendReasonCriteria(next, live.criteria, sample);
     next = blendReasonSection(next, live.customReasons, locale);

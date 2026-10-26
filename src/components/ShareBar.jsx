@@ -118,11 +118,11 @@ export function ShareBar({ labelled = false }) {
     window.location.assign(href);
   }
 
-  function renderNetwork(network) {
+  function renderNetwork(network, tipKey) {
     const href = network.href(pageUrl, text);
     const className = copiedId === network.id ? 'share-bar-btn is-copied' : 'share-bar-btn';
     const icon = copiedId === network.id ? <CheckIcon /> : <Glyph src={ICONS[network.id]} />;
-    const aria = t('share.on', { name: network.name });
+    const tip = t(tipKey, { name: network.name });
     if (!href) {
       return (
         <button
@@ -130,7 +130,8 @@ export function ShareBar({ labelled = false }) {
           className={className}
           type="button"
           data-network={network.id}
-          aria-label={aria}
+          data-tooltip={tip}
+          aria-label={tip}
           onClick={(event) => openNetwork(event, network)}
         >
           {icon}
@@ -143,10 +144,11 @@ export function ShareBar({ labelled = false }) {
         key={network.id}
         className={className}
         data-network={network.id}
+        data-tooltip={tip}
         href={href}
         target={external ? '_blank' : undefined}
         rel={external ? 'noopener noreferrer' : undefined}
-        aria-label={aria}
+        aria-label={tip}
         onClick={(event) => openNetwork(event, network)}
       >
         {icon}
@@ -154,24 +156,27 @@ export function ShareBar({ labelled = false }) {
     );
   }
 
+  const copyTip = copiedId === 'copy' ? t('share.copied') : t('share.copy');
+
   return (
     <div className={labelled ? 'share-bar is-labelled' : 'share-bar'}>
       {labelled ? <p className="share-bar-label">{label}</p> : null}
       <div className="share-bar-rows" role="group" aria-label={label}>
         <div className="share-bar-buttons">
-          {SOCIAL_NETWORKS.map(renderNetwork)}
+          {SOCIAL_NETWORKS.map((network) => renderNetwork(network, 'share.on'))}
           <button
             className={copiedId === 'copy' ? 'share-bar-btn is-copied' : 'share-bar-btn'}
             type="button"
             data-network="copy"
+            data-tooltip={copyTip}
             onClick={copyLink}
-            aria-label={copiedId === 'copy' ? t('share.copied') : t('share.copy')}
+            aria-label={copyTip}
           >
             {copiedId === 'copy' ? <CheckIcon /> : <LinkIcon />}
           </button>
         </div>
         <div className="share-bar-buttons">
-          {CHAT_NETWORKS.map(renderNetwork)}
+          {CHAT_NETWORKS.map((network) => renderNetwork(network, 'share.via'))}
         </div>
       </div>
     </div>

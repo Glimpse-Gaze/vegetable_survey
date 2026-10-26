@@ -3744,3 +3744,50 @@
     scroll-snap-align: start;
   }
 }
+
+.results-tip-card {
+  position: relative;
+  width: min(32rem, 100%);
+  padding-top: 28px;
+  text-align: left;
+}
+
+.results-tip-card h2 {
+  padding-right: 28px;
+  text-align: center;
+}
+
+.results-tip-body {
+  margin: 0 0 18px;
+  color: var(--muted);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.results-tip-body a {
+  color: var(--green);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.results-tip-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.55rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.results-tip-close:hover,
+.results-tip-close:focus-visible {
+  color: var(--ink);
+  background: rgba(29, 42, 28, 0.06);
+}

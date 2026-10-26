@@ -135,6 +135,57 @@ h1.eyebrow {
   margin: 0;
 }
 
+.already-code-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 18px 0 22px;
+}
+
+.already-code-wrap .response-code-card {
+  width: min(17.5rem, 100%);
+  max-width: min(17.5rem, 100%);
+  margin-top: 0;
+  box-sizing: border-box;
+}
+
+.already-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.already-actions .home-button {
+  width: min(18rem, 100%);
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.already-back {
+  justify-self: center;
+  margin-top: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.already-back:hover,
+.already-back:focus-visible {
+  color: var(--ink);
+}
+
+.already-hint {
+  margin: 0 0 28px;
+}
+
 .locale-prompt {
   margin: 0;
 }

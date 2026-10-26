@@ -9,6 +9,7 @@ import {
   rememberLocale,
   withLocale,
 } from './paths.js';
+import { SET_LOCALE_EVENT } from '../utils/vegSurveyConsole.js';
 
 function lookup(tree, key) {
   return key.split('.').reduce((node, part) => {
@@ -37,6 +38,15 @@ export function I18nProvider({ children }) {
     const current = `${location.pathname}${location.search}${location.hash}`;
     if (target !== current) navigate(target);
   }, [location.hash, location.pathname, location.search, navigate]);
+
+  useEffect(() => {
+    function onDevLocale(event) {
+      const next = event?.detail;
+      if (isLocale(next)) setLocale(next);
+    }
+    window.addEventListener(SET_LOCALE_EVENT, onDevLocale);
+    return () => window.removeEventListener(SET_LOCALE_EVENT, onDevLocale);
+  }, [setLocale]);
 
   useEffect(() => {
     const match = LOCALES.find((item) => item.id === locale);

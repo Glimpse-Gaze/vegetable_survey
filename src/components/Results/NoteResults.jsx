@@ -7,6 +7,10 @@ import {
 } from '../../data/noteResults.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import { applyMyNoteToPage, isMyOpenNote, readMyOpenNote } from '../../utils/myOpenNote.js';
+import {
+  answersMatchUiLocale,
+  readMyAnswers,
+} from '../../utils/myResponse.js';
 import { readMyResponseId } from '../../utils/myResponse.js';
 import { SurveyNudge } from './SurveyGate.jsx';
 
@@ -237,10 +241,23 @@ export function NoteResults({ section, viewingOwn = true }) {
   const responseId = useMemo(() => readMyResponseId(), []);
   const canVote = Boolean(responseId);
   const storedNote = useMemo(() => readMyOpenNote(), []);
-  const myNote = viewingOwn
-    ? storedNote.text || section.userNoteText || ''
-    : section.userNoteText || '';
-  const canPin = Boolean(viewingOwn && storedNote.text && storedNote.isPublic);
+  const myAnswers = useMemo(() => readMyAnswers(), []);
+  const noteLocaleOk = viewingOwn
+    ? (storedNote.locale
+      ? storedNote.locale === locale
+      : answersMatchUiLocale(myAnswers, locale))
+    : answersMatchUiLocale(
+      { locale: section.locale, openDescription: { text: section.userNoteText } },
+      locale,
+    );
+  const myNote = noteLocaleOk
+    ? (viewingOwn
+      ? storedNote.text || section.userNoteText || ''
+      : section.userNoteText || '')
+    : '';
+  const canPin = Boolean(
+    viewingOwn && noteLocaleOk && storedNote.text && storedNote.isPublic,
+  );
   const pool = section.notePool ?? [];
   const [myVotes, setMyVotes] = useState(() => readMyVotes(locale));
   const [resetDone, setResetDone] = useState(false);

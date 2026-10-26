@@ -17,6 +17,7 @@ export const es = {
   share: {
     label: 'Compartir',
     on: 'Compartir en {name}',
+    via: 'Compartir por {name}',
     copy: 'Copiar enlace',
     copied: 'Enlace copiado',
     invite: 'Invitar a hacer la encuesta',

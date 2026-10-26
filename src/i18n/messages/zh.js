@@ -17,6 +17,7 @@ export const zh = {
   share: {
     label: '分享',
     on: '分享到{name}',
+    via: '通过{name}分享',
     copy: '复制链接',
     copied: '已复制链接',
     invite: '邀请别人做调查',

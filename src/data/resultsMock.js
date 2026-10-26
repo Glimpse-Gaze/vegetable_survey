@@ -7,16 +7,19 @@ import cabbage from '../content/Cabbage.jpg';
 import carrots from '../content/Carrots.jpg';
 import cauliflower from '../content/Cauliflower.jpg';
 import celery from '../content/Celery.jpg';
+import celeriac from '../content/Celeriac.jpg';
 import greenBean from '../content/Green_Bean.jpg';
 import corn from '../content/Corn.jpg';
 import cucumber from '../content/Cucumber.jpg';
 import eggplant from '../content/Eggplant.jpg';
+import fennel from '../content/Fennel.jpg';
 import kale from '../content/Kale.jpg';
 import lettuce from '../content/Lettuce.jpg';
 import onion from '../content/Onion.jpg';
 import pakChoi from '../content/Pok_choi.jpg';
 import potato from '../content/Potato.jpg';
 import pumpkin from '../content/Pumpkin.jpg';
+import butternutSquash from '../content/Butternut_squash.jpg';
 import rapeseed from '../content/Rapeseed.jpg';
 import spinach from '../content/Spinach.jpg';
 import sweetPotato from '../content/Sweet_Potato.jpg';
@@ -77,11 +80,13 @@ export const VEGETABLE_ART = {
   carrot: carrots,
   cauliflower,
   celery,
+  celeriac,
   green_bean: greenBean,
   corn,
   sweetcorn: corn,
   cucumber,
   eggplant,
+  fennel,
   kale,
   lettuce,
   marrow: zucchini,
@@ -89,6 +94,7 @@ export const VEGETABLE_ART = {
   pak_choi: pakChoi,
   potato,
   pumpkin,
+  butternut_squash: butternutSquash,
   rapeseed,
   spinach,
   sweet_potato: sweetPotato,
@@ -162,8 +168,10 @@ export const VEGETABLE_LABELS = {
   cauliflower: 'Cauliflower',
   green_bean: 'Green bean',
   celery: 'Celery',
+  celeriac: 'Celeriac',
   corn: 'Corn',
   cucumber: 'Cucumber',
+  fennel: 'Fennel',
   kale: 'Kale',
   lettuce: 'Lettuce',
   marrow: 'Marrow',
@@ -171,6 +179,7 @@ export const VEGETABLE_LABELS = {
   pak_choi: 'Pak choi',
   potato: 'Potato',
   pumpkin: 'Pumpkin',
+  butternut_squash: 'Butternut squash',
   rapeseed: 'Rapeseed',
   sweet_potato: 'Sweet potato',
   tomato: 'Tomato',
@@ -506,7 +515,7 @@ function userBucketsFromAnswers(answers) {
   return map;
 }
 
-export function overlayCategory(category, answers) {
+export function overlayCategory(category, answers, uiLocale = null) {
   if (!answers) {
     return {
       ...category,
@@ -527,16 +536,28 @@ export function overlayCategory(category, answers) {
     association?.canonicalId,
     association?.rawAnswer,
   );
+  const localeOk =
+    uiLocale == null
+    || !answers.locale
+    || String(answers.locale).trim().toLowerCase()
+      === String(uiLocale).trim().toLowerCase();
+  // Custom free-text votes/notes stay in the language they were written in.
+  const isCustomVote = Boolean(
+    association && !association.canonicalId && association.rawAnswer,
+  );
+  const showCustomVote = localeOk || !isCustomVote;
+  const showNote = localeOk;
 
   return {
     ...category,
-    userVoteId,
-    userVoteName:
-      displayVoteName(association) ?? labelForVoteId(userVoteId),
+    userVoteId: showCustomVote ? userVoteId : null,
+    userVoteName: showCustomVote
+      ? (displayVoteName(association) ?? labelForVoteId(userVoteId))
+      : null,
     userCriteria: answers.initialCriteria ?? [],
     userSpectrum: answers.spectrum ?? [],
     userBuckets: userBucketsFromAnswers(answers),
-    userNoteText: answers.openDescription?.text ?? '',
+    userNoteText: showNote ? (answers.openDescription?.text ?? '') : '',
   };
 }
 
@@ -954,8 +975,14 @@ function artFor(id) {
   return artForVegetable(id);
 }
 
-export function getSection(categoryId, regionId, userAnswers = null, languageId = ALL_LANGUAGES_ID) {
-  const category = overlayCategory(getCategory(categoryId), userAnswers);
+export function getSection(
+  categoryId,
+  regionId,
+  userAnswers = null,
+  languageId = ALL_LANGUAGES_ID,
+  uiLocale = null,
+) {
+  const category = overlayCategory(getCategory(categoryId), userAnswers, uiLocale);
   const region = getRegion(regionId);
   const view = resultView(region, languageId);
   if (category.layout === 'buckets') {

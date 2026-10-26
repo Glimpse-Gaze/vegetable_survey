@@ -17,6 +17,7 @@ export const it = {
   share: {
     label: 'Condividi',
     on: 'Condividi su {name}',
+    via: 'Condividi via {name}',
     copy: 'Copia il link',
     copied: 'Link copiato',
     invite: 'Invita a compilare il sondaggio',

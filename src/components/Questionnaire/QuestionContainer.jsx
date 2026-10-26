@@ -1,10 +1,12 @@
 import { LocaleSwitcher } from '../LocaleSwitcher.jsx';
 import { useI18n } from '../../i18n/useI18n.js';
+import { useSurveyLocaleLocked } from '../../i18n/SurveyLocaleLock.jsx';
 
 const TOTAL_QUESTIONS = 7;
 
 export function QuestionContainer({ questionNumber, eyebrow, children }) {
   const { t } = useI18n();
+  const localeLocked = useSurveyLocaleLocked();
   const label =
     eyebrow ??
     (questionNumber
@@ -23,7 +25,9 @@ export function QuestionContainer({ questionNumber, eyebrow, children }) {
         ) : (
           <span className="question-panel-head-spacer" aria-hidden="true" />
         )}
-        <LocaleSwitcher className="locale-switcher--inline" />
+        {localeLocked ? null : (
+          <LocaleSwitcher className="locale-switcher--inline" />
+        )}
       </div>
       {children}
     </section>

@@ -228,7 +228,7 @@ export async function responseExists(id, databaseUrl) {
 }
 
 export async function insertResponseLimited(payload, databaseUrl, bucket) {
-  await consumeRateLimit(databaseUrl, `submit:${bucket}`, 6, 15 * 60);
+  await consumeRateLimit(databaseUrl, `submit:${bucket}`, 4, 60 * 60);
   return insertResponse(payload, databaseUrl);
 }
 

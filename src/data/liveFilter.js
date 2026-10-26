@@ -16,6 +16,7 @@ import {
   spectrumVegetables,
 } from './spectrumVegetables.js';
 import { languages as languageCatalog } from './languages.js';
+import { filterPublicVoteCounts, isCustomVoteKey } from '../utils/blockedLabels.js';
 
 const countryNameById = Object.fromEntries(
   countries.map((country) => [country.id, country.name]),
@@ -65,6 +66,8 @@ export function filterBallots(ballots, regionId = 'global', languageId = ALL_LAN
 export function aggregateBallots(ballots) {
   const associations = {};
   const mostVegetable = {};
+  const associationLabels = {};
+  const mostVegetableLabels = {};
   const criteriaVotes = {};
   const places = {};
   const languages = {};
@@ -76,6 +79,12 @@ export function aggregateBallots(ballots) {
   (ballots ?? []).forEach((ballot, index) => {
     bump(associations, ballot.association);
     bump(mostVegetable, ballot.mostVegetable);
+    if (ballot.association && ballot.associationLabel) {
+      associationLabels[ballot.association] = ballot.associationLabel;
+    }
+    if (ballot.mostVegetable && ballot.mostVegetableLabel) {
+      mostVegetableLabels[ballot.mostVegetable] = ballot.mostVegetableLabel;
+    }
     for (const criterion of ballot.criteria ?? []) bump(criteriaVotes, criterion);
     bump(places, ballot.place);
     for (const language of ballot.languages ?? []) bump(languages, language);
@@ -122,8 +131,9 @@ export function aggregateBallots(ballots) {
 
   return {
     liveCount: ballots?.length ?? 0,
-    associations,
-    mostVegetable,
+    associations: filterPublicVoteCounts(associations, associationLabels),
+    mostVegetable: filterPublicVoteCounts(mostVegetable, mostVegetableLabels),
+    voteLabels: { ...associationLabels, ...mostVegetableLabels },
     criteria: criteriaVotes,
     places,
     languages,
@@ -401,11 +411,37 @@ function buildNotesLive(category, region, language, aggregate, locale = 'en') {
   };
 }
 
+/** Drop custom:* veggie votes written under a different UI locale. */
+function scopeCustomVotesToLocale(ballots, locale) {
+  const want = String(locale ?? 'en').trim().toLowerCase();
+  return (ballots ?? []).map((ballot) => {
+    const written = String(ballot?.locale ?? 'en').trim().toLowerCase();
+    if (written === want) return ballot;
+    return {
+      ...ballot,
+      association: isCustomVoteKey(ballot.association) ? null : ballot.association,
+      associationLabel: isCustomVoteKey(ballot.association)
+        ? null
+        : ballot.associationLabel,
+      mostVegetable: isCustomVoteKey(ballot.mostVegetable)
+        ? null
+        : ballot.mostVegetable,
+      mostVegetableLabel: isCustomVoteKey(ballot.mostVegetable)
+        ? null
+        : ballot.mostVegetableLabel,
+    };
+  });
+}
+
 /**
  * Build a results section from live ballots only (no mock reweighting).
  */
 export function buildLiveSection(category, regionId, languageId, ballots, helpers = {}) {
-  const filtered = filterBallots(ballots, regionId, languageId);
+  const locale = helpers.locale ?? 'en';
+  const filtered = scopeCustomVotesToLocale(
+    filterBallots(ballots, regionId, languageId),
+    locale,
+  );
   const aggregate = aggregateBallots(filtered);
   const placeTallies = livePlaceTallies(ballots);
   const region = resolveLiveRegion(regionId, placeTallies);
@@ -413,7 +449,6 @@ export function buildLiveSection(category, regionId, languageId, ballots, helper
     languageId && languageId !== ALL_LANGUAGES_ID
       ? { id: languageId, name: languageNameById[languageId] ?? languageId }
       : null;
-  const locale = helpers.locale ?? 'en';
 
   if (category.layout === 'blades') {
     return buildBladeLive(category, region, language, aggregate, helpers);

@@ -17,6 +17,7 @@ export const ptBr = {
   share: {
     label: 'Compartilhar',
     on: 'Compartilhar no {name}',
+    via: 'Compartilhar via {name}',
     copy: 'Copiar link',
     copied: 'Link copiado',
     invite: 'Convidar para a pesquisa',
