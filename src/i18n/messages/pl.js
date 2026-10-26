@@ -94,7 +94,7 @@ export const pl = {
   },
   already: {
     eyebrow: 'Witaj ponownie',
-    title: 'Ta ankieta jest już u Ciebie wypełniona',
+    title: 'Ta ankieta została już tutaj wypełniona',
     body:
       'To urządzenie ma już zapisaną ukończoną odpowiedź. Możesz otworzyć wyniki kodem poniżej albo wypełnić ankietę jeszcze raz (na przykład gdy ktoś inny chce swojej kolejki).',
     seeResults: 'Zobacz moje wyniki',
