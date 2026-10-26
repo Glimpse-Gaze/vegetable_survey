@@ -1,0 +1,1279 @@
+{
+  "savedAt": "2026-10-26T00:25:09.628Z",
+  "dryRun": false,
+  "responseCount": 65,
+  "beforeHistogram": {
+    "taste": 34,
+    "common_label": 30,
+    "healthy": 28,
+    "appearance": 25,
+    "cooking": 23,
+    "green": 22,
+    "just_feels": 16,
+    "regularly_eaten": 15,
+    "underground": 15,
+    "childhood": 13,
+    "plant": 13,
+    "edible": 12,
+    "savoury": 11,
+    "local": 10,
+    "other": 6
+  },
+  "afterHistogram": {
+    "appearance": 42,
+    "just_feels": 42,
+    "taste": 34,
+    "healthy": 28,
+    "local": 24,
+    "cooking": 23,
+    "plant": 23,
+    "underground": 15,
+    "childhood": 13,
+    "savoury": 11,
+    "other": 6
+  },
+  "dualSelectCounts": {
+    "appearance": 9,
+    "local": 2,
+    "plant": 3,
+    "just_feels": 7
+  },
+  "halfPools": {
+    "appearance": 4.5,
+    "local": 1,
+    "plant": 1.5,
+    "just_feels": 3.5
+  },
+  "extrasFloor": {
+    "appearance": 4,
+    "local": 1,
+    "plant": 1,
+    "just_feels": 3
+  },
+  "droppedHalves": {
+    "appearance": 0.5,
+    "local": 0,
+    "plant": 0.5,
+    "just_feels": 0.5
+  },
+  "topUpsApplied": [
+    {
+      "survivor": "appearance",
+      "id": "0eda8f0b-c683-46fa-bf6e-35dceaafd848",
+      "ranking_code": "VscpAWyvRVgD"
+    },
+    {
+      "survivor": "appearance",
+      "id": "1c1077bb-c6eb-4b6c-84d4-007281165aba",
+      "ranking_code": "at5ioW5XGeQT"
+    },
+    {
+      "survivor": "appearance",
+      "id": "1fba7944-bd3f-4b00-a42b-08b6948050ed",
+      "ranking_code": "JHhd7kyvcL3J"
+    },
+    {
+      "survivor": "appearance",
+      "id": "281bb18c-b3cd-4343-b09b-303db21669c3",
+      "ranking_code": "2LmFX7ig8XW2"
+    },
+    {
+      "survivor": "local",
+      "id": "08a66048-724b-492d-a5e4-2649c5ed7bfb",
+      "ranking_code": "dw7QvUwrwcdP"
+    },
+    {
+      "survivor": "plant",
+      "id": "08a66048-724b-492d-a5e4-2649c5ed7bfb",
+      "ranking_code": "dw7QvUwrwcdP"
+    },
+    {
+      "survivor": "just_feels",
+      "id": "0b86f021-c716-44c7-88e9-da76f71707cc",
+      "ranking_code": "Kkp88BmuRE6c"
+    },
+    {
+      "survivor": "just_feels",
+      "id": "0eda8f0b-c683-46fa-bf6e-35dceaafd848",
+      "ranking_code": "VscpAWyvRVgD"
+    },
+    {
+      "survivor": "just_feels",
+      "id": "1a085c72-57b5-421b-a3d2-8d3fe1d530ed",
+      "ranking_code": "4mP54iRNqc4a"
+    }
+  ],
+  "changedRowCount": 50,
+  "unchangedRowCount": 15,
+  "sampleChanges": [
+    {
+      "id": "08a66048-724b-492d-a5e4-2649c5ed7bfb",
+      "ranking_code": "dw7QvUwrwcdP",
+      "before": [
+        "local",
+        "healthy",
+        "taste",
+        "underground",
+        "plant"
+      ],
+      "after": [
+        "local",
+        "healthy",
+        "taste",
+        "underground",
+        "plant",
+        "local",
+        "plant"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "0b86f021-c716-44c7-88e9-da76f71707cc",
+      "ranking_code": "Kkp88BmuRE6c",
+      "before": [
+        "common_label",
+        "plant",
+        "taste",
+        "just_feels"
+      ],
+      "after": [
+        "just_feels",
+        "plant",
+        "taste",
+        "just_feels"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    },
+    {
+      "id": "0eda8f0b-c683-46fa-bf6e-35dceaafd848",
+      "ranking_code": "VscpAWyvRVgD",
+      "before": [
+        "savoury",
+        "common_label",
+        "cooking",
+        "appearance",
+        "taste"
+      ],
+      "after": [
+        "savoury",
+        "just_feels",
+        "cooking",
+        "appearance",
+        "taste",
+        "appearance",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "1a085c72-57b5-421b-a3d2-8d3fe1d530ed",
+      "ranking_code": "4mP54iRNqc4a",
+      "before": [
+        "common_label",
+        "plant",
+        "taste",
+        "just_feels",
+        "healthy"
+      ],
+      "after": [
+        "just_feels",
+        "plant",
+        "taste",
+        "healthy",
+        "just_feels"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    },
+    {
+      "id": "1b799c7b-d9e5-4b60-b00a-66b2e18c247f",
+      "ranking_code": "PCcXbiHmpwFL",
+      "before": [
+        "childhood",
+        "regularly_eaten",
+        "taste",
+        "cooking",
+        "just_feels"
+      ],
+      "after": [
+        "childhood",
+        "local",
+        "taste",
+        "cooking",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "1c1077bb-c6eb-4b6c-84d4-007281165aba",
+      "ranking_code": "at5ioW5XGeQT",
+      "before": [
+        "plant",
+        "appearance",
+        "green",
+        "edible",
+        "savoury"
+      ],
+      "after": [
+        "plant",
+        "appearance",
+        "savoury",
+        "appearance"
+      ],
+      "dualHits": [
+        "appearance",
+        "plant"
+      ]
+    },
+    {
+      "id": "1fba7944-bd3f-4b00-a42b-08b6948050ed",
+      "ranking_code": "JHhd7kyvcL3J",
+      "before": [
+        "cooking",
+        "healthy",
+        "appearance",
+        "plant",
+        "common_label"
+      ],
+      "after": [
+        "cooking",
+        "healthy",
+        "appearance",
+        "plant",
+        "just_feels",
+        "appearance"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "27d89b22-3d3d-4f70-b869-f2c49b692af1",
+      "ranking_code": "MdU6jYLmaUPj",
+      "before": [
+        "common_label",
+        "cooking",
+        "underground",
+        "local",
+        "just_feels"
+      ],
+      "after": [
+        "just_feels",
+        "cooking",
+        "underground",
+        "local"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    },
+    {
+      "id": "281bb18c-b3cd-4343-b09b-303db21669c3",
+      "ranking_code": "2LmFX7ig8XW2",
+      "before": [
+        "common_label",
+        "healthy",
+        "taste",
+        "savoury",
+        "appearance"
+      ],
+      "after": [
+        "just_feels",
+        "healthy",
+        "taste",
+        "savoury",
+        "appearance",
+        "appearance"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "3547ed70-69e5-4d9e-897e-9d188bb67afa",
+      "ranking_code": "P7AVd4TgMLXD",
+      "before": [
+        "taste",
+        "cooking",
+        "regularly_eaten",
+        "just_feels"
+      ],
+      "after": [
+        "taste",
+        "cooking",
+        "local",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "3661f47d-c7d5-460b-9639-9e40cdd58807",
+      "ranking_code": "yaasLkRBmq5P",
+      "before": [
+        "appearance",
+        "common_label",
+        "taste"
+      ],
+      "after": [
+        "appearance",
+        "just_feels",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "404c9387-4e04-44fe-81ba-093dabec9343",
+      "ranking_code": "gUeCdnzFZ98L",
+      "before": [
+        "regularly_eaten",
+        "common_label",
+        "taste",
+        "healthy",
+        "underground"
+      ],
+      "after": [
+        "local",
+        "just_feels",
+        "taste",
+        "healthy",
+        "underground"
+      ],
+      "dualHits": []
+    }
+  ],
+  "allChanged": [
+    {
+      "id": "08a66048-724b-492d-a5e4-2649c5ed7bfb",
+      "ranking_code": "dw7QvUwrwcdP",
+      "before": [
+        "local",
+        "healthy",
+        "taste",
+        "underground",
+        "plant"
+      ],
+      "after": [
+        "local",
+        "healthy",
+        "taste",
+        "underground",
+        "plant",
+        "local",
+        "plant"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "0b86f021-c716-44c7-88e9-da76f71707cc",
+      "ranking_code": "Kkp88BmuRE6c",
+      "before": [
+        "common_label",
+        "plant",
+        "taste",
+        "just_feels"
+      ],
+      "after": [
+        "just_feels",
+        "plant",
+        "taste",
+        "just_feels"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    },
+    {
+      "id": "0eda8f0b-c683-46fa-bf6e-35dceaafd848",
+      "ranking_code": "VscpAWyvRVgD",
+      "before": [
+        "savoury",
+        "common_label",
+        "cooking",
+        "appearance",
+        "taste"
+      ],
+      "after": [
+        "savoury",
+        "just_feels",
+        "cooking",
+        "appearance",
+        "taste",
+        "appearance",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "1a085c72-57b5-421b-a3d2-8d3fe1d530ed",
+      "ranking_code": "4mP54iRNqc4a",
+      "before": [
+        "common_label",
+        "plant",
+        "taste",
+        "just_feels",
+        "healthy"
+      ],
+      "after": [
+        "just_feels",
+        "plant",
+        "taste",
+        "healthy",
+        "just_feels"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    },
+    {
+      "id": "1b799c7b-d9e5-4b60-b00a-66b2e18c247f",
+      "ranking_code": "PCcXbiHmpwFL",
+      "before": [
+        "childhood",
+        "regularly_eaten",
+        "taste",
+        "cooking",
+        "just_feels"
+      ],
+      "after": [
+        "childhood",
+        "local",
+        "taste",
+        "cooking",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "1c1077bb-c6eb-4b6c-84d4-007281165aba",
+      "ranking_code": "at5ioW5XGeQT",
+      "before": [
+        "plant",
+        "appearance",
+        "green",
+        "edible",
+        "savoury"
+      ],
+      "after": [
+        "plant",
+        "appearance",
+        "savoury",
+        "appearance"
+      ],
+      "dualHits": [
+        "appearance",
+        "plant"
+      ]
+    },
+    {
+      "id": "1fba7944-bd3f-4b00-a42b-08b6948050ed",
+      "ranking_code": "JHhd7kyvcL3J",
+      "before": [
+        "cooking",
+        "healthy",
+        "appearance",
+        "plant",
+        "common_label"
+      ],
+      "after": [
+        "cooking",
+        "healthy",
+        "appearance",
+        "plant",
+        "just_feels",
+        "appearance"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "27d89b22-3d3d-4f70-b869-f2c49b692af1",
+      "ranking_code": "MdU6jYLmaUPj",
+      "before": [
+        "common_label",
+        "cooking",
+        "underground",
+        "local",
+        "just_feels"
+      ],
+      "after": [
+        "just_feels",
+        "cooking",
+        "underground",
+        "local"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    },
+    {
+      "id": "281bb18c-b3cd-4343-b09b-303db21669c3",
+      "ranking_code": "2LmFX7ig8XW2",
+      "before": [
+        "common_label",
+        "healthy",
+        "taste",
+        "savoury",
+        "appearance"
+      ],
+      "after": [
+        "just_feels",
+        "healthy",
+        "taste",
+        "savoury",
+        "appearance",
+        "appearance"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "3547ed70-69e5-4d9e-897e-9d188bb67afa",
+      "ranking_code": "P7AVd4TgMLXD",
+      "before": [
+        "taste",
+        "cooking",
+        "regularly_eaten",
+        "just_feels"
+      ],
+      "after": [
+        "taste",
+        "cooking",
+        "local",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "3661f47d-c7d5-460b-9639-9e40cdd58807",
+      "ranking_code": "yaasLkRBmq5P",
+      "before": [
+        "appearance",
+        "common_label",
+        "taste"
+      ],
+      "after": [
+        "appearance",
+        "just_feels",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "404c9387-4e04-44fe-81ba-093dabec9343",
+      "ranking_code": "gUeCdnzFZ98L",
+      "before": [
+        "regularly_eaten",
+        "common_label",
+        "taste",
+        "healthy",
+        "underground"
+      ],
+      "after": [
+        "local",
+        "just_feels",
+        "taste",
+        "healthy",
+        "underground"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "457db737-a06d-4790-8ebe-080f390169a5",
+      "ranking_code": "TQQRwzCv2rKG",
+      "before": [
+        "appearance",
+        "common_label",
+        "regularly_eaten",
+        "cooking",
+        "underground"
+      ],
+      "after": [
+        "appearance",
+        "just_feels",
+        "local",
+        "cooking",
+        "underground"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "459d8aea-a9b5-48db-b8ab-3c69ddc29ce6",
+      "ranking_code": "J9Sy96oixuYG",
+      "before": [
+        "plant",
+        "taste",
+        "green",
+        "edible",
+        "other"
+      ],
+      "after": [
+        "plant",
+        "taste",
+        "appearance",
+        "other"
+      ],
+      "dualHits": [
+        "plant"
+      ]
+    },
+    {
+      "id": "4a150454-8ae4-4eb3-9b71-77b25138cebf",
+      "ranking_code": "8FMdYyjb9N4y",
+      "before": [
+        "other",
+        "healthy",
+        "green",
+        "plant",
+        "childhood"
+      ],
+      "after": [
+        "other",
+        "healthy",
+        "appearance",
+        "plant",
+        "childhood"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "4e35521d-1cbb-42f0-aff2-9802f2b4e30b",
+      "ranking_code": "Z6i4iiJZsnCQ",
+      "before": [
+        "appearance",
+        "taste",
+        "common_label",
+        "other",
+        "edible"
+      ],
+      "after": [
+        "appearance",
+        "taste",
+        "just_feels",
+        "other",
+        "plant"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "5c7e66b1-b9b2-46f5-be70-e1c89fd79061",
+      "ranking_code": "Lei5PJxQwXSB",
+      "before": [
+        "green",
+        "cooking"
+      ],
+      "after": [
+        "appearance",
+        "cooking"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "6243376d-c220-4611-b1d9-9eb9a02a245b",
+      "ranking_code": "qXHHBwdz7Jmj",
+      "before": [
+        "taste",
+        "common_label",
+        "appearance",
+        "savoury",
+        "green"
+      ],
+      "after": [
+        "taste",
+        "just_feels",
+        "appearance",
+        "savoury"
+      ],
+      "dualHits": [
+        "appearance"
+      ]
+    },
+    {
+      "id": "74b92708-03ac-4b62-85e3-24f1c6e3e05e",
+      "ranking_code": "Ggki7FuAWEdC",
+      "before": [
+        "green",
+        "taste",
+        "common_label",
+        "healthy",
+        "plant"
+      ],
+      "after": [
+        "appearance",
+        "taste",
+        "just_feels",
+        "healthy",
+        "plant"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "7d7d200f-166e-4cc7-9f20-a57af01aa47c",
+      "ranking_code": "94WeGSKCTvya",
+      "before": [
+        "common_label",
+        "local",
+        "taste",
+        "healthy",
+        "appearance"
+      ],
+      "after": [
+        "just_feels",
+        "local",
+        "taste",
+        "healthy",
+        "appearance"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "823670ed-de16-492e-8363-ed37e8fd7d30",
+      "ranking_code": "2LfwLzrKt9UB",
+      "before": [
+        "cooking",
+        "regularly_eaten",
+        "childhood",
+        "healthy",
+        "underground"
+      ],
+      "after": [
+        "cooking",
+        "local",
+        "childhood",
+        "healthy",
+        "underground"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "8244871f-5014-45cd-95fc-2584a4ec100a",
+      "ranking_code": "P69jCSudKkqP",
+      "before": [
+        "local",
+        "green",
+        "healthy",
+        "savoury",
+        "edible"
+      ],
+      "after": [
+        "local",
+        "appearance",
+        "healthy",
+        "savoury",
+        "plant"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "836d8ec9-b20a-4738-aa23-31233e72ebd1",
+      "ranking_code": "MmeRRo7BMsjT",
+      "before": [
+        "common_label",
+        "regularly_eaten",
+        "childhood",
+        "savoury",
+        "taste"
+      ],
+      "after": [
+        "just_feels",
+        "local",
+        "childhood",
+        "savoury",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "8ad47ff3-12cb-4766-ab8e-baa243d87c67",
+      "ranking_code": "Hyqcurw5Cmu6",
+      "before": [
+        "healthy",
+        "common_label"
+      ],
+      "after": [
+        "healthy",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "8fc14988-5f3b-491e-a10c-cb3753ca63ea",
+      "ranking_code": "qQLCkV8YLz7k",
+      "before": [
+        "cooking",
+        "healthy",
+        "regularly_eaten",
+        "common_label",
+        "taste"
+      ],
+      "after": [
+        "cooking",
+        "healthy",
+        "local",
+        "just_feels",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "91cc3bc1-186b-45d0-bacd-34ab3e06fc31",
+      "ranking_code": "PqkhSZcEwZcL",
+      "before": [
+        "regularly_eaten",
+        "cooking",
+        "savoury",
+        "childhood",
+        "common_label"
+      ],
+      "after": [
+        "local",
+        "cooking",
+        "savoury",
+        "childhood",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "93ce0a19-cf99-4f9d-b2ab-0b5a0ae68ef9",
+      "ranking_code": "EMDiAVHq2QAW",
+      "before": [
+        "taste",
+        "healthy",
+        "common_label",
+        "appearance",
+        "cooking"
+      ],
+      "after": [
+        "taste",
+        "healthy",
+        "just_feels",
+        "appearance",
+        "cooking"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "96505c15-8e33-4a55-b7e4-96df5aa918bc",
+      "ranking_code": "fh4zhodUTf8r",
+      "before": [
+        "edible",
+        "regularly_eaten",
+        "savoury",
+        "common_label",
+        "appearance"
+      ],
+      "after": [
+        "plant",
+        "local",
+        "savoury",
+        "just_feels",
+        "appearance"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "9f156030-3a52-4593-9e6c-f5d16f355a5a",
+      "ranking_code": "H9MD7FhJmVCq",
+      "before": [
+        "taste",
+        "underground",
+        "savoury",
+        "just_feels",
+        "common_label"
+      ],
+      "after": [
+        "taste",
+        "underground",
+        "savoury",
+        "just_feels"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    },
+    {
+      "id": "a595e915-6c09-4d1d-aa98-b025e80d9eb7",
+      "ranking_code": "7QutHQS8U6hu",
+      "before": [
+        "green",
+        "edible",
+        "just_feels"
+      ],
+      "after": [
+        "appearance",
+        "plant",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "abc9596e-0bb7-4bb0-b3d5-6a7fc433843e",
+      "ranking_code": "CBguAtMCeT4H",
+      "before": [
+        "childhood",
+        "local",
+        "cooking",
+        "regularly_eaten",
+        "just_feels"
+      ],
+      "after": [
+        "childhood",
+        "local",
+        "cooking",
+        "just_feels"
+      ],
+      "dualHits": [
+        "local"
+      ]
+    },
+    {
+      "id": "b84f5e9c-7f73-4d3e-952f-b7a5e62a2eb1",
+      "ranking_code": "ytt8qhJKYbB4",
+      "before": [
+        "appearance",
+        "healthy",
+        "green",
+        "common_label",
+        "just_feels"
+      ],
+      "after": [
+        "appearance",
+        "healthy",
+        "just_feels"
+      ],
+      "dualHits": [
+        "appearance",
+        "just_feels"
+      ]
+    },
+    {
+      "id": "b8d9654c-fbbb-47f2-91e7-a9fb84552ae3",
+      "ranking_code": "t5yJJ9RTJqo7",
+      "before": [
+        "taste",
+        "common_label"
+      ],
+      "after": [
+        "taste",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "ba3b5ec8-4a6c-4ab9-8176-a23a0a04ef70",
+      "ranking_code": "cnBVYTup3ACF",
+      "before": [
+        "childhood",
+        "taste",
+        "edible",
+        "green",
+        "healthy"
+      ],
+      "after": [
+        "childhood",
+        "taste",
+        "plant",
+        "appearance",
+        "healthy"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "bd1129d9-c5b3-4496-b22d-8e8172746c18",
+      "ranking_code": "c5Pfw56KPD75",
+      "before": [
+        "other",
+        "healthy",
+        "edible",
+        "appearance"
+      ],
+      "after": [
+        "other",
+        "healthy",
+        "plant",
+        "appearance"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "bf4a4cb5-c5c2-42be-b4e3-33ce5664c11e",
+      "ranking_code": "B5Pk98cANjpn",
+      "before": [
+        "appearance",
+        "common_label",
+        "healthy",
+        "just_feels",
+        "taste"
+      ],
+      "after": [
+        "appearance",
+        "just_feels",
+        "healthy",
+        "taste"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    },
+    {
+      "id": "c02c4ce6-70a6-4e1e-94f4-23a6846d4ce4",
+      "ranking_code": "vfVzbq3SjCoh",
+      "before": [
+        "taste",
+        "green",
+        "appearance",
+        "just_feels",
+        "healthy"
+      ],
+      "after": [
+        "taste",
+        "appearance",
+        "just_feels",
+        "healthy"
+      ],
+      "dualHits": [
+        "appearance"
+      ]
+    },
+    {
+      "id": "cb52223b-2dd6-4fb1-9862-719f2a32632e",
+      "ranking_code": "yJRECRuD4RRG",
+      "before": [
+        "green",
+        "healthy",
+        "plant",
+        "edible",
+        "local"
+      ],
+      "after": [
+        "appearance",
+        "healthy",
+        "plant",
+        "local"
+      ],
+      "dualHits": [
+        "plant"
+      ]
+    },
+    {
+      "id": "cc72df62-329f-400f-a2f8-367f87386670",
+      "ranking_code": "36td77mvhd7u",
+      "before": [
+        "taste",
+        "appearance",
+        "common_label",
+        "healthy",
+        "green"
+      ],
+      "after": [
+        "taste",
+        "appearance",
+        "just_feels",
+        "healthy"
+      ],
+      "dualHits": [
+        "appearance"
+      ]
+    },
+    {
+      "id": "d0187137-d461-4900-83b8-dc87809f6e22",
+      "ranking_code": "VNpkgMGK4NxA",
+      "before": [
+        "green",
+        "edible",
+        "common_label"
+      ],
+      "after": [
+        "appearance",
+        "plant",
+        "just_feels"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "d22a0441-49ae-4299-af23-046737b506b5",
+      "ranking_code": "y8vkVyFJiMkd",
+      "before": [
+        "appearance",
+        "cooking",
+        "green",
+        "edible",
+        "taste"
+      ],
+      "after": [
+        "appearance",
+        "cooking",
+        "plant",
+        "taste"
+      ],
+      "dualHits": [
+        "appearance"
+      ]
+    },
+    {
+      "id": "d4da0737-2e51-4bfc-a808-4ad53d5bcaf4",
+      "ranking_code": "TL9qf6M5zTq4",
+      "before": [
+        "taste",
+        "green",
+        "common_label",
+        "appearance",
+        "regularly_eaten"
+      ],
+      "after": [
+        "taste",
+        "appearance",
+        "just_feels",
+        "local"
+      ],
+      "dualHits": [
+        "appearance"
+      ]
+    },
+    {
+      "id": "da8234f3-0ec6-4150-88bd-f6ef5cdc0b28",
+      "ranking_code": "WDDPxqPTJYQY",
+      "before": [
+        "green"
+      ],
+      "after": [
+        "appearance"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "e302cb9e-159d-4c1e-8ba7-fe5d082fbfd1",
+      "ranking_code": "wzxp4VZcJd9g",
+      "before": [
+        "edible",
+        "taste",
+        "appearance",
+        "regularly_eaten",
+        "local"
+      ],
+      "after": [
+        "plant",
+        "taste",
+        "appearance",
+        "local"
+      ],
+      "dualHits": [
+        "local"
+      ]
+    },
+    {
+      "id": "e94e4d95-4a46-4ae5-beaf-78f78c79757a",
+      "ranking_code": "wu5TrMkudGAt",
+      "before": [
+        "green",
+        "appearance",
+        "healthy",
+        "common_label",
+        "other"
+      ],
+      "after": [
+        "appearance",
+        "healthy",
+        "just_feels",
+        "other"
+      ],
+      "dualHits": [
+        "appearance"
+      ]
+    },
+    {
+      "id": "f1b39aa3-1b2b-4a67-b50a-8994b94cfb67",
+      "ranking_code": "XnzUGM3PArZ3",
+      "before": [
+        "cooking",
+        "healthy",
+        "appearance",
+        "regularly_eaten",
+        "childhood"
+      ],
+      "after": [
+        "cooking",
+        "healthy",
+        "appearance",
+        "local",
+        "childhood"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "f4648241-9363-477d-925c-6223fa8827ab",
+      "ranking_code": "dpHYnkL7x42b",
+      "before": [
+        "healthy",
+        "regularly_eaten",
+        "green",
+        "childhood",
+        "taste"
+      ],
+      "after": [
+        "healthy",
+        "local",
+        "appearance",
+        "childhood",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "f626c8d8-2c77-4359-ad7a-fde3877335d2",
+      "ranking_code": "msLwMn4EBXW8",
+      "before": [
+        "green",
+        "taste",
+        "appearance",
+        "common_label",
+        "regularly_eaten"
+      ],
+      "after": [
+        "appearance",
+        "taste",
+        "just_feels",
+        "local"
+      ],
+      "dualHits": [
+        "appearance"
+      ]
+    },
+    {
+      "id": "f84c103c-4191-4610-ac03-9ff8732bfc03",
+      "ranking_code": "gQGSt8GQHMt4",
+      "before": [
+        "green",
+        "common_label",
+        "taste",
+        "healthy",
+        "plant"
+      ],
+      "after": [
+        "appearance",
+        "just_feels",
+        "taste",
+        "healthy",
+        "plant"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "f8963ab9-05dc-4c91-b29d-de026ca6d4f2",
+      "ranking_code": "7BNvJGDdZKyL",
+      "before": [
+        "childhood",
+        "green",
+        "cooking",
+        "common_label",
+        "just_feels"
+      ],
+      "after": [
+        "childhood",
+        "appearance",
+        "cooking",
+        "just_feels"
+      ],
+      "dualHits": [
+        "just_feels"
+      ]
+    }
+  ]
+}

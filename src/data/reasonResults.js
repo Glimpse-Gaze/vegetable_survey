@@ -16,20 +16,17 @@ export const COMMENT_DISPLAY_COUNT = 22;
 const REASON_RESPONDENTS = 700;
 
 const REASON_VOTES = {
-  cooking: 412,
-  appearance: 318,
-  plant: 287,
-  common_label: 264,
+  cooking: 482,
+  appearance: 494,
+  just_feels: 327,
+  plant: 441,
   healthy: 241,
+  local: 202,
   underground: 198,
-  green: 176,
-  edible: 154,
-  savoury: 141,
-  regularly_eaten: 118,
-  taste: 97,
-  local: 84,
+  taste: 167,
   childhood: 71,
-  just_feels: 63,
+  other: 40,
+  structure: 0,
 };
 
 export const REASON_COMMENTS_EN = [

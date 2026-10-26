@@ -9,7 +9,7 @@ export const DEV_SPEEDRUN = {
     'healthy',
     'appearance',
     'plant',
-    'common_label',
+    'just_feels',
   ],
   customCriterion: '',
   customCriterionPublic: false,

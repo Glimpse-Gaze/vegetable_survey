@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Designing the vegetable frame on the homepage</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    :root {
+      --ink: #1d2a1c;
+      --muted: #4a5748;
+      --rule: #d5d0c4;
+      --paper: #f7f4ec;
+      --accent: #2f5c3a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #fff;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+    }
+
+    main {
+      max-width: 42rem;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 0.35em;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0 0 1.4em;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    h2 {
+      margin: 1.45em 0 0.45em;
+      padding-top: 0.35em;
+      border-top: 1px solid var(--rule);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    h2:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    p { margin: 0 0 0.7em; }
+
+    ul, ol {
+      margin: 0 0 0.85em;
+      padding-left: 1.25em;
+    }
+
+    li { margin: 0.25em 0; }
+
+    li strong { color: var(--ink); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5em 0 1em;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border: 1px solid var(--rule);
+      padding: 0.45em 0.55em;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--paper);
+      font-weight: 600;
+    }
+
+    .note {
+      margin: 0.9em 0 0;
+      padding: 0.75em 0.9em;
+      background: var(--paper);
+      border-left: 3px solid var(--accent);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .note strong { color: var(--ink); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Designing the vegetable frame on the homepage</h1>
+    <p class="subtitle">A short overview of the goal, the problems, and the design choices behind the botanical border on The Great Vegetable Survey.</p>
+
+    <h2>What we set out to do</h2>
+    <p>The homepage is meant to feel like a page sitting inside a botanical illustration: vegetables along the <strong>top</strong>, <strong>bottom</strong>, <strong>left</strong>, and <strong>right</strong>.</p>
+    <p>Those drawings should:</p>
+    <ul>
+      <li>Sit against the edges of the browser window</li>
+      <li>Scroll with the page (not float fixed over the content)</li>
+      <li>Stay soft and transparent where they overlap the background — no hard rectangular cutouts</li>
+      <li>Never crush or shrink to “fit” when space gets tight; if anything, they should slide <strong>outward</strong> off the screen so the text stays readable</li>
+    </ul>
+    <p>The illustrations are stored as high-quality originals, then compressed to lighter WebP files for the live site.</p>
+
+    <h2>Why this is harder than it looks</h2>
+    <p>A decorative border that looks right on one big monitor often breaks elsewhere:</p>
+    <ul>
+      <li><strong>Different window sizes</strong> — maximized, half-width, fullscreen (F11), laptop vs external display</li>
+      <li><strong>Browser chrome</strong> — tabs and toolbars steal height in normal mode, then disappear in fullscreen</li>
+      <li><strong>Phones</strong> — especially “Request desktop site,” which pretends the screen is wide</li>
+      <li><strong>Languages</strong> — some titles are taller (accents, line spacing), which used to accidentally change how big the side art looked</li>
+      <li><strong>Left vs right art</strong> — the two side images aren’t mirror images, so they can’t share every number blindly</li>
+    </ul>
+    <p>So the work wasn’t only “place four images.” It was finding rules that keep the <em>idea</em> of the frame stable while the viewport changes.</p>
+
+    <h2>Design principles we settled on</h2>
+    <p><strong>1. Protect the center first</strong><br />
+    We treat the middle of the page (title, buttons, text) as a reserved “safe zone” about as wide as the main content column. The side drawings may decorate outside that zone; they should not sit on top of the words.</p>
+    <p><strong>2. Push out, don’t shrink</strong><br />
+    When the window gets narrower, we don’t scale the side vegetables down. We slide them further off the left and right edges. You see less of the art, but what’s left still looks full-size and natural.</p>
+    <p><strong>3. One shared “retreat” for both sides</strong><br />
+    Left and right keep their own resting positions (they look different on purpose), but when the window shrinks they both move outward by the <strong>same extra amount</strong>. That keeps the frame feeling even.</p>
+    <p><strong>4. Pick the right meaning of “screen height”</strong><br />
+    Browsers expose several ways to measure height. We learned the hard way that the choice matters:</p>
+    <ul>
+      <li>Units that change while you scroll (as the mobile URL bar shows/hides) made the artwork <strong>pulse in size</strong> — bad</li>
+      <li>Units based on the <em>current</em> visible window made the sides <strong>too small</strong> in a normal laptop window, leaving a gap above the bottom vegetables — until you hit F11</li>
+      <li>Units based on the <em>large</em> window (closer to fullscreen size) keep the sides generous even when toolbars are visible</li>
+    </ul>
+    <p><strong>5. On phones, simplify</strong><br />
+    Core mobile already looked fine with only top and bottom. Side panels on a small screen (or a phone faking a desktop width) tended to jump in and cover the UI. So on real phones and touch devices we <strong>turn the sides off</strong> and only keep the horizontal bands, slightly enlarged and with less empty space above the title.</p>
+
+    <h2>Paths we tried (and what we learned)</h2>
+    <p>Early versions used percentage insets and aggressive cropping. That either floated the art away from the window edge or pulled top and bottom too deep into the content.</p>
+    <p>We also tried locking width and height independently so “taller” didn’t mean “wider.” In practice, if you force a tall box but keep a fixed width and ask the image to fit inside it, the picture simply stops growing — you only get empty padding. For undistorted art, <strong>height still drives width</strong> because of the image’s proportions. Positioning is what we keep independent, not the drawing’s geometry.</p>
+    <p>Locale-specific title spacing taught another lesson: if side height is a <strong>percentage of the whole page</strong>, a taller French title makes the page taller, the sides grow, and they creep toward the text. Sizing sides from the <strong>viewport</strong>, not the document height, fixed that.</p>
+
+    <h2>How it works today</h2>
+    <p>Think of four layers pinned to the homepage:</p>
+    <ul>
+      <li><strong>Top &amp; bottom</strong> — wide images along the edges, slightly oversized and tucked so they feel flush, with padding on the text so copy doesn’t sit under the densest part of the art</li>
+      <li><strong>Left &amp; right</strong> — tall images anchored to the sides</li>
+    </ul>
+    <p>For the sides, the layout roughly asks:</p>
+    <ol>
+      <li>How wide is this strip at our chosen fullscreen-like height?</li>
+      <li>How much horizontal room is left outside the central safe zone?</li>
+      <li>If the strip is wider than that room, push it outward by the difference</li>
+    </ol>
+    <p>Top and bottom don’t use that push logic; they’re simpler edge decorations.</p>
+    <p>On small or touch screens, those side steps never run — the side images are hidden.</p>
+    <p>The main text block is laid out so the survey UI sits toward the upper-middle of the page, while the small “Glimpse &amp; Gaze” footer stays at the very bottom. That helps when someone zooms the browser out and the page would otherwise look top-heavy.</p>
+
+    <h2>What “done” looks like</h2>
+    <ul>
+      <li><strong>Desktop:</strong> a full four-sided vegetable frame that hugs the window, keeps text clear as you resize, and doesn’t leave an awkward hole above the bottom art in a normal (non-F11) window</li>
+      <li><strong>Mobile:</strong> a calmer top-and-bottom frame, readable title, no side panels crashing the layout</li>
+      <li><strong>For future tweaks:</strong> a few understandable knobs (how far each side sits at rest, how tall the strips are, how wide the safe text column is) rather than a maze of one-off hacks per device</li>
+    </ul>
+
+    <p class="note"><strong>In one sentence:</strong> the frame is less a static picture and more a small layout system — decorate the edges, defend the center, and when space runs out, give way outward.</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,462 @@
+{
+  "savedAt": "2026-10-26T00:53:26.758Z",
+  "dryRun": false,
+  "responseCount": 65,
+  "savouryBreakdown": {
+    "cooking": 1,
+    "taste": 5,
+    "both": 2,
+    "alone": 3
+  },
+  "cookingHalves": 5.5,
+  "tasteHalves": 5.5,
+  "extrasFloor": {
+    "cooking": 5,
+    "taste": 5
+  },
+  "droppedHalves": {
+    "cooking": 0.5,
+    "taste": 0.5
+  },
+  "topUpsApplied": [
+    {
+      "survivor": "cooking",
+      "id": "0eda8f0b-c683-46fa-bf6e-35dceaafd848",
+      "ranking_code": "VscpAWyvRVgD"
+    },
+    {
+      "survivor": "cooking",
+      "id": "1b5b586b-a157-4802-91fe-9dc6e4f8e82f",
+      "ranking_code": "67DM2hEY6qrA"
+    },
+    {
+      "survivor": "cooking",
+      "id": "1b799c7b-d9e5-4b60-b00a-66b2e18c247f",
+      "ranking_code": "PCcXbiHmpwFL"
+    },
+    {
+      "survivor": "cooking",
+      "id": "1fba7944-bd3f-4b00-a42b-08b6948050ed",
+      "ranking_code": "JHhd7kyvcL3J"
+    },
+    {
+      "survivor": "cooking",
+      "id": "27d89b22-3d3d-4f70-b869-f2c49b692af1",
+      "ranking_code": "MdU6jYLmaUPj"
+    },
+    {
+      "survivor": "taste",
+      "id": "08a66048-724b-492d-a5e4-2649c5ed7bfb",
+      "ranking_code": "dw7QvUwrwcdP"
+    },
+    {
+      "survivor": "taste",
+      "id": "0b86f021-c716-44c7-88e9-da76f71707cc",
+      "ranking_code": "Kkp88BmuRE6c"
+    },
+    {
+      "survivor": "taste",
+      "id": "0eda8f0b-c683-46fa-bf6e-35dceaafd848",
+      "ranking_code": "VscpAWyvRVgD"
+    },
+    {
+      "survivor": "taste",
+      "id": "1a085c72-57b5-421b-a3d2-8d3fe1d530ed",
+      "ranking_code": "4mP54iRNqc4a"
+    },
+    {
+      "survivor": "taste",
+      "id": "1b799c7b-d9e5-4b60-b00a-66b2e18c247f",
+      "ranking_code": "PCcXbiHmpwFL"
+    }
+  ],
+  "beforeHistogram": {
+    "appearance": 42,
+    "just_feels": 42,
+    "taste": 34,
+    "healthy": 28,
+    "local": 24,
+    "cooking": 23,
+    "plant": 23,
+    "underground": 15,
+    "childhood": 13,
+    "savoury": 11,
+    "other": 6
+  },
+  "afterHistogram": {
+    "appearance": 42,
+    "just_feels": 42,
+    "taste": 39,
+    "cooking": 28,
+    "healthy": 28,
+    "local": 24,
+    "plant": 23,
+    "underground": 15,
+    "childhood": 13,
+    "other": 6
+  },
+  "changedRowCount": 18,
+  "allChanged": [
+    {
+      "id": "08a66048-724b-492d-a5e4-2649c5ed7bfb",
+      "ranking_code": "dw7QvUwrwcdP",
+      "before": [
+        "local",
+        "healthy",
+        "taste",
+        "underground",
+        "plant",
+        "local",
+        "plant"
+      ],
+      "after": [
+        "local",
+        "healthy",
+        "taste",
+        "underground",
+        "plant",
+        "local",
+        "plant",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "0b86f021-c716-44c7-88e9-da76f71707cc",
+      "ranking_code": "Kkp88BmuRE6c",
+      "before": [
+        "just_feels",
+        "plant",
+        "taste",
+        "just_feels"
+      ],
+      "after": [
+        "just_feels",
+        "plant",
+        "taste",
+        "just_feels",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "0eda8f0b-c683-46fa-bf6e-35dceaafd848",
+      "ranking_code": "VscpAWyvRVgD",
+      "before": [
+        "savoury",
+        "just_feels",
+        "cooking",
+        "appearance",
+        "taste",
+        "appearance",
+        "just_feels"
+      ],
+      "after": [
+        "just_feels",
+        "cooking",
+        "appearance",
+        "taste",
+        "appearance",
+        "just_feels",
+        "cooking",
+        "taste"
+      ],
+      "dualHits": [
+        "cooking",
+        "taste"
+      ]
+    },
+    {
+      "id": "1a085c72-57b5-421b-a3d2-8d3fe1d530ed",
+      "ranking_code": "4mP54iRNqc4a",
+      "before": [
+        "just_feels",
+        "plant",
+        "taste",
+        "healthy",
+        "just_feels"
+      ],
+      "after": [
+        "just_feels",
+        "plant",
+        "taste",
+        "healthy",
+        "just_feels",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "1b5b586b-a157-4802-91fe-9dc6e4f8e82f",
+      "ranking_code": "67DM2hEY6qrA",
+      "before": [
+        "just_feels",
+        "underground",
+        "cooking",
+        "plant"
+      ],
+      "after": [
+        "just_feels",
+        "underground",
+        "cooking",
+        "plant",
+        "cooking"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "1b799c7b-d9e5-4b60-b00a-66b2e18c247f",
+      "ranking_code": "PCcXbiHmpwFL",
+      "before": [
+        "childhood",
+        "local",
+        "taste",
+        "cooking",
+        "just_feels"
+      ],
+      "after": [
+        "childhood",
+        "local",
+        "taste",
+        "cooking",
+        "just_feels",
+        "cooking",
+        "taste"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "1c1077bb-c6eb-4b6c-84d4-007281165aba",
+      "ranking_code": "at5ioW5XGeQT",
+      "before": [
+        "plant",
+        "appearance",
+        "savoury",
+        "appearance"
+      ],
+      "after": [
+        "plant",
+        "appearance",
+        "appearance"
+      ],
+      "dualHits": [
+        "alone"
+      ]
+    },
+    {
+      "id": "1fba7944-bd3f-4b00-a42b-08b6948050ed",
+      "ranking_code": "JHhd7kyvcL3J",
+      "before": [
+        "cooking",
+        "healthy",
+        "appearance",
+        "plant",
+        "just_feels",
+        "appearance"
+      ],
+      "after": [
+        "cooking",
+        "healthy",
+        "appearance",
+        "plant",
+        "just_feels",
+        "appearance",
+        "cooking"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "27d89b22-3d3d-4f70-b869-f2c49b692af1",
+      "ranking_code": "MdU6jYLmaUPj",
+      "before": [
+        "just_feels",
+        "cooking",
+        "underground",
+        "local"
+      ],
+      "after": [
+        "just_feels",
+        "cooking",
+        "underground",
+        "local",
+        "cooking"
+      ],
+      "dualHits": []
+    },
+    {
+      "id": "281bb18c-b3cd-4343-b09b-303db21669c3",
+      "ranking_code": "2LmFX7ig8XW2",
+      "before": [
+        "just_feels",
+        "healthy",
+        "taste",
+        "savoury",
+        "appearance",
+        "appearance"
+      ],
+      "after": [
+        "just_feels",
+        "healthy",
+        "taste",
+        "appearance",
+        "appearance"
+      ],
+      "dualHits": [
+        "taste"
+      ]
+    },
+    {
+      "id": "6243376d-c220-4611-b1d9-9eb9a02a245b",
+      "ranking_code": "qXHHBwdz7Jmj",
+      "before": [
+        "taste",
+        "just_feels",
+        "appearance",
+        "savoury"
+      ],
+      "after": [
+        "taste",
+        "just_feels",
+        "appearance"
+      ],
+      "dualHits": [
+        "taste"
+      ]
+    },
+    {
+      "id": "8244871f-5014-45cd-95fc-2584a4ec100a",
+      "ranking_code": "P69jCSudKkqP",
+      "before": [
+        "local",
+        "appearance",
+        "healthy",
+        "savoury",
+        "plant"
+      ],
+      "after": [
+        "local",
+        "appearance",
+        "healthy",
+        "plant"
+      ],
+      "dualHits": [
+        "alone"
+      ]
+    },
+    {
+      "id": "836d8ec9-b20a-4738-aa23-31233e72ebd1",
+      "ranking_code": "MmeRRo7BMsjT",
+      "before": [
+        "just_feels",
+        "local",
+        "childhood",
+        "savoury",
+        "taste"
+      ],
+      "after": [
+        "just_feels",
+        "local",
+        "childhood",
+        "taste"
+      ],
+      "dualHits": [
+        "taste"
+      ]
+    },
+    {
+      "id": "91cc3bc1-186b-45d0-bacd-34ab3e06fc31",
+      "ranking_code": "PqkhSZcEwZcL",
+      "before": [
+        "local",
+        "cooking",
+        "savoury",
+        "childhood",
+        "just_feels"
+      ],
+      "after": [
+        "local",
+        "cooking",
+        "childhood",
+        "just_feels"
+      ],
+      "dualHits": [
+        "cooking"
+      ]
+    },
+    {
+      "id": "96505c15-8e33-4a55-b7e4-96df5aa918bc",
+      "ranking_code": "fh4zhodUTf8r",
+      "before": [
+        "plant",
+        "local",
+        "savoury",
+        "just_feels",
+        "appearance"
+      ],
+      "after": [
+        "plant",
+        "local",
+        "just_feels",
+        "appearance"
+      ],
+      "dualHits": [
+        "alone"
+      ]
+    },
+    {
+      "id": "9f156030-3a52-4593-9e6c-f5d16f355a5a",
+      "ranking_code": "H9MD7FhJmVCq",
+      "before": [
+        "taste",
+        "underground",
+        "savoury",
+        "just_feels"
+      ],
+      "after": [
+        "taste",
+        "underground",
+        "just_feels"
+      ],
+      "dualHits": [
+        "taste"
+      ]
+    },
+    {
+      "id": "dc72bfe2-450b-42ce-8e51-72040204a274",
+      "ranking_code": "nXKVTDc6Zq7V",
+      "before": [
+        "taste",
+        "cooking",
+        "savoury"
+      ],
+      "after": [
+        "taste",
+        "cooking"
+      ],
+      "dualHits": [
+        "cooking",
+        "taste"
+      ]
+    },
+    {
+      "id": "f6931bd6-330f-4a30-b4ea-cfcc6ba0499b",
+      "ranking_code": "59Q5SXzeUuRN",
+      "before": [
+        "taste",
+        "healthy",
+        "savoury",
+        "underground",
+        "just_feels"
+      ],
+      "after": [
+        "taste",
+        "healthy",
+        "underground",
+        "just_feels"
+      ],
+      "dualHits": [
+        "taste"
+      ]
+    }
+  ]
+}
