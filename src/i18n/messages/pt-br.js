@@ -139,7 +139,7 @@ export const ptBr = {
     continueHint: 'Escolhe pelo menos um',
   },
   criteria: {
-    structure: 'Por causa da estrutura',
+    structure: 'Por causa da textura',
     cooking: 'Por causa de como a gente come',
     underground: 'Por causa de como cresce, ou como é colhido',
     appearance: 'Por causa de como parece',

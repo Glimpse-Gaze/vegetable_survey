@@ -138,7 +138,7 @@ export const ru = {
     continueHint: 'Выберите хотя бы один',
   },
   criteria: {
-    structure: 'Из-за строения',
+    structure: 'Из-за текстуры',
     cooking: 'Из-за того, как его едят',
     underground: 'Из-за того, как растёт или как собирают',
     appearance: 'Из-за внешнего вида',

@@ -139,7 +139,7 @@ export const es = {
     continueHint: 'Elige al menos uno',
   },
   criteria: {
-    structure: 'Por su estructura',
+    structure: 'Por su textura',
     cooking: 'Por cómo se come',
     underground: 'Por cómo crece, o cómo se cosecha',
     appearance: 'Por cómo se ve',

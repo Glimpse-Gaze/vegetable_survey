@@ -132,7 +132,7 @@ export const zhHant = {
     continueHint: '至少選一項',
   },
   criteria: {
-    structure: '因為它的結構',
+    structure: '因為它的口感',
     cooking: '因為吃法的關係',
     underground: '因為它怎麼長，或怎麼收',
     appearance: '因為它的樣子',

@@ -139,7 +139,7 @@ export const de = {
     continueHint: 'Wähl mindestens eins',
   },
   criteria: {
-    structure: 'Wegen der Struktur',
+    structure: 'Wegen der Textur',
     cooking: 'Wegen der Art, wie man es isst',
     underground: 'Wegen der Art, wie es wächst oder geerntet wird',
     appearance: 'Wegen des Aussehens',

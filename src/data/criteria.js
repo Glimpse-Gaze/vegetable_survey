@@ -1,5 +1,5 @@
 export const criteria = [
-  { id: 'structure', label: 'Because of its structure' },
+  { id: 'structure', label: 'Because of its texture' },
   { id: 'cooking', label: 'Because of how you consume it' },
   { id: 'underground', label: 'Because of how it grows, or how it’s harvested'},
   { id: 'appearance', label: 'Because of how it looks'},

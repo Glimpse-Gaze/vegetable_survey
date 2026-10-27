@@ -138,7 +138,7 @@ export const ja = {
     continueHint: '少なくとも1つ選んでください',
   },
   criteria: {
-    structure: '形や構造のせい',
+    structure: '食感のせい',
     cooking: '食べ方のせい',
     underground: '育ち方や収穫の仕方のせい',
     appearance: '見た目のせい',

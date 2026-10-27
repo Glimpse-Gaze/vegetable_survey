@@ -134,7 +134,7 @@ export const ko = {
     continueHint: '하나 이상 골라 주세요',
   },
   criteria: {
-    structure: '구조 때문에',
+    structure: '식감 때문에',
     cooking: '먹는 방식 때문에',
     underground: '자라는 방식이나 수확하는 방식 때문에',
     appearance: '생긴 것 때문에',

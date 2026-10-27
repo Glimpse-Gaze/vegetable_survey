@@ -402,7 +402,8 @@ export function Questionnaire() {
     setStep(STEPS.WELCOME);
   }
 
-  const localeLocked = step !== STEPS.WELCOME;
+  // Loc testing: keep the language pill available on every survey step.
+  const localeLocked = false;
 
   return (
     <SurveyLocaleLockProvider locked={localeLocked}>

@@ -139,7 +139,7 @@ export const fr = {
     continueHint: 'Choisis au moins un critère',
   },
   criteria: {
-    structure: 'À cause de sa structure',
+    structure: 'À cause de sa texture',
     cooking: 'À cause de la façon dont on le mange',
     underground: 'À cause de comment ça pousse, ou comment on le récolte',
     appearance: 'À cause de son apparence',

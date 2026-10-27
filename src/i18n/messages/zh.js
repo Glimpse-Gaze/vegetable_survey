@@ -132,7 +132,7 @@ export const zh = {
     continueHint: '至少选一项',
   },
   criteria: {
-    structure: '因为它的结构',
+    structure: '因为它的口感',
     cooking: '因为吃法的关系',
     underground: '因为它怎么长，或怎么收',
     appearance: '因为它的样子',
