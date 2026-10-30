@@ -216,6 +216,7 @@ export const vegetables = [
     'broccoli raab',
     'cime di rapa',
     'broccoletti',
+    'friarielli',
     'brassica rapa var. ruvo',
   ]),
   v('zha_cai', 'Zha cai', [
