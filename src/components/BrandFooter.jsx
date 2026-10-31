@@ -19,7 +19,7 @@ export function BrandFooter({ className = '', version }) {
         aria-hidden="true"
       />
       <p className="brand-footer-credit">
-        {locale === 'zh' ? (
+        {locale === 'zh' || locale === 'zh-hant' ? (
           <>
             <a href={BRAND_URL} target="_blank" rel="noreferrer">
               {t('brand.name')}

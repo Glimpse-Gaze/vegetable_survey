@@ -49,23 +49,26 @@ export function getSuggestions(query, vegetables, limit = 6, locale = 'en') {
 
   for (const vegetable of vegetables) {
     const name = normalizeQuery(vegetable.name);
+    const aliases = (vegetable.aliases ?? []).map((alias) => normalizeQuery(alias));
     const namePrefix = name.startsWith(q);
-    const aliasPrefix = vegetable.aliases.some((alias) =>
-      normalizeQuery(alias).startsWith(q),
-    );
+    const aliasPrefix = aliases.some((alias) => alias.startsWith(q));
+    // Substring hits: 「白菜」→小白菜/大白菜, "melon"→winter melon, etc.
+    const nameContains = !namePrefix && name.includes(q);
+    const aliasContains = !aliasPrefix && aliases.some((alias) => alias.includes(q));
 
-    if (!namePrefix && !aliasPrefix) continue;
+    if (!namePrefix && !aliasPrefix && !nameContains && !aliasContains) continue;
 
+    const rank = namePrefix ? 0 : aliasPrefix ? 1 : nameContains ? 2 : 3;
     scored.push({
       vegetable,
-      namePrefix,
+      rank,
       length: name.length,
       name,
     });
   }
 
   scored.sort((a, b) => {
-    if (a.namePrefix !== b.namePrefix) return a.namePrefix ? -1 : 1;
+    if (a.rank !== b.rank) return a.rank - b.rank;
     if (a.length !== b.length) return a.length - b.length;
     return a.name.localeCompare(b.name, collatorLocale(locale));
   });
