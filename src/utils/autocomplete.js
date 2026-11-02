@@ -41,9 +41,17 @@ function minimumQueryLength(query) {
     : 2;
 }
 
-export function getSuggestions(query, vegetables, limit = 6, locale = 'en') {
+export function getSuggestions(
+  query,
+  vegetables,
+  limit = 6,
+  locale = 'en',
+  /** Override min chars; veggies keep script-aware default (2 Latin / 1 CJK). */
+  minChars,
+) {
   const q = normalizeQuery(query);
-  if (q.length < minimumQueryLength(query)) return [];
+  const needed = minChars ?? minimumQueryLength(query);
+  if (q.length < needed) return [];
 
   const scored = [];
 

@@ -96,7 +96,7 @@ export const ko = {
     seeResults: '내 결과 보기',
     retake: '설문 다시 하기',
     retakeHint:
-      '다시 하면 새 응답이 저장돼요. 이 기기에서 새 라운드를 끝낼 때까지 이전 코드는 그대로 쓸 수 있어요.',
+      '지금 코드를 저장해 두세요. 이 기기에서 설문을 다시 하면 새 코드로 바뀌어요.',
     backHome: '첫 화면으로 돌아가요',
   },
   welcome: {
@@ -209,7 +209,7 @@ export const ko = {
     resultsTitle: '인터랙티브 결과',
     resultsBody: '결과 페이지에서 답을 세계와 비교하고, 다른 사람의 코멘트에 표를 줄 수 있어요.',
     resultsButton: '결과 보기',
-    codeTitle: '결과 비교',
+    codeTitle: '결과 공유',
     codeBody: '이 코드나 링크로 언제든 내 결과를 다시 볼 수 있어요. 다른 사람에게 공유해도 좋아요!',
     copy: '복사',
     copied: '복사했어요',
@@ -409,7 +409,7 @@ export const ko = {
     },
     share: {
       options: '공유 옵션',
-      compareHint: '내 답이 다른 사람들 답과 어떻게 다른지 봐요.',
+      compareHint: '결과를 공유하거나 결과 코드를 열어 다른 사람들과 비교해 보세요.',
       picturesHint: '답변을 그림으로 만들어 저장하고 보낼 수 있어요.',
     },
     tip: {
@@ -428,7 +428,7 @@ export const ko = {
       toVote: ', 그러면 내 답을 다른 사람들 답과 비교할 수 있어요.',
       openCode: '결과 코드 열기',
       yourCode: '내 코드',
-      rankingsTitle: '결과 비교',
+      rankingsTitle: '결과 공유',
       viewing: '보는 중인 결과',
       keepCode: '이 코드나 링크로 언제든 내 결과를 다시 볼 수 있어요. 다른 사람에게 공유해도 좋아요!',
       incorrect: '코드가 맞지 않아요',

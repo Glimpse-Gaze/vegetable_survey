@@ -96,7 +96,7 @@ export const zhHant = {
     seeResults: '查看我的結果',
     retake: '再做一次問卷',
     retakeHint:
-      '再做一次會保存一份新的回答。在這台裝置上完成新一輪之前，原來的代碼仍然有效。',
+      '請先儲存目前的代碼。在這台裝置上再做一次問卷，會換成新的代碼。',
     backHome: '返回首頁',
   },
   welcome: {
@@ -204,7 +204,7 @@ export const zhHant = {
     resultsTitle: '互動式資料展示',
     resultsBody: '前往結果頁可以看到你的回答和全球資料的對比，也可以給別人的評論投票。',
     resultsButton: '查看結果',
-    codeTitle: '比較結果',
+    codeTitle: '分享結果',
     codeBody: '訪問這個代碼或連結可以隨時回看你的回答，也可以分享給別人！',
     copy: '複製',
     copied: '已複製',
@@ -402,7 +402,7 @@ export const zhHant = {
     },
     share: {
       options: '分享選項',
-      compareHint: '看看你的回答和大家的有什麼不同。',
+      compareHint: '分享你的結果，或打開一個結果代碼，和其他人比較。',
       picturesHint: '把回答做成圖片，可以儲存或發給別人。',
     },
     tip: {
@@ -421,7 +421,7 @@ export const zhHant = {
       toVote: '，就能把自己的回答和別人的比較。',
       openCode: '打開結果代碼',
       yourCode: '你的代碼',
-      rankingsTitle: '比較結果',
+      rankingsTitle: '分享結果',
       viewing: '正在查看結果',
       keepCode: '用這個代碼或連結，隨時查看你的結果。也可以分享給別人！',
       incorrect: '代碼不對',

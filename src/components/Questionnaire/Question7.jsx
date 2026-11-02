@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import { featuredCountryIds } from '../../data/countries.js';
-import { featuredLanguageIds } from '../../data/languages.js';
 import { useI18n } from '../../i18n/useI18n.js';
 import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import {
   findCanonicalMatch,
-  getLookupSuggestions,
+  getSuggestions,
 } from '../../utils/autocomplete.js';
 import { AutocompleteInput } from './AutocompleteInput.jsx';
 import { QuestionContainer } from './QuestionContainer.jsx';
@@ -102,16 +100,17 @@ export function Question7({
     });
   }, [countriesById, languagesById, placePicked?.id]);
 
-  const placeSuggestions = getLookupSuggestions(placeValue, countries, {
-    featuredIds: featuredCountryIds,
-    browseAll: true,
+  // Type-to-search like veggies, but match from the first character.
+  const placeSuggestions = getSuggestions(placeValue, countries, 8, locale, 1).filter(
+    (item) => item.id !== DISCLOSE_ID,
+  );
+  const languageSuggestions = getSuggestions(
+    languageValue,
+    languages,
+    10,
     locale,
-  }).filter((item) => item.id !== DISCLOSE_ID);
-  const languageSuggestions = getLookupSuggestions(languageValue, languages, {
-    featuredIds: featuredLanguageIds,
-    limit: 10,
-    locale,
-  }).filter(
+    1,
+  ).filter(
     (item) =>
       item.id !== DISCLOSE_ID &&
       !languageItems.some((entry) => entry.canonicalId === item.id),

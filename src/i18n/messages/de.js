@@ -100,7 +100,7 @@ export const de = {
     seeResults: 'Meine Ergebnisse ansehen',
     retake: 'Umfrage nochmal machen',
     retakeHint:
-      'Wenn du nochmal startest, wird eine neue Antwort gespeichert. Dein alter Code funktioniert weiter, bis du auf diesem Gerät eine neue Runde fertig hast.',
+      'Bitte speichere deinen aktuellen Code. Wenn du die Umfrage auf diesem Gerät nochmal ausfüllst, wird er durch einen neuen ersetzt.',
     backHome: 'Zurück zur Startseite',
   },
   welcome: {
@@ -219,7 +219,7 @@ export const de = {
     resultsBody:
       'Auf den Ergebnisseiten siehst du, wie die Antworten im Vergleich zur Welt dastehen, und kannst Kommentare anderer bewerten.',
     resultsButton: 'Ergebnisse ansehen',
-    codeTitle: 'Ergebnisse vergleichen',
+    codeTitle: 'Ergebnisse teilen',
     codeBody:
       'Nutze diesen Code oder Link, um deine Ergebnisse jederzeit wieder anzuzeigen. Du kannst ihn auch weitergeben!',
     copy: 'Kopieren',
@@ -426,7 +426,8 @@ export const de = {
     },
     share: {
       options: 'Optionen zum Teilen',
-      compareHint: 'Sieh, wie deine Antworten neben denen der anderen stehen.',
+      compareHint:
+        'Teile deine Ergebnisse oder öffne einen Ergebniscode, um mit allen anderen zu vergleichen.',
       picturesHint: 'Mach aus deinen Antworten Grafiken, die du speichern und verschicken kannst.',
     },
     tip: {
@@ -445,7 +446,7 @@ export const de = {
       toVote: ', um deine Antworten mit anderen zu vergleichen.',
       openCode: 'Einen Ergebniscode öffnen',
       yourCode: 'Dein Code',
-      rankingsTitle: 'Ergebnisse vergleichen',
+      rankingsTitle: 'Ergebnisse teilen',
       viewing: 'Ergebnisse offen',
       keepCode: 'Nutze diesen Code oder Link, um deine Ergebnisse jederzeit wieder anzuzeigen. Du kannst ihn auch weitergeben!',
       incorrect: 'Falscher Code',

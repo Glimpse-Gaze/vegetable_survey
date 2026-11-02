@@ -100,7 +100,7 @@ export const ptBr = {
     seeResults: 'Ver meus resultados',
     retake: 'Responder a pesquisa de novo',
     retakeHint:
-      'Responder de novo grava uma resposta nova. Seu código anterior continua valendo até você terminar uma nova rodada neste aparelho.',
+      'Salve o seu código atual. Responder a pesquisa de novo neste aparelho vai substituí-lo por um novo.',
     backHome: 'Voltar à página principal',
   },
   welcome: {
@@ -219,7 +219,7 @@ export const ptBr = {
     resultsBody:
       'Nas páginas de resultado dá pra ver como suas respostas ficam perto do resto do mundo, e avaliar o que outras pessoas escreveram.',
     resultsButton: 'Ver os resultados',
-    codeTitle: 'Comparar resultados',
+    codeTitle: 'Compartilhar resultados',
     codeBody:
       'Use este código ou link para ver seus resultados quando quiser. Pode compartilhar com outras pessoas!',
     copy: 'Copiar',
@@ -426,7 +426,8 @@ export const ptBr = {
     },
     share: {
       options: 'Opções de compartilhamento',
-      compareHint: 'Veja como as suas respostas ficam perto das dos outros.',
+      compareHint:
+        'Compartilhe seus resultados ou abra um código de resultados para comparar com os outros.',
       picturesHint: 'Transforme suas respostas em gráficos para salvar e enviar.',
     },
     tip: {
@@ -445,7 +446,7 @@ export const ptBr = {
       toVote: ' para comparar suas respostas com as dos outros.',
       openCode: 'Abrir um código de resultados',
       yourCode: 'Seu código',
-      rankingsTitle: 'Comparar resultados',
+      rankingsTitle: 'Compartilhar resultados',
       viewing: 'Vendo os resultados',
       keepCode: 'Use este código ou link para ver seus resultados quando quiser. Pode compartilhar com outras pessoas!',
       incorrect: 'Código incorreto',

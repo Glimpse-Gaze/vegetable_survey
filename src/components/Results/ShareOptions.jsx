@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useI18n } from '../../i18n/useI18n.js';
 import { useSurveyCatalog } from '../../i18n/useSurveyCatalog.js';
 import { buildResultCards } from '../../utils/resultCards.js';
@@ -18,7 +18,6 @@ export function ShareOptions({
 }) {
   const { t } = useI18n();
   const catalog = useSurveyCatalog();
-  const [compareOpen, setCompareOpen] = useState(false);
   const featured = useMemo(
     () => buildResultCards(answers, catalog).featured,
     [answers, catalog],
@@ -37,11 +36,6 @@ export function ShareOptions({
       document.removeEventListener('keydown', onKey);
     };
   }, [open, onClose]);
-
-  useEffect(() => {
-    if (!open) return;
-    if (viewingOther || invalid) setCompareOpen(true);
-  }, [open, viewingOther, invalid]);
 
   if (!open) return null;
 
@@ -67,30 +61,15 @@ export function ShareOptions({
         <div className="share-options-list">
           <div className="share-compare">
             <p className="share-compare-hint">{t('results.share.compareHint')}</p>
-            <button
-              className="response-code-pill"
-              type="button"
-              aria-expanded={compareOpen}
-              onClick={() => setCompareOpen((current) => !current)}
-            >
-              {t('results.gate.rankingsTitle')}
-            </button>
-            {compareOpen ? (
-              <div className="results-share-row">
-                <ResponseCodeCard
-                  code={code}
-                  categoryId={categoryId}
-                  viewingOther={viewingOther}
-                  invalid={invalid}
-                  hideTitle
-                />
-              </div>
-            ) : null}
-          </div>
-
-          <div className="share-invite">
-            <strong>{t('share.invite')}</strong>
-            <ShareBar />
+            <div className="results-share-row">
+              <ResponseCodeCard
+                code={code}
+                categoryId={categoryId}
+                viewingOther={viewingOther}
+                invalid={invalid}
+                hideTitle
+              />
+            </div>
           </div>
 
           {featured.length ? (
@@ -103,6 +82,11 @@ export function ShareOptions({
               <AnswerCardStrip cards={featured} />
             </section>
           ) : null}
+
+          <div className="share-invite">
+            <strong>{t('share.invite')}</strong>
+            <ShareBar />
+          </div>
         </div>
       </div>
     </div>

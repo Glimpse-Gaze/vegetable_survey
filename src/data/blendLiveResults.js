@@ -2,6 +2,7 @@ import { VOTE_THRESHOLD } from './resultsMock.js';
 import { isPublishableText } from '../utils/publishableText.js';
 import { iso3ForCountry } from './countryIso3.js';
 import { countries } from './countries.js';
+import { parentPlaceId } from './mapTerritoryParents.js';
 import {
   filterPublicVoteCounts,
   isCustomVoteKey,
@@ -532,16 +533,19 @@ export function mapCountriesFromLive(mockLiveCountries, livePlaces = {}) {
     mockLiveCountries.map((country) => [country.id, { ...country }]),
   );
 
-  for (const [placeId, count] of Object.entries(livePlaces)) {
+  for (const [rawPlaceId, count] of Object.entries(livePlaces)) {
     if (!count) continue;
+    const placeId = parentPlaceId(rawPlaceId);
     const iso3 = iso3ForCountry(placeId);
     if (!iso3) continue;
     const existing = byId.get(placeId);
     if (existing) {
+      const liveCount = (existing.liveCount ?? 0) + count;
       byId.set(placeId, {
         ...existing,
-        votes: Math.max(existing.votes, count),
-        liveCount: count,
+        votes: Math.max(existing.votes, liveCount),
+        liveCount,
+        live: liveCount >= VOTE_THRESHOLD || existing.live,
       });
     } else {
       byId.set(placeId, {

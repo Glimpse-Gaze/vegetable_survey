@@ -100,7 +100,7 @@ export const ptPt = {
     seeResults: 'Ver os meus resultados',
     retake: 'Preencher o inquérito outra vez',
     retakeHint:
-      'Preencher outra vez grava uma resposta nova. O teu código anterior continua a valer até terminares uma nova ronda neste aparelho.',
+      'Guarda o teu código atual. Preencher o inquérito outra vez neste aparelho substitui-o por um novo.',
     backHome: 'Voltar à página principal',
   },
   welcome: {
@@ -219,7 +219,7 @@ export const ptPt = {
     resultsBody:
       'Nas páginas de resultados vês como as tuas respostas se comparam com o resto do mundo, e podes avaliar comentários de outras pessoas.',
     resultsButton: 'Ver os resultados',
-    codeTitle: 'Comparar resultados',
+    codeTitle: 'Partilhar resultados',
     codeBody:
       'Usa este código ou ligação para veres os teus resultados quando quiseres. Podes partilhá-lo com outras pessoas!',
     copy: 'Copiar',
@@ -426,7 +426,8 @@ export const ptPt = {
     },
     share: {
       options: 'Opções de partilha',
-      compareHint: 'Vê como as tuas respostas ficam ao lado das dos outros.',
+      compareHint:
+        'Partilha os teus resultados ou abre um código de resultados para comparar com os outros.',
       picturesHint: 'Transforma as tuas respostas em gráficos para guardar e enviar.',
     },
     tip: {
@@ -445,7 +446,7 @@ export const ptPt = {
       toVote: ' para comparares as tuas respostas com as dos outros.',
       openCode: 'Abrir um código de resultados',
       yourCode: 'O teu código',
-      rankingsTitle: 'Comparar resultados',
+      rankingsTitle: 'Partilhar resultados',
       viewing: 'A ver os resultados',
       keepCode: 'Usa este código ou ligação para veres os teus resultados quando quiseres. Podes partilhá-lo com outras pessoas!',
       incorrect: 'Código errado',

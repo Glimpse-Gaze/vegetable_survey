@@ -99,7 +99,7 @@ export const ja = {
     seeResults: '自分の結果を見る',
     retake: 'もう一度答える',
     retakeHint:
-      'もう一度答えると新しい回答が保存されます。この端末で新しい回答を終えるまで、前のコードはそのまま使えます。',
+      '今のコードを保存しておいてください。この端末でもう一度答えると、新しいコードに差し替わります。',
     backHome: 'トップに戻る',
   },
   welcome: {
@@ -218,7 +218,7 @@ export const ja = {
     resultsBody:
       '結果ページで自分の答えを世界と比べたり、他の人のコメントに評価をつけたりできます。',
     resultsButton: '結果を見る',
-    codeTitle: '結果を比較',
+    codeTitle: '結果を共有',
     codeBody:
       'このコードやリンクで、いつでも自分の結果を表示できます。他の人に共有しても大丈夫！',
     copy: 'コピー',
@@ -421,7 +421,7 @@ export const ja = {
     },
     share: {
       options: '共有オプション',
-      compareHint: '自分の答えが他の人とどう違うか見てみましょう。',
+      compareHint: '結果を共有するか、結果コードを開いてみんなと比較しましょう。',
       picturesHint: '答えを画像にして保存・送信できます。',
     },
     tip: {
@@ -440,7 +440,7 @@ export const ja = {
       toVote: '。そうすると自分の答えを他の人と比べられます。',
       openCode: '結果コードを開く',
       yourCode: 'あなたのコード',
-      rankingsTitle: '結果を比較',
+      rankingsTitle: '結果を共有',
       viewing: '表示中の結果',
       keepCode:
         'このコードやリンクで、いつでも自分の結果を表示できます。他の人に共有しても大丈夫！',

@@ -102,7 +102,7 @@ export const en = {
     seeResults: 'See my results',
     retake: 'Take the survey again',
     retakeHint:
-      'Taking it again will save a new response. Your previous code still works until you finish a new run on this device.',
+      'Please save your current code. Filling the survey again on this device will replace it with a new one.',
     backHome: 'Back to the main page',
   },
   welcome: {
@@ -209,7 +209,7 @@ export const en = {
     resultsBody:
       'On the results pages you can see how your answers compare globally, and rate other people’s comments.',
     resultsButton: 'See the results',
-    codeTitle: 'Compare results',
+    codeTitle: 'Share results',
     codeBody:
       'Use this code or link to display your results any time in the future. Feel free to share it with others!',
     copy: 'Copy',
@@ -415,7 +415,8 @@ export const en = {
     },
     share: {
       options: 'Sharing options',
-      compareHint: 'See how your answers compare with everyone else.',
+      compareHint:
+        'Share your results or open a results code to compare with everyone else.',
       picturesHint: 'Turn your answers into graphics you can save and send.',
     },
     tip: {
@@ -434,7 +435,7 @@ export const en = {
       toVote: ' to compare your answers to others.',
       openCode: 'Open a results code',
       yourCode: 'Your code',
-      rankingsTitle: 'Compare results',
+      rankingsTitle: 'Share results',
       viewing: 'Viewing results',
       keepCode: 'Use this code or link to display your results any time in the future. Feel free to share it with others!',
       incorrect: 'Incorrect ID',

@@ -1,3 +1,5 @@
+import { rollupParentOf } from './mapTerritoryParents.js';
+
 const CONTINENT_COUNTRIES = {
   africa: [
     'algeria',
@@ -255,7 +257,7 @@ export function continentOf(placeId) {
   return COUNTRY_TO_CONTINENT[placeId] ?? null;
 }
 
-// Country votes count for the country and its continent.
+// Country votes count for the country, rolled-up subdivisions/territories, and continent.
 // Continent-only votes count for that continent, never for a country.
 export function voteCountsForRegion(placeId, regionId) {
   if (!placeId || placeId === 'prefer_not_to_disclose' || placeId === 'antarctica') {
@@ -263,5 +265,6 @@ export function voteCountsForRegion(placeId, regionId) {
   }
   if (regionId === 'global') return true;
   if (placeId === regionId) return true;
+  if (rollupParentOf(placeId) === regionId) return true;
   return isContinentId(regionId) && continentOf(placeId) === regionId;
 }

@@ -100,7 +100,7 @@ export const pl = {
     seeResults: 'Zobacz moje wyniki',
     retake: 'Wypełnij ankietę jeszcze raz',
     retakeHint:
-      'Nowe wypełnienie zapisze nową odpowiedź. Poprzedni kod działa nadal, dopóki nie dokończysz nowej rundy na tym urządzeniu.',
+      'Zapisz obecny kod. Ponowne wypełnienie ankiety na tym urządzeniu zastąpi go nowym.',
     backHome: 'Wróć na stronę główną',
   },
   welcome: {
@@ -219,7 +219,7 @@ export const pl = {
     resultsBody:
       'Na stronach wyników zobaczysz, jak Twoje odpowiedzi wypadają na tle reszty świata. Możesz też oceniać komentarze innych osób.',
     resultsButton: 'Zobacz wyniki',
-    codeTitle: 'Porównaj wyniki',
+    codeTitle: 'Udostępnij wyniki',
     codeBody:
       'Użyj tego kodu lub linku, żeby w każdej chwili wyświetlić swoje wyniki. Możesz go też komuś udostępnić!',
     copy: 'Kopiuj',
@@ -426,14 +426,15 @@ export const pl = {
     },
     share: {
       options: 'Opcje udostępniania',
-      compareHint: 'Zobacz, jak Twoje odpowiedzi wypadają na tle innych.',
+      compareHint:
+        'Udostępnij swoje wyniki albo otwórz kod wyników, żeby porównać je z innymi.',
       picturesHint: 'Zrób z odpowiedzi grafiki, które możesz zapisać i wysłać.',
     },
     tip: {
-      title: 'Podoba Ci się to, co widzisz?',
+      title: 'Podobają Ci się wyniki?',
       before:
         'To niezależny projekt zrobiony dla frajdy. Włożyłem w niego sporo pracy, więc jeśli Ci się podoba, rozważ',
-      link: 'napiwek dla mnie',
+      link: 'wsparcie mnie napiwkiem',
       after: '!',
       later: 'Może później',
       close: 'Zamknij',
@@ -446,7 +447,7 @@ export const pl = {
       toVote: ', żeby porównać swoje odpowiedzi z innymi.',
       openCode: 'Otwórz kod wyników',
       yourCode: 'Twój kod',
-      rankingsTitle: 'Porównaj wyniki',
+      rankingsTitle: 'Udostępnij wyniki',
       viewing: 'Podgląd wyników',
       keepCode: 'Użyj tego kodu lub linku, żeby w każdej chwili wyświetlić swoje wyniki. Możesz go też komuś udostępnić!',
       incorrect: 'Nieprawidłowy kod',

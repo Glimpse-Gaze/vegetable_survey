@@ -1674,6 +1674,11 @@
     position: relative;
   }
 
+  .reason-reset {
+    /* Anchor the tip to the pill, not the full-width row. */
+    isolation: isolate;
+  }
+
   .reason-reset-tip {
     position: absolute;
     bottom: calc(100% + 10px);
@@ -1691,8 +1696,8 @@
     transform: translateX(-50%);
   }
 
-  .reason-reset-row:hover .reason-reset-tip,
-  .reason-reset-row:focus-within .reason-reset-tip {
+  .reason-reset:hover + .reason-reset-tip,
+  .reason-reset:focus-visible + .reason-reset-tip {
     opacity: 1;
   }
 }
@@ -2449,6 +2454,8 @@
 }
 
 .bucket-lookup-card {
+  width: 100%;
+  max-width: 36rem;
   margin-top: 14px;
   padding: 16px 18px 12px;
   border: 1.5px solid var(--border);
@@ -2697,20 +2704,6 @@
   display: grid;
   justify-items: center;
   gap: 8px;
-}
-
-.share-compare .response-code-pill {
-  min-height: 44px;
-  padding: 8px 18px;
-  font-size: 0.95rem;
-  white-space: normal;
-  text-align: center;
-  line-height: 1.2;
-}
-
-.share-compare .response-code-pill[aria-expanded='true'] {
-  background: var(--cabbage-deep);
-  border-color: var(--cabbage-deep);
 }
 
 .share-compare-hint {

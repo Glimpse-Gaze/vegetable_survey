@@ -1,5 +1,9 @@
 import { startTransition, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import mapMarkup from '../../assets/map/World_Equal.svg?raw';
+import {
+  TERRITORY_ISO_AS_COUNTRY,
+  TERRITORY_ISO_COUNTRY_ID,
+} from '../../data/mapTerritoryParents.js';
 import { LIVE_COUNTRIES, VOTE_THRESHOLD } from '../../data/resultsMock.js';
 import { countryIdFromMapTitle } from '../../i18n/countryNameIndex.js';
 import { MAP_PLACE_IDS, mapPlaceName } from '../../i18n/mapPlaceNames.js';
@@ -41,13 +45,8 @@ function tipBox(clientX, clientY, mapEl, above) {
 }
 
 /** Territories drawn on the map, counted as the country they belong to. */
-const ISO_AS_COUNTRY = {
-  PRI: 'USA',
-};
-
-const ISO_COUNTRY_ID = {
-  PRI: 'united_states',
-};
+const ISO_AS_COUNTRY = TERRITORY_ISO_AS_COUNTRY;
+const ISO_COUNTRY_ID = TERRITORY_ISO_COUNTRY_ID;
 
 function rawCountryIso3(group) {
   return [...group.classList].find(

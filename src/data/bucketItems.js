@@ -35,7 +35,7 @@ export const bucketItems = [
   { id: 'horseradish', name: 'Horseradish', family: 'Brassicaceae' },
   { id: 'celery', name: 'Celery', family: 'Apiaceae' },
   { id: 'pak_choi', name: 'Pak choi', family: 'Brassicaceae' },
-  { id: 'rocket', name: 'Rocket', family: 'Brassicaceae' },
+  { id: 'rocket', name: 'Rocket leaves', family: 'Brassicaceae' },
 ];
 
 export function emptyBuckets() {

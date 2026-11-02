@@ -4,6 +4,7 @@ import { criteria } from './criteria.js';
 import { bucketItems } from './bucketItems.js';
 import { iso3ForCountry } from './countryIso3.js';
 import { liveTextItemsForLocale } from './blendLiveResults.js';
+import { rollupParentOf } from './mapTerritoryParents.js';
 import {
   ALL_LANGUAGES_ID,
   REGIONS,
@@ -144,7 +145,7 @@ export function aggregateBallots(ballots) {
   };
 }
 
-/** Live counts for places + rolled-up continents (for filters / map). */
+/** Live counts for places + rolled-up continents + sovereign parents (for filters / map). */
 export function livePlaceTallies(ballots) {
   const counts = {};
   for (const ballot of ballots ?? []) {
@@ -153,6 +154,8 @@ export function livePlaceTallies(ballots) {
     bump(counts, place);
     const continent = continentOf(place);
     if (continent && continent !== place) bump(counts, continent);
+    const parent = rollupParentOf(place);
+    if (parent && parent !== place) bump(counts, parent);
   }
   return counts;
 }
@@ -474,22 +477,13 @@ export function buildLiveSection(category, regionId, languageId, ballots, helper
   };
 }
 
-/** Places drawn separately on the map, tallied with the country they belong to. */
-const MAP_PLACE_ALIASES = {
-  puerto_rico: 'united_states',
-};
-
 /** Map countries from live tallies only (mock regions are not filter seeds). */
 export function mapCountriesFromLiveTallies(placeTallies = {}) {
-  const folded = new Map();
+  const countriesOnMap = [];
   for (const [placeId, count] of Object.entries(placeTallies)) {
     if (!count || isContinentId(placeId)) continue;
-    const id = MAP_PLACE_ALIASES[placeId] ?? placeId;
-    folded.set(id, (folded.get(id) ?? 0) + count);
-  }
-
-  const countriesOnMap = [];
-  for (const [placeId, count] of folded) {
+    // Children already contributed into the parent in livePlaceTallies.
+    if (rollupParentOf(placeId) !== placeId) continue;
     const iso3 = iso3ForCountry(placeId);
     if (!iso3) continue;
     countriesOnMap.push({

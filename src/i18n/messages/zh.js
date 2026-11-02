@@ -96,7 +96,7 @@ export const zh = {
     seeResults: '查看我的结果',
     retake: '再做一次问卷',
     retakeHint:
-      '再做一次会保存一份新的回答。在这台设备上完成新一轮之前，原来的代码仍然有效。',
+      '请先保存当前的代码。在这台设备上再做一次问卷，会换成新的代码。',
     backHome: '返回首页',
   },
   welcome: {
@@ -204,7 +204,7 @@ export const zh = {
     resultsTitle: '互动式数据展示',
     resultsBody: '前往结果页可以看到你的回答和全球数据的对比，也可以给别人的评论投票。',
     resultsButton: '查看结果',
-    codeTitle: '比较结果',
+    codeTitle: '分享结果',
     codeBody: '访问这个代码或链接可以随时回看你的回答，也可以分享给别人！',
     copy: '复制',
     copied: '已复制',
@@ -402,7 +402,7 @@ export const zh = {
     },
     share: {
       options: '分享选项',
-      compareHint: '看看你的回答和大家的有什么不同。',
+      compareHint: '分享你的结果，或打开一个结果代码，和其他人比较。',
       picturesHint: '把回答做成图片，可以保存或发给别人。',
     },
     tip: {
@@ -421,7 +421,7 @@ export const zh = {
       toVote: '，就能把自己的回答和别人的比较。',
       openCode: '打开结果代码',
       yourCode: '你的代码',
-      rankingsTitle: '比较结果',
+      rankingsTitle: '分享结果',
       viewing: '正在查看结果',
       keepCode: '用这个代码或链接，随时查看你的结果。也可以分享给别人！',
       incorrect: '代码不对',
