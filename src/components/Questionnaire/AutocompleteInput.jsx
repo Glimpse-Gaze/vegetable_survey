@@ -21,16 +21,18 @@ export function AutocompleteInput({
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const listId = `${inputId}-listbox`;
-  const showList = open && !disabled && !composing && suggestions.length > 0;
+  // Show while composing too. Android Gboard (and similar) keeps Latin
+  // keystrokes in an IME composition session, so gating on !composing
+  // hid the list until the keyboard closed or a native suggestion committed.
+  const showList = open && !disabled && suggestions.length > 0;
   const activeDescendant =
     showList && highlightIndex >= 0
       ? `${listId}-option-${highlightIndex}`
       : undefined;
 
   useEffect(() => {
-    if (composing) return;
     setHighlightIndex(-1);
-  }, [suggestions, composing]);
+  }, [suggestions]);
 
   useEffect(() => {
     if (!autoFocus) return;
@@ -150,6 +152,12 @@ export function AutocompleteInput({
   }, []);
 
   function handleKeyDown(event) {
+    // Leave Enter/arrows to the IME while a composition is active (CJK,
+    // and some Android Latin keyboards). keyCode 229 is the legacy signal.
+    if (composing || event.nativeEvent.isComposing || event.keyCode === 229) {
+      return;
+    }
+
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       setOpen(true);
@@ -239,7 +247,7 @@ export function AutocompleteInput({
         onChange={(event) => {
           if (disabled) return;
           onChange(event.target.value);
-          if (!composing) setOpen(true);
+          setOpen(true);
         }}
         onCompositionStart={() => setComposing(true)}
         onCompositionEnd={(event) => {
